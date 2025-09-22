@@ -20,9 +20,9 @@ date_default_timezone_set('America/New_York');
 
 function connect() {
     $host = "localhost"; 
-    $database = "spcadb";
-    $user = "spcadb";
-    $pass = "spcadb";
+    $database = "micha-ministries-db";
+    $user = "micha-ministries-db";
+    $pass = "micha-ministries-db";
     if ($_SERVER['SERVER_NAME'] == 'jenniferp160.sg-host.com') {
         $user = 'uknrzrk8sj1e7';
         $database = 'dbkzrh4cfmxbt0';
