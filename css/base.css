@@ -242,6 +242,10 @@ input[type=tel], select, textarea, .pseudo-input, .pseudo-input-disabled {
     scroll-margin: 7.5rem;
 }
 
+input[type=text] {
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+}
+
 input[type=text]:disabled, input[type=password]:disabled, input[type=date]:disabled, input[type=number]:disabled,
 input[type=email]:disabled, input[type=tel]:disabled, select:disabled, textarea:disabled,
 .pseudo-input-disabled {
@@ -385,7 +389,7 @@ h3:not(:first-of-type) {
 }
 
 .error-toast {
-    background-color: var(--error-toast-background-color);
+    background-color: #f8d7da;
     color: var(--error-toast-font-color);
     padding: 1rem;
     border-radius: 0.5rem;
