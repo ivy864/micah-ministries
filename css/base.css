@@ -109,7 +109,7 @@ header > img {
 }
 
 nav {
-    font-size: 2rem;
+    font-size: 2.5rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -147,6 +147,7 @@ nav ul li a {
 
 nav ul li a:hover {
     color: var(--accent-color);
+    font-size: 1.1rem;
 }
 
 span.logo {
