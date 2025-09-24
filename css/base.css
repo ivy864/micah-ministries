@@ -84,7 +84,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --error-color: red;
 
     /* Global rules */
-    font-size: 18px;
+    font-size: 40px;
     font-family: Montserrat;
     font-weight: 300;
 }
@@ -178,7 +178,7 @@ nav {
 }
 
 /* Header mobile rules */
-@media only screen and (max-width: 1079px) {
+@media only screen and (max-width: 300px) {
     nav {
         flex-direction: column;
         background-color: var(--page-background-color);
@@ -275,7 +275,7 @@ input[type=submit]:hover, button:hover, .button:hover {
 } */
 
 label {
-    color: var(--main-color);
+    color: #0066cc;
     font-weight: 600;
     width: 100%;
     text-align: left;
