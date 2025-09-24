@@ -857,7 +857,7 @@ table.general th:last-of-type {
 table.general th {
     background-color: var(--main-color);
     color: var(--button-font-color);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 table.general th, table.general td {
@@ -901,6 +901,8 @@ img.profile-pic {
 
 .link-like {
     cursor: pointer;
+    color: var(--accent-color);
+
 }
 
 .form-row {
