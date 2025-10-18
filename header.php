@@ -599,6 +599,7 @@ if (date("H:i:s") > "18:19:59") {
 	$permission_array['leaderboard.php'] = 0;
         // $permission_array['findanimal.php'] = 0; //TODO DELETE
         //pages volunteers can view
+        $permission_array['leaseview.php'] = 1;
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
         $permission_array['calendar.php'] = 1;
@@ -708,7 +709,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
             </div>
                 <a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>
             <div class="nav-links">
