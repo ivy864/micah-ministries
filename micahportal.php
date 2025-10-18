@@ -15,7 +15,7 @@ if (!isset($_SESSION['_id'])) {
 <body>
     <h2>Welcome</h2>
 
-    <button onclick="window.location.href='leaseman.php'">Lease Management</button>
+    <button onclick="window.location.href='leaseView.php'">Lease Management</button>
     <button onclick="window.location.href='maintman.php'">Maintenance Management</button>
     <button onclick="window.location.href='editlogin.php'">Edit Profile</button>
 </body>
