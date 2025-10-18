@@ -106,9 +106,16 @@
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
-  <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px]"
-       style="background-image: url(images/login_background.jpg);">
-  </div>
+  <!-- Left: Image Section (Hidden on small screens) -->
+<div
+  class="hidden md:block md:w-1/2 bg-center bg-cover rounded-r-[50px]"
+  style="
+    background-image: url('https://micahfredericksburg.org/wp-content/uploads/2022/06/Home-Hero.jpg');
+    background-position: center;
+    background-size: cover;
+  ">
+</div>
+
 
   <!-- Right: Form Section -->
 
