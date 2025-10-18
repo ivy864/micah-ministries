@@ -106,16 +106,9 @@
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
-  <!-- Left: Image Section (Hidden on small screens) -->
-<div
-  class="hidden md:block md:w-1/2 bg-center bg-cover rounded-r-[50px]"
-  style="
-    background-image: url('https://micahfredericksburg.org/wp-content/uploads/2022/06/Home-Hero.jpg');
-    background-position: center;
-    background-size: cover;
-  ">
-</div>
-
+  <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px]"
+       style="background-image: url(images/login_background.jpg);">
+  </div>
 
   <!-- Right: Form Section -->
 
@@ -124,13 +117,13 @@
 
     <div class="w-2/3 max-w-md flex flex-col items-center">
 
-      <!-- Logo Placeholder (Now the same width as inputs and centered) -->
+      <!-- Logo Placeholder (Now the same width as inputs and centered) 
       <div class="w-full flex justify-center mb-6">
         <img src="images/drawn_logo.png"
              alt="Logo"
              class="w-full max-w-xs">
-      </div>
-
+     </div>
+--> 
       <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
 	<span class="wave">👋</span> Nice to see you again.
       </h2>
@@ -157,7 +150,7 @@
         </div>
         <div class="flex justify-between items-center mb-4">
           <a href="#" class="text-blue-500 text-sm hover:underline">Forgot password?</a>
-          <a href="https://fredspca.org/" class="text-blue-500 text-sm hover:underline">Fredericksburg SPCA Website</a>
+          <a href="https://micahfredericksburg.org/" class="text-blue-500 text-sm hover:underline">Micah Ecumenical Ministries Website</a>
         </div>
         <button class="cursor-pointer w-full bg-[#345284] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
       </form>
