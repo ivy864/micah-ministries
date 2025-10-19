@@ -598,40 +598,44 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['volunteerregister.php'] = 0;
 	$permission_array['leaderboard.php'] = 0;
         // $permission_array['findanimal.php'] = 0; //TODO DELETE
-        //pages volunteers can view
-        $permission_array['leaseview.php'] = 1;
+        //pages maintenance staff can view (Level 1)
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
-        $permission_array['calendar.php'] = 1;
-        $permission_array['eventsearch.php'] = 1;
         $permission_array['changepassword.php'] = 1;
         $permission_array['editprofile.php'] = 1;
         $permission_array['inbox.php'] = 1;
-        $permission_array['date.php'] = 1;
-        $permission_array['event.php'] = 1;
         $permission_array['viewprofile.php'] = 1;
         $permission_array['viewnotification.php'] = 1;
-        $permission_array['volunteerreport.php'] = 1;
-        $permission_array['viewmyupcomingevents.php'] = 1;
-        $permission_array['volunteerviewgroup.php'] = 1;
-	    $permission_array['viewcheckinout.php'] = 1;
         $permission_array['viewresources.php'] = 1;
         $permission_array['discussionmain.php'] = 1;
         $permission_array['viewdiscussions.php'] = 1;
         $permission_array['discussioncontent.php'] = 1;
-        $permission_array['milestonepoints.php'] = 1;
-        $permission_array['selectvotm.php'] = 1;
-        $permission_array['volunteerviewgroupmembers.php'] = 1;
+        $permission_array['micahportal.php'] = 1;
+        
+        //pages case managers can view (Level 2) - Lease + Maintenance
+        $permission_array['leaseview.php'] = 2;
+        $permission_array['calendar.php'] = 2;
+        $permission_array['eventsearch.php'] = 2;
+        $permission_array['date.php'] = 2;
+        $permission_array['event.php'] = 2;
+        $permission_array['volunteerreport.php'] = 2;
+        $permission_array['viewmyupcomingevents.php'] = 2;
+        $permission_array['volunteerviewgroup.php'] = 2;
+	    $permission_array['viewcheckinout.php'] = 2;
+        $permission_array['milestonepoints.php'] = 2;
+        $permission_array['selectvotm.php'] = 2;
+        $permission_array['volunteerviewgroupmembers.php'] = 2;
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0;
-        $permission_array['personsearch.php'] = 2;
+        //user management - admin only (Level 3)
+        $permission_array['personsearch.php'] = 3;
         $permission_array['personedit.php'] = 0; // changed to 0 so that applicants can apply
-        $permission_array['viewschedule.php'] = 2;
-        $permission_array['addweek.php'] = 2;
-        $permission_array['log.php'] = 2;
-        $permission_array['reports.php'] = 2;
-        $permission_array['eventedit.php'] = 2;
-        $permission_array['modifyuserrole.php'] = 2;
+        $permission_array['viewschedule.php'] = 3;
+        $permission_array['addweek.php'] = 3;
+        $permission_array['log.php'] = 3;
+        $permission_array['reports.php'] = 3;
+        $permission_array['eventedit.php'] = 3;
+        $permission_array['modifyuserrole.php'] = 3;
         $permission_array['addevent.php'] = 2;
         $permission_array['editevent.php'] = 2;
         // $permission_array['roster.php'] = 2; //TODO DELETE
@@ -659,15 +663,17 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['groupview.php'] = 2;
         $permission_array['managemembers.php'] = 2;
         $permission_array['deleteGroup.php'] = 2;
-        $permission_array['volunteermanagement.php'] = 2;
-        $permission_array['groupmanagement.php'] = 2;
-        $permission_array['eventmanagement.php'] = 2;
-        $permission_array['maintman.php'] = 2;
-        $permission_array['viewallmaintenancerequests.php'] = 2;
-        $permission_array['addmaintenancerequest.php'] = 2;
-        $permission_array['editmaintenancerequest.php'] = 2;
-        $permission_array['assignmaintenancetasks.php'] = 2;
-        $permission_array['viewpendingmaintenancerequests.php'] = 2;
+        //admin-only management pages (Level 3)
+        $permission_array['volunteermanagement.php'] = 3;
+        $permission_array['groupmanagement.php'] = 3;
+        $permission_array['eventmanagement.php'] = 3;
+        //maintenance management - all roles can access (Level 1)
+        $permission_array['maintman.php'] = 1;
+        $permission_array['viewallmaintenancerequests.php'] = 1;
+        $permission_array['addmaintenancerequest.php'] = 1;
+        $permission_array['editmaintenancerequest.php'] = 1;
+        $permission_array['assignmaintenancetasks.php'] = 1;
+        $permission_array['viewpendingmaintenancerequests.php'] = 1;
         $permission_array['creatediscussion.php'] = 2;
         $permission_array['checkedinvolunteers.php'] = 2;
         $permission_array['deletediscussion.php'] = 2;
