@@ -1,5 +1,4 @@
 <?php
-
 session_cache_expire(30);
 session_start();
 $loggedIn = isset($_SESSION['_id']);
@@ -8,7 +7,7 @@ if ($accessLevel < 2) { header('Location: index.php'); exit; }
 
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-// Placeholder table
+//Placeholder table
 // Give each row a stable fake ID so edit/archive actions have a target
 $seedRows = [
   ['id'=>101,'name'=>'Leaky faucet','date'=>'2025-10-05','type'=>'Plumbing','address'=>'101 Maple St, Apt 2B','area'=>'Kitchen'],
@@ -44,7 +43,6 @@ if (isset($_GET['archive'])) {
   $archiveId = (int)$_GET['archive'];
   $rows = array_values(array_filter($rows, fn($r) => (int)$r['id'] !== $archiveId));
   $_SESSION['mm_rows'] = $rows;
-  // Redirect to clean the URL
   $qs = $_GET; unset($qs['archive']);
   header('Location: ?'.http_build_query($qs));
   exit;
@@ -78,7 +76,6 @@ function sortLink($label, $col, $cur, $dir){
   <title>Micah Ministries | Maintenance Management</title>
   <link href="css/normal_tw.css" rel="stylesheet">
   <style>
-    /* Cap table height and allow scroll so page doesn’t stretch forever */
     .table-scroll { max-height: 60vh; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; }
     table { width: 100%; border-collapse: collapse; background: #fff; }
     thead th { position: sticky; top: 0; background: #f9fafb; }
@@ -92,7 +89,6 @@ function sortLink($label, $col, $cur, $dir){
     footer.site-footer { margin-top: 24px; padding: 16px 0; color:#6b7280; border-top:1px solid #e5e7eb; font-size: 14px; text-align:center; }
   </style>
   <?php
-    // Same header/nav as leaseView.php
     $tailwind_mode = true;
     require_once('header.php');
   ?>
