@@ -15,7 +15,30 @@ require_once('header.php');
     require_once('domain/MaintenanceRequest.php')
 ?>
 
-<h2>Manage Maintenance Request</h2>
+<style>
+    .manage-maintenance-header {
+        display: flex;
+        justify-content: space-between;
+    }
+    .manage-maintenance-header > button {
+        margin-right: 5em;
+        background-color: #5C91B6;
+        color: white;
+        padding: .5em;
+        border-radius: 1em;
+        font-weight: bold;
+    }
+
+    .manage-maintenance-header > button:hover {
+        background-color: #4E7FA2;
+    }
+</style>
+
+<div class="manage-maintenance-header">
+    <h2>Manage Maintenance Request</h2>
+    <button>Mark Complete</button>
+</div>
+
 
 <?php
     $testdata = [
