@@ -1,12 +1,6 @@
 <?php
-session_start();
     // Template for new VMS pages. Base your new page on this one
 
-// redirect to login if not logged in
-if (!isset($_SESSION['_id'])) {
-    header('Location: login.php');
-    exit();
-}
     // Make session information accessible, allowing us to associate
     // data with the logged-in user.
     session_cache_expire(30);
@@ -28,10 +22,8 @@ if (!isset($_SESSION['_id'])) {
     }
 ?>
 <!DOCTYPE html>
-<html>
 <html lang="en">
 <head>
-    <title>Maintenance Management</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maintenance Management Page</title>
@@ -63,9 +55,6 @@ require_once('header.php');
 </head>
 
 <body>
-    <h2>Maintenance Management Page</h2>
-    <p>This is where maintenance request tools will go.</p>
-    <a href="micahportal.php">Return to Portal</a>
 
 
   <!-- Larger Hero Section -->
