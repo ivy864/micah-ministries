@@ -662,6 +662,12 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['volunteermanagement.php'] = 2;
         $permission_array['groupmanagement.php'] = 2;
         $permission_array['eventmanagement.php'] = 2;
+        $permission_array['maintman.php'] = 2;
+        $permission_array['viewallmaintenancerequests.php'] = 2;
+        $permission_array['addmaintenancerequest.php'] = 2;
+        $permission_array['editmaintenancerequest.php'] = 2;
+        $permission_array['assignmaintenancetasks.php'] = 2;
+        $permission_array['viewpendingmaintenancerequests.php'] = 2;
         $permission_array['creatediscussion.php'] = 2;
         $permission_array['checkedinvolunteers.php'] = 2;
         $permission_array['deletediscussion.php'] = 2;
