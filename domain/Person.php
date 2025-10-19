@@ -119,8 +119,25 @@ class Person {
 		$this->is_new_volunteer = $is_new_volunteer;
         $this->total_hours_volunteered = $total_hours_volunteered;
 		$this->training_level = $training_level;
-        // Access level
-        $this->access_level = ($id == 'vmsroot') ? 3 : 1;
+        // Access level - Updated for three-role system
+        if ($id == 'vmsroot') {
+            $this->access_level = 3; // Super admin
+        } else {
+            switch ($type) {
+                case 'admin':
+                    $this->access_level = 3; // Admin: Lease + Maintenance + User Management
+                    break;
+                case 'case_manager':
+                    $this->access_level = 2; // Case Manager: Lease + Maintenance (no user management)
+                    break;
+                case 'maintenance':
+                    $this->access_level = 1; // Maintenance Staff: Maintenance only
+                    break;
+                default:
+                    $this->access_level = 1; // Default to maintenance level for backward compatibility
+                    break;
+            }
+        }
 
     }
 
