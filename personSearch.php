@@ -15,7 +15,7 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    // admin-only access
+    // case manager and admin access (level 2+)
     if ($accessLevel < 2) {
         header('Location: index.php');
         die();
@@ -24,7 +24,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Fredericksburg SPCA | Volunteer/Participant Search</title>
+    <title>Micah Ministries | User Search</title>
     <link href="css/normal_tw.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
@@ -53,7 +53,7 @@ require_once('header.php');
 
 <header class="hero-header">
     <div class="center-header">
-        <h1>Volunteer/Participant Search</h1>
+        <h1>User Search</h1>
     </div>
 </header>
 
@@ -61,8 +61,8 @@ require_once('header.php');
     <div class="main-content-box w-[80%] p-8">
 
         <div class="text-center mb-8">
-            <h2>Find a Volunteer or Participant</h2>
-            <p class="sub-text">Use filters below to search and create mailing lists.</p>
+                <h2>Find a User</h2>
+            <p class="sub-text">Use filters below to search for a user. </p>
         </div>
 
         <form id="person-search" class="space-y-6" method="get">
@@ -88,7 +88,7 @@ require_once('header.php');
 
                 if (!($name || $id || $phone || $zip || $role || $status || $photo_release)) {
                     echo '<div class="error-block">At least one search criterion is required.</div>';
-                } else if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', ''])) {
+                } else if (!valueConstrainedTo($role, ['admin', 'case_manager', 'maintenance', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
                 } else if (!valueConstrainedTo($status, ['Active', 'Inactive', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
@@ -181,8 +181,9 @@ require_once('header.php');
                 <label for="role">Role</label>
                 <select id="role" name="role" class="w-full">
                     <option value="">Any</option>
-                    <option value="volunteer" <?php if (isset($role) && $role == 'volunteer') echo 'selected'; ?>>Volunteer</option>
-                    <option value="participant" <?php if (isset($role) && $role == 'participant') echo 'selected'; ?>>Participant</option>
+                    <option value="admin" <?php if (isset($role) && $role == 'admin') echo 'selected'; ?>>Admin</option>
+                    <option value="case_manager" <?php if (isset($role) && $role == 'case_manager') echo 'selected'; ?>>Case Manager</option>
+                    <option value="maintenance" <?php if (isset($role) && $role == 'maintenance') echo 'selected'; ?>>Maintenance Staff</option>
                 </select>
             </div>
 
@@ -218,7 +219,7 @@ require_once('header.php');
     <div class="info-section">
         <div class="blue-div"></div>
         <p class="info-text">
-            Use this tool to filter and search for volunteers or participants by their role, zip code, phone, archive status, and more. Mailing list support is built in.
+            Use this tool to filter and search for users by their role (Admin, Case Manager, Maintenance Staff), zip code, phone, archive status, and more. Mailing list support is built in.
         </p>
     </div>
 </main>
