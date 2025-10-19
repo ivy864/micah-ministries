@@ -805,13 +805,6 @@ if (date("H:i:s") > "18:19:59") {
                 <div class="nav-item">User Management
                     <div class="dropdown">
 
-<a href="viewAllPersons.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/list-solid.svg">
-    <span>View All Users</span>
-  </div>
-</a>
-
 <a href="personSearch.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/search.svg">
@@ -824,7 +817,7 @@ if (date("H:i:s") > "18:19:59") {
     <span>Modify User Role</span>
   </div>
 </a>
-<a href="insertAdmin.php" style="text-decoration: none;">
+<a href="createNewUser.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/user-plus.svg">
     <span>Add User</span>
