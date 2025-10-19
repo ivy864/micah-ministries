@@ -599,6 +599,9 @@ if (date("H:i:s") > "18:19:59") {
 	$permission_array['leaderboard.php'] = 0;
         // $permission_array['findanimal.php'] = 0; //TODO DELETE
         //pages maintenance staff can view (Level 1)
+        //pages volunteers can view
+        $permission_array['leaseview.php'] = 1;
+        $permission_array['maintman.php'] = 1;
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
         $permission_array['changepassword.php'] = 1;
