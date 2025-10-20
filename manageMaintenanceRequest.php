@@ -52,9 +52,9 @@
 
                 <?php
                     $testdata = [
-                        new MaintenanceRequest(0, 'joe biden', 'sink is leaking', '1600 pennsylvania ave', 'bathroom 4', 'plumbing'),
-                        new MaintenanceRequest(1, 'crow boy', 'ran out of plastic to destroy', 'big tree', 'branch #39', 'misc'),
-                        new MaintenanceRequest(2, 'Tony Hawk', 'skateboard broke', 'the skate park', 'vert ramp', 'carpentry')
+                        new MaintenanceRequest(0, 'joe biden', 'sink is leaking', '1600 pennsylvania ave', 'bathroom 4', 'plumbing', '2024-03-02'),
+                        new MaintenanceRequest(1, 'crow boy', 'ran out of plastic to destroy', 'big tree', 'branch #39', 'misc', '2025-06-31'),
+                        new MaintenanceRequest(2, 'Tony Hawk', 'skateboard broke', 'the skate park', 'vert ramp', 'carpentry', '2027-12-01')
                     ];
 
                     $request = $testdata[$_GET['id']];
@@ -64,7 +64,15 @@
                     <tr>
                         <td>Name:</td>
                         <td><?php echo $request->getRequester(); ?></td>
-                    </tr>    
+                    </tr> 
+                    <tr>
+                        <td>Name:</td>
+                        <td><?php echo $request->getRequestDate(); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Type:</td>
+                        <td><?php echo $request->getProblemType(); ?></td>
+                    </tr>
                     <tr>
                         <td>Address:</td>
                         <td><?php echo $request->getAddress(); ?></td>

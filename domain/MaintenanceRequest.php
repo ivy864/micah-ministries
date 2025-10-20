@@ -7,8 +7,18 @@ class MaintenanceRequest {
     private $address;
     private $area;
     private $problemType;
+    private $date;
 
-    public function __construct($id, $requester, $desc, $address, $area, $problemType)
+    /**
+     * @param int $id
+     * @param string $requester
+     * @param string $desc
+     * @param string $address
+     * @param string $area
+     * @param string $problemType
+     * @param string $date
+     */
+    public function __construct($id, $requester, $desc, $address, $area, $problemType, $date)
     {
         $this->id = $id;
         $this->requester = $requester;
@@ -16,6 +26,7 @@ class MaintenanceRequest {
         $this->address = $address;
         $this->area = $area;
         $this->problemType = $problemType; 
+        $this->date = $date;
     }
 
     public function getID() {
@@ -42,4 +53,7 @@ class MaintenanceRequest {
         return $this->problemType;
     }
 
+    public function getRequestDate() {
+        return $this->date;
+    }
 }
