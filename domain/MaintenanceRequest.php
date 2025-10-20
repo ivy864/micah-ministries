@@ -6,14 +6,16 @@ class MaintenanceRequest {
     private $desc;
     private $address;
     private $area;
+    private $problemType;
 
-    public function __construct($id, $requester, $desc, $address, $area)
+    public function __construct($id, $requester, $desc, $address, $area, $problemType)
     {
         $this->id = $id;
         $this->requester = $requester;
         $this->desc = $desc;
         $this->address = $address;
         $this->area = $area;
+        $this->problemType = $problemType; 
     }
 
     public function getID() {
@@ -34,6 +36,10 @@ class MaintenanceRequest {
 
     public function getArea() {
         return $this->area;
+    }
+
+    public function getProblemType() {
+        return $this->problemType;
     }
 
 }

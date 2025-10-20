@@ -52,9 +52,9 @@
 
                 <?php
                     $testdata = [
-                        new MaintenanceRequest(0, 'joe biden', 'sink is leaking', '1600 pennsylvania ave', 'bathroom 4'),
-                        new MaintenanceRequest(1, 'crow boy', 'ran out of plastic to destroy', 'big tree', 'branch #39'),
-                        new MaintenanceRequest(2, 'Tony Hawk', 'skateboard broke', 'the skate park', 'vert ramp')
+                        new MaintenanceRequest(0, 'joe biden', 'sink is leaking', '1600 pennsylvania ave', 'bathroom 4', 'plumbing'),
+                        new MaintenanceRequest(1, 'crow boy', 'ran out of plastic to destroy', 'big tree', 'branch #39', 'misc'),
+                        new MaintenanceRequest(2, 'Tony Hawk', 'skateboard broke', 'the skate park', 'vert ramp', 'carpentry')
                     ];
 
                     $request = $testdata[$_GET['id']];
