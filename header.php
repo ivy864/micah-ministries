@@ -613,6 +613,10 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['discussionmain.php'] = 1;
         $permission_array['viewdiscussions.php'] = 1;
         $permission_array['discussioncontent.php'] = 1;
+        $permission_array['milestonepoints.php'] = 1;
+        $permission_array['selectvotm.php'] = 1;
+        $permission_array['volunteerviewgroupmembers.php'] = 1;
+        $permission_array['managemaintenancerequest.php'] = 1;
         $permission_array['micahportal.php'] = 1;
         
         //pages case managers can view (Level 2) - Lease + Maintenance
