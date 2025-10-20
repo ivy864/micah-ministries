@@ -35,6 +35,9 @@
             .manage-maintenance-header > button {
                 width: initial;
             }
+            td {
+                padding: .5rem;
+            }
         </style>
     </head>
     <body>
