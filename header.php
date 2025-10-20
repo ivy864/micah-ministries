@@ -621,6 +621,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['milestonepoints.php'] = 1;
         $permission_array['selectvotm.php'] = 1;
         $permission_array['volunteerviewgroupmembers.php'] = 1;
+        $permission_array['managemaintenancerequest.php'] = 1;
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0;
         $permission_array['personsearch.php'] = 2;
