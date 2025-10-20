@@ -84,7 +84,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --error-color: red;
 
     /* Global rules */
-    font-size: 18px;
+    font-size: 40px;
     font-family: Montserrat;
     font-weight: 300;
 }
@@ -179,7 +179,7 @@ nav {
 }
 
 /* Header mobile rules */
-@media only screen and (max-width: 1079px) {
+@media only screen and (max-width: 300px) {
     nav {
         flex-direction: column;
         background-color: var(--page-background-color);
@@ -280,7 +280,7 @@ input[type=submit]:hover, button:hover, .button:hover {
 } */
 
 label {
-    color: var(--main-color);
+    color: #0066cc;
     font-weight: 600;
     width: 100%;
     text-align: left;
@@ -373,7 +373,8 @@ h3:not(:first-of-type) {
     background-color: var(--happy-toast-background-color);
     color: var(--happy-toast-font-color);
     padding: 1rem;
-    border-radius: 0.5rem;
+    /*border-radius: 0.5rem;*/
+    border-radius: 1rem;
     margin-bottom: 1rem;
     /*thomas*/
     text-align: center;
@@ -585,7 +586,8 @@ main.dashboard > p {
 .dashboard-item:hover {
     background-color: var(--accent-color);
     cursor: pointer;
-    /* text-shadow: 0px 0px .25rem black; */
+     text-shadow: 1px 1px 2px #000 
+     /*.25rem black;*/
 }
 
 .dashboard-item > img {
