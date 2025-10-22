@@ -57,35 +57,49 @@ include_once "database/dbShifts.php";
     <main>
         <div class="main-content-box p-6">
 
+            <!-- WIP -->
+            <!-- Need to format so that it looks better -->
             <div class="overflow-x-auto">
-
                 <form action="processAddLease.php" method="POST" class="space-y-4">
-
                     <div>
-                        <label for="person_id" class="block font-medium text-gray-700">Person ID:</label>
-                        <input type="text" id="person_id" name="person_id" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
-                    </div>
-
-                    <div>
-                        <label for="lease_start" class="block font-medium text-gray-700">Lease Start Date:</label>
-                        <input type="date" id="lease_start" name="lease_start" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                        <label for="tenant_name" class="block font-medium text-gray-700">Tenant Name:</label>
+                        <input type="text" id="tenant_name" name="tenant_name" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
 
                     <div>
-                        <label for="lease_end" class="block font-medium text-gray-700">Lease End Date:</label>
-                        <input type="date" id="lease_end" name="lease_end" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                        <label for="property_address" class="block font-medium text-gray-700">Property Address:</label>
+                        <input type="text" id="property_address" name="property_address" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
 
                     <div>
-                        <button type="submit" class="blue-button">Add Lease</button>
+                        <label for="unit_number" class="block font-medium text-gray-700">Unit Number:</label>
+                        <input type="text" id="unit_number" name="unit_number" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
 
-                    <div class="d-flex justify-content-end mb-4">
-                        <a href="micahportal.php" class="blue-button">Return to Portal</a>
+                    <div>
+                        <label for="lease_start_date" class="block font-medium text-gray-700">Lease Start Date:</label>
+                        <input type="date" id="lease_start_date" name="lease_start_date" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
 
+                    <div>
+                        <label for="lease_end_date" class="block font-medium text-gray-700">Lease End Date:</label>
+                        <input type="date" id="lease_end_date" name="lease_end_date" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    </div>
+
+                    <div>
+                        <label for="rent_amount" class="block font-medium text-gray-700">Rent Amount:</label>
+                        <input type="number" step="0.01" id="rent_amount" name="rent_amount" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    </div>
+
+                    <div>
+                        <button type="submit" class="blue-button">Sumbit Changes</button>
+                    </div>
                 </form>
-            </div>
 
+                <div class="d-flex justify-content-end mb-4">
+                    <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
+                </div>
+
+            </div>
         </div>
 </body>
