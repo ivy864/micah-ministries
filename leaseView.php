@@ -59,7 +59,7 @@ include_once "database/dbShifts.php";
 
             <div class="d-flex justify-content-end mb-4">
                 <!-- Replace index.php with the add page for leases -->
-                <a href="index.php" class="blue-button">Add a Lease</a>
+                <a href="addLease.php" class="blue-button">Add a Lease</a>
             </div>
 
             <div class="overflow-x-auto">
