@@ -21,7 +21,7 @@ include_once "database/dbShifts.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Micah Ministries | Add Leases</title>
+    <title>Micah Ministries | Edit Leases</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
     <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
@@ -50,7 +50,7 @@ include_once "database/dbShifts.php";
 <body>
     <div class="hero-header">
         <div class="center-header">
-            <h1>Add a Lease</h1>
+            <h1>Edit a Lease</h1>
         </div>
     </div>
 
