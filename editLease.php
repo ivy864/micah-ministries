@@ -14,8 +14,7 @@ if ($accessLevel < 2) {
     die();
 }
 include_once "database/dbPersons.php";
-include_once "database/dbShifts.php";
-
+// viewleases db needs to be created/added
 ?>
 
 <!DOCTYPE html>
