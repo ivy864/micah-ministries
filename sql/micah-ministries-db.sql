@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2025 at 03:46 PM
+-- Generation Time: Oct 23, 2025 at 06:19 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -217,8 +217,10 @@ CREATE TABLE `dbmaintenancerequests` (
 --
 
 INSERT INTO `dbmaintenancerequests` (`id`, `requester_name`, `requester_email`, `requester_phone`, `location`, `building`, `unit`, `description`, `priority`, `status`, `assigned_to`, `created_at`, `updated_at`, `completed_at`, `notes`, `archived`) VALUES
-('MR20251019002748230', 'Ileana ', 'iperezru@mail.umw.edu', '6056519684', 'bathroom', '39', '1A', 'poo everywhere! haaalp! ', 'Medium', 'Pending', 'Luke', '2025-10-19 04:27:48', '2025-10-19 04:27:48', NULL, 'hurry! ', 0),
-('MR20251019111152405', 'Ileana ', 'iperezru@mail.umw.edu', '156896969', 'kitchen', '45', '2A ', 'invaders!! ', 'Emergency', 'Pending', 'CJ ', '2025-10-19 15:11:52', '2025-10-19 15:11:52', NULL, 'noooo!', 0);
+('MR20251019002748230', 'Ileana', 'iperezru@mail.umw.edu', '6056519684', 'bathroom', '39', '1A', 'poo everywhere! noooooo! ', 'Emergency', 'Completed', 'Luke', '2025-10-19 04:27:48', '2025-10-23 03:27:17', '2025-10-23 03:27:17', 'hurry! ', 0),
+('MR20251019111152405', 'Ileana ', 'iperezru@mail.umw.edu', '156896969', 'kitchen', '45', '2A ', 'invaders!! ', 'High', 'In Progress', 'Maddy', '2025-10-19 15:11:52', '2025-10-23 03:54:21', NULL, 'noooo!', 0),
+('MR20251022133359704', 'Ileana', 'iperezru@mail.umw.edu', '6057854521', 'balcony', '18', '2A', 'haaaalp! ', 'Emergency', 'In Progress', 'Alex', '2025-10-22 17:33:59', '2025-10-23 04:09:21', '2025-10-23 03:53:41', 'moor ice cream ', 0),
+('MR20251023001053122', 'Ileana ', 'iperezru@mail.umw.edu', '1234567890', 'master bedroom ', '58', '2A', 'Plant Zombieeees! ', 'Emergency', 'Pending', 'Luke', '2025-10-23 04:10:53', '2025-10-23 04:11:32', '0000-00-00 00:00:00', 'we\'ll fix the notes section later. ', 0);
 
 -- --------------------------------------------------------
 
