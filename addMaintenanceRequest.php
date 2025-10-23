@@ -21,8 +21,9 @@
         die();
     }
 
-    // include database functions
+    // include database functions and domain object
     require_once('database/dbMaintenanceRequests.php');
+    require_once('domain/MaintenanceRequest.php');
     
     $message = '';
     $error = '';
@@ -45,12 +46,15 @@
         if (empty($requester_name) || empty($description)) {
             $error = 'Requester name and description are required.';
         } else {
-            // add to database
-            $result = add_maintenance_request(
+            // create maintenance request object
+            $maintenanceRequest = new MaintenanceRequest(
                 $id, $requester_name, $requester_email, $requester_phone, 
                 $location, $building, $unit, $description, $priority, 
                 'Pending', $assigned_to, $notes
             );
+            
+            // add to database using object
+            $result = add_maintenance_request($maintenanceRequest);
             
             if ($result) {
                 $message = 'Maintenance request created successfully! Request ID: ' . $id;

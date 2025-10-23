@@ -16,6 +16,7 @@
  */
 
 include_once('dbinfo.php');
+include_once(dirname(__FILE__).'/../domain/MaintenanceRequest.php');
 
 /**
  * Sets up a new dbmaintenancerequests table - only creates if it doesn't exist
@@ -68,23 +69,31 @@ function create_dbMaintenanceRequests() {
 }
 
 /**
- * adds a new maintenance request to the database
+ * adds a new maintenance request to the database using MaintenanceRequest object
  */
-function add_maintenance_request($id, $requester_name, $requester_email, $requester_phone, $location, $building, $unit, $description, $priority, $status, $assigned_to, $notes) {
+function add_maintenance_request($maintenanceRequest) {
+    if (!$maintenanceRequest instanceof MaintenanceRequest) {
+        die("Error: add_maintenance_request type mismatch");
+    }
+
     $con=connect();
-    $query = "INSERT INTO dbmaintenancerequests (id, requester_name, requester_email, requester_phone, location, building, unit, description, priority, status, assigned_to, notes, archived) VALUES('" .
-            $id . "','" .
-            $requester_name . "','" .
-            $requester_email . "','" .
-            $requester_phone . "','" .
-            $location . "','" .
-            $building . "','" .
-            $unit . "','" .
-            $description . "','" .
-            $priority . "','" .
-            $status . "','" .
-            $assigned_to . "','" .
-            $notes . "',0)";
+    $query = "INSERT INTO dbmaintenancerequests (id, requester_name, requester_email, requester_phone, location, building, unit, description, priority, status, assigned_to, notes, archived, created_at, updated_at, completed_at) VALUES('" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getID()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getRequesterName()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getRequesterEmail()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getRequesterPhone()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getLocation()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getBuilding()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getUnit()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getDescription()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getPriority()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getStatus()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getAssignedTo()) . "','" .
+            mysqli_real_escape_string($con, $maintenanceRequest->getNotes()) . "','" .
+            $maintenanceRequest->getArchived() . "','" .
+            $maintenanceRequest->getCreatedAt() . "','" .
+            $maintenanceRequest->getUpdatedAt() . "','" .
+            ($maintenanceRequest->getCompletedAt() ? $maintenanceRequest->getCompletedAt() : 'NULL') . "')";
     
     $result = mysqli_query($con,$query);
     if (!$result) {
@@ -96,15 +105,32 @@ function add_maintenance_request($id, $requester_name, $requester_email, $reques
     return true;
 }
 
+
 /**
- * retrieves all maintenance requests from the database
+ * retrieves all maintenance requests from the database as MaintenanceRequest objects
  */
-function get_all_maintenance_requests($limit = null, $offset = 0) {
+function get_all_maintenance_requests($limit = null, $offset = 0, $sort_by = 'created_at', $sort_order = 'DESC') {
     $con=connect();
-    $query = "SELECT * FROM dbmaintenancerequests WHERE archived = 0 ORDER BY created_at DESC";
+    
+    // validate sort column to prevent SQL injection
+    $allowed_sort_columns = ['id', 'requester_name', 'location', 'building', 'priority', 'status', 'assigned_to', 'created_at'];
+    if (!in_array($sort_by, $allowed_sort_columns)) {
+        $sort_by = 'created_at';
+    }
+    
+    // validate sort order
+    $sort_order = strtoupper($sort_order);
+    if (!in_array($sort_order, ['ASC', 'DESC'])) {
+        $sort_order = 'DESC';
+    }
+    
+    // ensure offset is never negative
+    $offset = max(0, (int)$offset);
+    
+    $query = "SELECT * FROM dbmaintenancerequests WHERE archived = 0 ORDER BY " . $sort_by . " " . $sort_order;
     
     if ($limit !== null) {
-        $query .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        $query .= " LIMIT " . (int)$limit . " OFFSET " . $offset;
     }
     
     $result = mysqli_query($con,$query);
@@ -116,11 +142,35 @@ function get_all_maintenance_requests($limit = null, $offset = 0) {
     
     $requests = array();
     while ($row = mysqli_fetch_array($result)) {
-        $requests[] = $row;
+        $request = new MaintenanceRequest(
+            $row['id'],
+            $row['requester_name'],
+            $row['requester_email'],
+            $row['requester_phone'],
+            $row['location'],
+            $row['building'],
+            $row['unit'],
+            $row['description'],
+            $row['priority'],
+            $row['status'],
+            $row['assigned_to'],
+            $row['notes'],
+            $row['archived']
+        );
+        
+        // set timestamps from database
+        $request->setCreatedAt($row['created_at']);
+        $request->setUpdatedAt($row['updated_at']);
+        if ($row['completed_at']) {
+            $request->setCompletedAt($row['completed_at']);
+        }
+        
+        $requests[] = $request;
     }
     mysqli_close($con);
     return $requests;
 }
+
 
 /**
  * retrieves pending maintenance requests
@@ -144,11 +194,11 @@ function get_pending_maintenance_requests() {
 }
 
 /**
- * retrieves a specific maintenance request by id
+ * retrieves a specific maintenance request by id as MaintenanceRequest object
  */
 function get_maintenance_request_by_id($id) {
     $con=connect();
-    $query = "SELECT * FROM dbmaintenancerequests WHERE id = '" . $id . "'";
+    $query = "SELECT * FROM dbmaintenancerequests WHERE id = '" . mysqli_real_escape_string($con, $id) . "'";
     $result = mysqli_query($con,$query);
     if (!$result || mysqli_num_rows($result) == 0) {
         mysqli_close($con);
@@ -156,28 +206,59 @@ function get_maintenance_request_by_id($id) {
     }
     
     $row = mysqli_fetch_array($result);
+    $request = new MaintenanceRequest(
+        $row['id'],
+        $row['requester_name'],
+        $row['requester_email'],
+        $row['requester_phone'],
+        $row['location'],
+        $row['building'],
+        $row['unit'],
+        $row['description'],
+        $row['priority'],
+        $row['status'],
+        $row['assigned_to'],
+        $row['notes'],
+        $row['archived']
+    );
+    
+    // set timestamps from database
+    $request->setCreatedAt($row['created_at']);
+    $request->setUpdatedAt($row['updated_at']);
+    if ($row['completed_at']) {
+        $request->setCompletedAt($row['completed_at']);
+    }
+    
     mysqli_close($con);
-    return $row;
+    return $request;
 }
 
+
 /**
- * updates a maintenance request
+ * updates a maintenance request using MaintenanceRequest object
  */
-function update_maintenance_request($id, $requester_name, $requester_email, $requester_phone, $location, $building, $unit, $description, $priority, $status, $assigned_to, $notes) {
+function update_maintenance_request($maintenanceRequest) {
+    if (!$maintenanceRequest instanceof MaintenanceRequest) {
+        die("Error: update_maintenance_request type mismatch");
+    }
+
     $con=connect();
     $query = "UPDATE dbmaintenancerequests SET " .
-            "requester_name = '" . $requester_name . "'," .
-            "requester_email = '" . $requester_email . "'," .
-            "requester_phone = '" . $requester_phone . "'," .
-            "location = '" . $location . "'," .
-            "building = '" . $building . "'," .
-            "unit = '" . $unit . "'," .
-            "description = '" . $description . "'," .
-            "priority = '" . $priority . "'," .
-            "status = '" . $status . "'," .
-            "assigned_to = '" . $assigned_to . "'," .
-            "notes = '" . $notes . "'" .
-            " WHERE id = '" . $id . "'";
+            "requester_name = '" . mysqli_real_escape_string($con, $maintenanceRequest->getRequesterName()) . "'," .
+            "requester_email = '" . mysqli_real_escape_string($con, $maintenanceRequest->getRequesterEmail()) . "'," .
+            "requester_phone = '" . mysqli_real_escape_string($con, $maintenanceRequest->getRequesterPhone()) . "'," .
+            "location = '" . mysqli_real_escape_string($con, $maintenanceRequest->getLocation()) . "'," .
+            "building = '" . mysqli_real_escape_string($con, $maintenanceRequest->getBuilding()) . "'," .
+            "unit = '" . mysqli_real_escape_string($con, $maintenanceRequest->getUnit()) . "'," .
+            "description = '" . mysqli_real_escape_string($con, $maintenanceRequest->getDescription()) . "'," .
+            "priority = '" . mysqli_real_escape_string($con, $maintenanceRequest->getPriority()) . "'," .
+            "status = '" . mysqli_real_escape_string($con, $maintenanceRequest->getStatus()) . "'," .
+            "assigned_to = '" . mysqli_real_escape_string($con, $maintenanceRequest->getAssignedTo()) . "'," .
+            "notes = '" . mysqli_real_escape_string($con, $maintenanceRequest->getNotes()) . "'," .
+            "archived = '" . $maintenanceRequest->getArchived() . "'," .
+            "updated_at = '" . $maintenanceRequest->getUpdatedAt() . "'," .
+            "completed_at = " . ($maintenanceRequest->getCompletedAt() ? "'" . $maintenanceRequest->getCompletedAt() . "'" : 'NULL') .
+            " WHERE id = '" . mysqli_real_escape_string($con, $maintenanceRequest->getID()) . "'";
     
     $result = mysqli_query($con,$query);
     if (!$result) {
@@ -188,6 +269,7 @@ function update_maintenance_request($id, $requester_name, $requester_email, $req
     mysqli_close($con);
     return true;
 }
+
 
 /**
  * deletes a maintenance request (archives it)

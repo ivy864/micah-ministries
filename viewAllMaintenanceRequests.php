@@ -24,15 +24,49 @@
     // include database functions
     require_once('database/dbMaintenanceRequests.php');
     
-    // pagination settings
+    // pagination and sorting settings
     $items_per_page = 15;
     $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    
+    // ensure current_page is at least 1
+    if ($current_page < 1) {
+        $current_page = 1;
+    }
+    
     $offset = ($current_page - 1) * $items_per_page;
     
-    // get paginated maintenance requests
-    $maintenance_requests = get_all_maintenance_requests($items_per_page, $offset);
+    // sorting parameters
+    $sort_by = $_GET['sort'] ?? 'created_at';
+    $sort_order = $_GET['order'] ?? 'DESC';
+    
+    // get total requests first to validate page number
     $total_requests = get_maintenance_requests_count();
     $total_pages = ceil($total_requests / $items_per_page);
+    
+    // ensure current_page doesn't exceed total pages
+    if ($current_page > $total_pages && $total_pages > 0) {
+        $current_page = $total_pages;
+        $offset = ($current_page - 1) * $items_per_page;
+    }
+    
+    // get paginated and sorted maintenance requests
+    $maintenance_requests = get_all_maintenance_requests($items_per_page, $offset, $sort_by, $sort_order);
+    
+    // helper function to generate sort URLs
+    function getSortUrl($column) {
+        global $sort_by, $sort_order, $current_page;
+        $new_order = ($sort_by == $column && $sort_order == 'ASC') ? 'DESC' : 'ASC';
+        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order;
+    }
+    
+    // helper function to get sort arrow
+    function getSortArrow($column) {
+        global $sort_by, $sort_order;
+        if ($sort_by == $column) {
+            return $sort_order == 'ASC' ? ' ↑' : ' ↓';
+        }
+        return '';
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,6 +113,18 @@ require_once('header.php');
 	    background-color: #274471;
 	    color: white;
 	    font-weight: bold;
+	}
+	
+	.maintenance-table th a {
+	    color: white !important;
+	    text-decoration: none;
+	    display: block;
+	    width: 100%;
+	}
+	
+	.maintenance-table th a:hover {
+	    color: #ffd700 !important;
+	    text-decoration: underline;
 	}
 	
 	.maintenance-table tr:nth-child(even) {
@@ -233,49 +279,50 @@ require_once('header.php');
                 <table class="maintenance-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Requester</th>
-                        <th>Location</th>
+                        <th><a href="<?php echo getSortUrl('id'); ?>" style="color: #274471; text-decoration: none;">ID<?php echo getSortArrow('id'); ?></a></th>
+                        <th><a href="<?php echo getSortUrl('requester_name'); ?>" style="color: #274471; text-decoration: none;">Requester<?php echo getSortArrow('requester_name'); ?></a></th>
+                        <th><a href="<?php echo getSortUrl('location'); ?>" style="color: #274471; text-decoration: none;">Location<?php echo getSortArrow('location'); ?></a></th>
                         <th>Description</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Assigned To</th>
-                        <th>Created</th>
+                        <th><a href="<?php echo getSortUrl('priority'); ?>" style="color: #274471; text-decoration: none;">Priority<?php echo getSortArrow('priority'); ?></a></th>
+                        <th><a href="<?php echo getSortUrl('status'); ?>" style="color: #274471; text-decoration: none;">Status<?php echo getSortArrow('status'); ?></a></th>
+                        <th><a href="<?php echo getSortUrl('assigned_to'); ?>" style="color: #274471; text-decoration: none;">Assigned To<?php echo getSortArrow('assigned_to'); ?></a></th>
+                        <th><a href="<?php echo getSortUrl('created_at'); ?>" style="color: #274471; text-decoration: none;">Created<?php echo getSortArrow('created_at'); ?></a></th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($maintenance_requests as $request): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($request['id']); ?></td>
+                            <td><?php echo htmlspecialchars($request->getID()); ?></td>
                             <td>
-                                <?php echo htmlspecialchars($request['requester_name']); ?><br>
-                                <small><?php echo htmlspecialchars($request['requester_email']); ?></small>
+                                <?php echo htmlspecialchars($request->getRequesterName()); ?><br>
+                                <small><?php echo htmlspecialchars($request->getRequesterEmail()); ?></small><br>
+                                <small style="color: #666;"><?php echo htmlspecialchars($request->getRequesterPhone()); ?></small>
                             </td>
                             <td>
-                                <?php echo htmlspecialchars($request['location']); ?>
-                                <?php if ($request['building']): ?>
-                                    <br><small>Building: <?php echo htmlspecialchars($request['building']); ?></small>
+                                <?php echo htmlspecialchars($request->getLocation()); ?>
+                                <?php if ($request->getBuilding()): ?>
+                                    <br><small>Building: <?php echo htmlspecialchars($request->getBuilding()); ?></small>
                                 <?php endif; ?>
-                                <?php if ($request['unit']): ?>
-                                    <br><small>Unit: <?php echo htmlspecialchars($request['unit']); ?></small>
+                                <?php if ($request->getUnit()): ?>
+                                    <br><small>Unit: <?php echo htmlspecialchars($request->getUnit()); ?></small>
                                 <?php endif; ?>
                             </td>
-                            <td><?php echo htmlspecialchars(substr($request['description'], 0, 100)) . (strlen($request['description']) > 100 ? '...' : ''); ?></td>
+                            <td><?php echo htmlspecialchars(substr($request->getDescription(), 0, 100)) . (strlen($request->getDescription()) > 100 ? '...' : ''); ?></td>
                             <td>
-                                <span class="priority-<?php echo strtolower($request['priority']); ?>">
-                                    <?php echo htmlspecialchars($request['priority']); ?>
+                                <span class="priority-<?php echo strtolower($request->getPriority()); ?>">
+                                    <?php echo htmlspecialchars($request->getPriority()); ?>
                                 </span>
                             </td>
                             <td>
-                                <span class="status-<?php echo strtolower(str_replace(' ', '-', $request['status'])); ?>">
-                                    <?php echo htmlspecialchars($request['status']); ?>
+                                <span class="status-<?php echo strtolower(str_replace(' ', '-', $request->getStatus())); ?>">
+                                    <?php echo htmlspecialchars($request->getStatus()); ?>
                                 </span>
                             </td>
-                            <td><?php echo htmlspecialchars($request['assigned_to'] ?: 'Unassigned'); ?></td>
-                            <td><?php echo date('M j, Y', strtotime($request['created_at'])); ?></td>
+                            <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
+                            <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
                             <td>
-                                <a href="editMaintenanceRequest.php?id=<?php echo urlencode($request['id']); ?>" style="color: #274471; text-decoration: none;">Edit</a>
+                                <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>" style="color: #274471; text-decoration: none;">Edit</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -292,8 +339,8 @@ require_once('header.php');
                     
                     <div class="pagination-buttons">
                         <?php if ($current_page > 1): ?>
-                            <a href="?page=1" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
-                            <a href="?page=<?php echo $current_page - 1; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
+                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
+                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
                         <?php endif; ?>
                         
                         <?php
@@ -302,15 +349,15 @@ require_once('header.php');
                         
                         for ($i = $start_page; $i <= $end_page; $i++):
                         ?>
-                            <a href="?page=<?php echo $i; ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
+                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
                                style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: <?php echo $i == $current_page ? '#1e3554' : '#274471'; ?>; color: white; text-decoration: none; border-radius: 4px;">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
                         
                         <?php if ($current_page < $total_pages): ?>
-                            <a href="?page=<?php echo $current_page + 1; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
-                            <a href="?page=<?php echo $total_pages; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
+                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
+                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
                         <?php endif; ?>
                     </div>
                 </div>
