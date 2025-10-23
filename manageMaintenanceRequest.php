@@ -43,9 +43,54 @@
     
     $message = '';
     $error = '';
+    $edit_mode = isset($_GET['edit']) && $_GET['edit'] == '1';
     
-    // handle form submission
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // show success message if redirected from successful save
+    if (isset($_GET['saved']) && $_GET['saved'] == '1') {
+        $message = '✅ Changes saved successfully! The maintenance request has been updated.';
+    }
+    
+    // helper function to render form fields
+    function renderField($type, $name, $value, $edit_mode, $required = false, $options = []) {
+        $base_style = "width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;";
+        $readonly_style = "padding: 6px; display: inline-block; width: 100%; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;";
+        
+        if ($edit_mode) {
+            switch ($type) {
+                case 'text':
+                case 'email':
+                case 'tel':
+                    return '<input type="' . $type . '" name="' . $name . '" value="' . htmlspecialchars($value) . '" ' . 
+                           ($required ? 'required ' : '') . 'style="' . $base_style . '">';
+                case 'textarea':
+                    $height = $options['height'] ?? '50px';
+                    return '<textarea name="' . $name . '" ' . ($required ? 'required ' : '') . 
+                           'style="' . $base_style . ' height: ' . $height . '; resize: vertical;">' . 
+                           htmlspecialchars($value) . '</textarea>';
+                case 'select':
+                    $html = '<select name="' . $name . '" style="' . $base_style . '">';
+                    foreach ($options['options'] as $option_value => $option_text) {
+                        $selected = ($value == $option_value) ? ' selected' : '';
+                        $html .= '<option value="' . htmlspecialchars($option_value) . '"' . $selected . '>' . 
+                                htmlspecialchars($option_text) . '</option>';
+                    }
+                    $html .= '</select>';
+                    return $html;
+            }
+        } else {
+            // read-only mode
+            $display_value = $value ?: ($options['placeholder'] ?? '');
+            $class = '';
+            if ($type == 'select' && isset($options['display_class'])) {
+                $class = 'class="' . $options['display_class'] . '"';
+            }
+            return '<span ' . $class . ' style="' . $readonly_style . ' font-weight: bold;">' . 
+                   htmlspecialchars($display_value) . '</span>';
+        }
+    }
+    
+    // handle form submission - only process if in edit mode
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && $edit_mode) {
         $requester_name = $_POST['requester_name'] ?? '';
         $requester_email = $_POST['requester_email'] ?? '';
         $requester_phone = $_POST['requester_phone'] ?? '';
@@ -60,28 +105,51 @@
         
         // basic validation
         if (empty($requester_name) || empty($description)) {
-            $error = 'Requester name and description are required.';
+            $error = '❌ Please fill in all required fields. Requester name and description are required.';
         } else {
-            // update the maintenance request object
-            $request->setRequesterName($requester_name);
-            $request->setRequesterEmail($requester_email);
-            $request->setRequesterPhone($requester_phone);
-            $request->setLocation($location);
-            $request->setBuilding($building);
-            $request->setUnit($unit);
-            $request->setDescription($description);
-            $request->setPriority($priority);
-            $request->setStatus($status);
-            $request->setAssignedTo($assigned_to);
-            $request->setNotes($notes);
+            // check if any changes were made
+            $has_changes = false;
+            if ($request->getRequesterName() !== $requester_name ||
+                $request->getRequesterEmail() !== $requester_email ||
+                $request->getRequesterPhone() !== $requester_phone ||
+                $request->getLocation() !== $location ||
+                $request->getBuilding() !== $building ||
+                $request->getUnit() !== $unit ||
+                $request->getDescription() !== $description ||
+                $request->getPriority() !== $priority ||
+                $request->getStatus() !== $status ||
+                $request->getAssignedTo() !== $assigned_to ||
+                $request->getNotes() !== $notes) {
+                $has_changes = true;
+            }
             
-            // update in database using object
-            $result = update_maintenance_request($request);
-            
-            if ($result) {
-                $message = 'Maintenance request updated successfully!';
+            if (!$has_changes) {
+                $message = 'ℹ️ No changes were made. The form data is the same as before.';
             } else {
-                $error = 'Failed to update maintenance request. Please try again.';
+                // update the maintenance request object
+                $request->setRequesterName($requester_name);
+                $request->setRequesterEmail($requester_email);
+                $request->setRequesterPhone($requester_phone);
+                $request->setLocation($location);
+                $request->setBuilding($building);
+                $request->setUnit($unit);
+                $request->setDescription($description);
+                $request->setPriority($priority);
+                $request->setStatus($status);
+                $request->setAssignedTo($assigned_to);
+                $request->setNotes($notes);
+                
+                // update in database using object
+                $result = update_maintenance_request($request);
+                
+                if ($result) {
+                    $message = '✅ Changes saved successfully! The maintenance request has been updated.';
+                    // redirect to view mode after successful update
+                    header('Location: ?id=' . urlencode($request_id) . '&saved=1');
+                    exit;
+                } else {
+                    $error = '❌ Failed to save changes. Please check your connection and try again.';
+                }
             }
         }
     }
@@ -104,20 +172,35 @@
                 width: initial;
             }
             td {
-                padding: .3rem;
+                padding: 8px 4px;
                 border-bottom: 1px solid #eee;
                 font-size: 14px;
+                vertical-align: top;
             }
             
-            /* make table wider and more compact */
+            /* make form more compact and centered */
             .main-content-box {
-                max-width: 90% !important;
+                max-width: 800px !important;
                 width: 100% !important;
+                margin: 0 auto;
             }
             
             table {
                 width: 100%;
                 font-size: 14px;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            /* reduce gap between columns */
+            td:first-child {
+                width: 30%;
+                padding-right: 10px;
+            }
+            
+            td:last-child {
+                width: 70%;
+                padding-left: 10px;
             }
             
             input, select, textarea {
@@ -207,23 +290,31 @@
         <main>
             <div class="main-content-box  p-8 w-full max-w-3xl">
                 <div class="manage-maintenance-header">
-                    <h2>Edit Maintenance Request</h2>
-                    <a href="viewAllMaintenanceRequests.php" class="btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Back to List</a>
+                    <h2>Manage Maintenance Request</h2>
+                    <div>
+                        <?php if (!$edit_mode): ?>
+                            <a href="?id=<?php echo urlencode($request_id); ?>&edit=1" class="btn-primary" style="display: inline-block; padding: 8px 16px; background: #274471; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Edit</a>
+                        <?php else: ?>
+                            <a href="#" onclick="document.getElementById('maintenance-form').submit(); return false;" class="btn-primary" style="display: inline-block; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Save</a>
+                            <a href="?id=<?php echo urlencode($request_id); ?>" class="btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Cancel</a>
+                        <?php endif; ?>
+                        <a href="viewAllMaintenanceRequests.php" class="btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; line-height: 1.4;">Back to List</a>
+                    </div>
                 </div>
                 
                 <?php if ($message): ?>
-                    <div class="alert alert-success" style="padding: 15px; margin-bottom: 20px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px;">
-                        <?php echo htmlspecialchars($message); ?>
+                    <div class="alert alert-success" style="padding: 15px; margin-bottom: 20px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <?php echo $message; ?>
                     </div>
                 <?php endif; ?>
                 
                 <?php if ($error): ?>
-                    <div class="alert alert-error" style="padding: 15px; margin-bottom: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;">
-                        <?php echo htmlspecialchars($error); ?>
+                    <div class="alert alert-error" style="padding: 15px; margin-bottom: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <?php echo $error; ?>
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="">
+                <form id="maintenance-form" method="POST" action="">
                     <table>
                     <tr>
                         <td><strong>Request ID:</strong></td>
@@ -231,57 +322,49 @@
                     </tr>
                     <tr>
                         <td><strong>Requester Name *:</strong></td>
-                        <td><input type="text" name="requester_name" value="<?php echo htmlspecialchars($request->getRequesterName()); ?>" required style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-size: 13px;"></td>
+                        <td><?php echo renderField('text', 'requester_name', $request->getRequesterName(), $edit_mode, true); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Email:</strong></td>
-                        <td><input type="email" name="requester_email" value="<?php echo htmlspecialchars($request->getRequesterEmail()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('email', 'requester_email', $request->getRequesterEmail(), $edit_mode); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Phone:</strong></td>
-                        <td><input type="tel" name="requester_phone" value="<?php echo htmlspecialchars($request->getRequesterPhone()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('tel', 'requester_phone', $request->getRequesterPhone(), $edit_mode); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Location:</strong></td>
-                        <td><input type="text" name="location" value="<?php echo htmlspecialchars($request->getLocation()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('text', 'location', $request->getLocation(), $edit_mode); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Building:</strong></td>
-                        <td><input type="text" name="building" value="<?php echo htmlspecialchars($request->getBuilding()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('text', 'building', $request->getBuilding(), $edit_mode); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Unit:</strong></td>
-                        <td><input type="text" name="unit" value="<?php echo htmlspecialchars($request->getUnit()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('text', 'unit', $request->getUnit(), $edit_mode); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Description *:</strong></td>
-                        <td><textarea name="description" required style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; height: 50px; resize: vertical; font-size: 13px;"><?php echo htmlspecialchars($request->getDescription()); ?></textarea></td>
+                        <td><?php echo renderField('textarea', 'description', $request->getDescription(), $edit_mode, true, ['height' => '50px']); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Priority:</strong></td>
-                        <td>
-                            <select name="priority" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
-                                <option value="Low" <?php echo ($request->getPriority() == 'Low') ? 'selected' : ''; ?>>Low</option>
-                                <option value="Medium" <?php echo ($request->getPriority() == 'Medium') ? 'selected' : ''; ?>>Medium</option>
-                                <option value="High" <?php echo ($request->getPriority() == 'High') ? 'selected' : ''; ?>>High</option>
-                                <option value="Emergency" <?php echo ($request->getPriority() == 'Emergency') ? 'selected' : ''; ?>>Emergency</option>
-                            </select>
-                        </td>
+                        <td><?php echo renderField('select', 'priority', $request->getPriority(), $edit_mode, false, [
+                            'options' => ['Low' => 'Low', 'Medium' => 'Medium', 'High' => 'High', 'Emergency' => 'Emergency'],
+                            'display_class' => 'priority-' . strtolower($request->getPriority())
+                        ]); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Status:</strong></td>
-                        <td>
-                            <select name="status" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
-                                <option value="Pending" <?php echo ($request->getStatus() == 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                                <option value="In Progress" <?php echo ($request->getStatus() == 'In Progress') ? 'selected' : ''; ?>>In Progress</option>
-                                <option value="Completed" <?php echo ($request->getStatus() == 'Completed') ? 'selected' : ''; ?>>Completed</option>
-                                <option value="Cancelled" <?php echo ($request->getStatus() == 'Cancelled') ? 'selected' : ''; ?>>Cancelled</option>
-                            </select>
-                        </td>
+                        <td><?php echo renderField('select', 'status', $request->getStatus(), $edit_mode, false, [
+                            'options' => ['Pending' => 'Pending', 'In Progress' => 'In Progress', 'Completed' => 'Completed', 'Cancelled' => 'Cancelled'],
+                            'display_class' => 'status-' . strtolower(str_replace(' ', '-', $request->getStatus()))
+                        ]); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Assigned To:</strong></td>
-                        <td><input type="text" name="assigned_to" value="<?php echo htmlspecialchars($request->getAssignedTo()); ?>" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"></td>
+                        <td><?php echo renderField('text', 'assigned_to', $request->getAssignedTo(), $edit_mode, false, ['placeholder' => 'Unassigned']); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Created:</strong></td>
@@ -289,14 +372,9 @@
                     </tr>
                     <tr>
                         <td><strong>Notes:</strong></td>
-                        <td><textarea name="notes" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; height: 40px; resize: vertical; font-size: 13px;"><?php echo htmlspecialchars($request->getNotes()); ?></textarea></td>
+                        <td><?php echo renderField('textarea', 'notes', $request->getNotes(), $edit_mode, false, ['height' => '40px', 'placeholder' => 'No notes']); ?></td>
                     </tr>
                 </table>
-                
-                <div class="form-buttons">
-                    <button type="submit" style="background-color: #274471; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
-                    <a href="viewAllMaintenanceRequests.php" style="background-color: #6c757d; color: white; border: none; border-radius: 4px; text-decoration: none; display: inline-block;">Cancel</a>
-                </div>
                 
                 </form>
             </div>

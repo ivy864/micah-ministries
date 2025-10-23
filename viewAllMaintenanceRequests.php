@@ -127,6 +127,17 @@ require_once('header.php');
 	    text-decoration: underline;
 	}
 	
+	.maintenance-table td a {
+	    color: #274471;
+	    text-decoration: none;
+	    font-weight: bold;
+	}
+	
+	.maintenance-table td a:hover {
+	    color: #1e3554;
+	    text-decoration: underline;
+	}
+	
 	.maintenance-table tr:nth-child(even) {
 	    background-color: #f2f2f2;
 	}
@@ -287,13 +298,12 @@ require_once('header.php');
                         <th><a href="<?php echo getSortUrl('status'); ?>" style="color: #274471; text-decoration: none;">Status<?php echo getSortArrow('status'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('assigned_to'); ?>" style="color: #274471; text-decoration: none;">Assigned To<?php echo getSortArrow('assigned_to'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('created_at'); ?>" style="color: #274471; text-decoration: none;">Created<?php echo getSortArrow('created_at'); ?></a></th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($maintenance_requests as $request): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($request->getID()); ?></td>
+                            <td><a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>" style="color: #274471; text-decoration: none; font-weight: bold;"><?php echo htmlspecialchars($request->getID()); ?></a></td>
                             <td>
                                 <?php echo htmlspecialchars($request->getRequesterName()); ?><br>
                                 <small><?php echo htmlspecialchars($request->getRequesterEmail()); ?></small><br>
@@ -321,9 +331,6 @@ require_once('header.php');
                             </td>
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
-                            <td>
-                                <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>" style="color: #274471; text-decoration: none;">Edit</a>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
