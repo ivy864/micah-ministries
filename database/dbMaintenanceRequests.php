@@ -99,9 +99,14 @@ function add_maintenance_request($id, $requester_name, $requester_email, $reques
 /**
  * retrieves all maintenance requests from the database
  */
-function get_all_maintenance_requests() {
+function get_all_maintenance_requests($limit = null, $offset = 0) {
     $con=connect();
     $query = "SELECT * FROM dbmaintenancerequests WHERE archived = 0 ORDER BY created_at DESC";
+    
+    if ($limit !== null) {
+        $query .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+    }
+    
     $result = mysqli_query($con,$query);
     if (!$result) {
         echo mysqli_error($con);
@@ -206,6 +211,23 @@ function delete_maintenance_request($id) {
 function get_pending_maintenance_count() {
     $con=connect();
     $query = "SELECT COUNT(*) as count FROM dbmaintenancerequests WHERE status = 'Pending' AND archived = 0";
+    $result = mysqli_query($con,$query);
+    if (!$result) {
+        mysqli_close($con);
+        return 0;
+    }
+    
+    $row = mysqli_fetch_array($result);
+    mysqli_close($con);
+    return $row['count'];
+}
+
+/**
+ * gets total count of all maintenance requests
+ */
+function get_maintenance_requests_count() {
+    $con=connect();
+    $query = "SELECT COUNT(*) as count FROM dbmaintenancerequests WHERE archived = 0";
     $result = mysqli_query($con,$query);
     if (!$result) {
         mysqli_close($con);
