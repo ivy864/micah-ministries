@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 23, 2025 at 06:19 AM
+-- Host: localhost
+-- Generation Time: Oct 24, 2025 at 09:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -656,6 +656,19 @@ INSERT INTO `dbshifts` (`shift_id`, `person_id`, `date`, `startTime`, `endTime`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `db_maintenance_comments`
+--
+
+CREATE TABLE `db_maintenance_comments` (
+  `author_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `request_id` varchar(256) NOT NULL,
+  `content` varchar(2048) DEFAULT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `discussion_replies`
 --
 
@@ -794,6 +807,12 @@ ALTER TABLE `dbpersons`
 --
 ALTER TABLE `dbshifts`
   ADD PRIMARY KEY (`shift_id`);
+
+--
+-- Indexes for table `db_maintenance_comments`
+--
+ALTER TABLE `db_maintenance_comments`
+  ADD PRIMARY KEY (`author_id`,`request_id`,`time`);
 
 --
 -- Indexes for table `discussion_replies`
