@@ -118,11 +118,9 @@ include_once "database/dbShifts.php";
                 </table>
             </div>
 
-            <!-- need to format it so that it looks better -->
-            <div class="d-flex justify-content-end mb-4">
+            <div class="mt-10 flex justify-end">
                 <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
             </div>
-
 
         </div>
 </body>
