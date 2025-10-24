@@ -21,8 +21,9 @@
         die();
     }
 
-    // include database functions
+    // include database functions and domain object
     require_once('database/dbMaintenanceRequests.php');
+    require_once('domain/MaintenanceRequest.php');
     
     $message = '';
     $error = '';
@@ -45,12 +46,15 @@
         if (empty($requester_name) || empty($description)) {
             $error = 'Requester name and description are required.';
         } else {
-            // add to database
-            $result = add_maintenance_request(
+            // create maintenance request object
+            $maintenanceRequest = new MaintenanceRequest(
                 $id, $requester_name, $requester_email, $requester_phone, 
                 $location, $building, $unit, $description, $priority, 
                 'Pending', $assigned_to, $notes
             );
+            
+            // add to database using object
+            $result = add_maintenance_request($maintenanceRequest);
             
             if ($result) {
                 $message = 'Maintenance request created successfully! Request ID: ' . $id;
@@ -68,7 +72,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Maintenance Request</title>
-  <link href="css/management_tw.css" rel="stylesheet">
+  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
@@ -91,16 +95,18 @@ require_once('header.php');
 	}
 	
 	.form-container {
-	    max-width: 800px;
-	    margin: 20px auto;
-	    padding: 20px;
-	    background: white;
-	    border-radius: 8px;
-	    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	    max-width: none !important;
+	    width: 100% !important;
+	    margin: 5px auto !important;
+	    padding: 10px !important;
+	    background: white !important;
+	    border-radius: 8px !important;
+	    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+	    border: 2px solid #274471 !important;
 	}
 	
 	.form-group {
-	    margin-bottom: 20px;
+	    margin-bottom: 6px !important;
 	}
 	
 	.form-group label {
@@ -121,7 +127,7 @@ require_once('header.php');
 	}
 	
 	.form-group textarea {
-	    height: 100px;
+	    height: 40px;
 	    resize: vertical;
 	}
 	
@@ -132,6 +138,30 @@ require_once('header.php');
 	
 	.form-row .form-group {
 	    flex: 1;
+	}
+	
+	/* compact navigation buttons - override tailwind */
+	.button-section {
+	    margin-bottom: 10px !important;
+	}
+	
+	.compact-nav-btn {
+	    padding: 8px 16px !important;
+	    font-size: 14px !important;
+	    margin-right: 10px !important;
+	    margin-bottom: 5px !important;
+	    height: auto !important;
+	    width: auto !important;
+	}
+	
+	.compact-nav-btn .button-left-gray {
+	    padding: 4px 8px !important;
+	}
+	
+	.compact-nav-btn .button-icon {
+	    height: 16px !important;
+	    width: 16px !important;
+	    left: 12px !important;
 	}
 	
 	.btn-primary {
@@ -181,6 +211,41 @@ require_once('header.php');
 	    color: #721c24;
 	    border: 1px solid #f5c6cb;
 	}
+	
+	/* compact text section */
+	.text-section h1 {
+	    margin-bottom: 5px !important;
+	}
+	
+	.text-section p {
+	    margin-bottom: 10px !important;
+	}
+	
+	/* force layout changes - full width form */
+	.sections {
+	    flex-direction: row !important;
+	    gap: 10px !important;
+	}
+	
+	/* adjust main content since hero is removed */
+	main {
+	    margin-top: 0 !important;
+	    padding: 10px !important;
+	}
+	
+	.button-section {
+	    width: 0% !important;
+	    display: none !important;
+	}
+	
+	.text-section {
+	    width: 100% !important;
+	}
+	
+	.form-container {
+	    max-width: none !important;
+	    width: 100% !important;
+	}
 
 </style>
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
@@ -189,31 +254,15 @@ require_once('header.php');
 
 <body>
 
-  <!-- Larger Hero Section -->
-  <header class="hero-header"></header>
+  <!-- Hero Section - Removed to save space -->
+  <!-- <header class="hero-header"></header> -->
 
   <!-- Main Content -->
   <main>
     <div class="sections">
 
-      <!-- Buttons Section -->
+      <!-- Navigation Section - Removed -->
       <div class="button-section">
-        <button onclick="window.location.href='maintman.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Back to Maintenance Management</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/arrow-left-solid.svg" alt="Back Icon">
-        </button>
-
-        <button onclick="window.location.href='viewAllMaintenanceRequests.php';">
-	  <div class="button-left-gray"></div>
-	  <div>View All Requests</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="List Icon">
-        </button>
-
-	<div class="text-center mt-6">
-        	<a href="index.php" class="return-button">Return to Dashboard</a>
-	</div>
-
      </div>
 
       <!-- Text Section -->

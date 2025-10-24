@@ -973,9 +973,9 @@
     z-index: 0;
     height: calc(var(--spacing) * 40);
     width: 100%;
+    background-color: #294877;
     background-size: auto;
     background-position: center;
-    background-image: url('../images/login_background.jpg');
   }
   .sections {
     display: flex;
