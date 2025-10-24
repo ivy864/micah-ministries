@@ -25,7 +25,7 @@
 @layer components {
 	.hero-header {
 		@apply h-40 w-full bg-auto bg-center relative z-0;
-		background-image: url('../images/login_background.jpg');
+		background-color: #294877;
 	}
 	.sections {
 		@apply flex flex-col lg:flex-row gap-12 w-full max-w-6xl;
