@@ -1,20 +1,25 @@
 <?php 
 
 class Comment {
-    private $name;
+    private $authorID;
     private $requestID;
     private $content;
     private $time;
-
-    public function __construct($name, $requestID, $content, $time) {
-        $this->name = $name;
+    /**
+     * @param string $authorID
+     * @param string $requestID
+     * @param string $content
+     * @param int $time
+     */
+    public function __construct($authorID, $requestID, $content, $time) {
+        $this->authorID= $authorID;
         $this->requestID = $requestID;
         $this->content = $content;
         $this->time = $time;
     }
 
-    public function getName() {
-        return $this->name;
+    public function getAuthorID() {
+        return $this->authorID;
     }
 
     public function getRequestID() {

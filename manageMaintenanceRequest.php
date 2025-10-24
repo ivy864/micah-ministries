@@ -15,6 +15,19 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
+
+    require_once('domain/Comment.php');
+    require_once('database/dbComments.php');
+
+    if ($_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
+        add_comment($cmnt);
+        exit();
+    }
+    if ($_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+        http_response_code(201);
+        exit();
+    }
     
     // admin-only access
     if ($accessLevel < 2) {
@@ -160,6 +173,7 @@
         <?php require_once('universal.inc') ?>
         <title>Micah Ministries | Manage Maintenance Request</title>
         <link href="css/normal_tw.css" rel="stylesheet">
+        <script src="js/comment.js"></script>
 
         <style>
             .manage-maintenance-header {
@@ -377,6 +391,12 @@
                 </table>
                 
                 </form>
+                
+            </div>
+            <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
+                <h2>Comments</h2>
+                <textarea id="commentBox"></textarea>
+                <button onclick='writeComment()'>Comment</button>
             </div>
         </main>
     </body>
