@@ -41,7 +41,7 @@
             'first_name', 'last_name', 'birthday', 'street_address', 'city', 'state',
             'zip_code', 'email', 'phone1', 'phone1type', 'emergency_contact_first_name',
             'emergency_contact_last_name', 'emergency_contact_phone',
-            'emergency_contact_phone_type', 'emergency_contact_relation'
+            'emergency_contact_phone_type', 'emergency_contact_relation', 'user_role'
         );
         $errors = false;
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -51,6 +51,14 @@
         $first_name = $args['first_name'];
         
         $last_name = $args['last_name'];
+
+        $user_role = $args['user_role'];
+        
+        // Validate role
+        if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
+            echo "<p>Invalid user role.</p>";
+            $errors = true;
+        }
         
         $birthday = validateDate($args['birthday']);
         if (!$birthday) {
@@ -153,7 +161,7 @@
             $zip_code, $email, $phone1, $phone1type, $emergency_contact_first_name,
             $emergency_contact_last_name, $emergency_contact_phone,
             $emergency_contact_phone_type, $emergency_contact_relation, $type,
-             $skills, $interests
+             $skills, $interests, $user_role
         );
         if ($result) {
             if ($editingSelf) {
@@ -167,16 +175,41 @@
     }
 ?>
 <!DOCTYPE html>
-<html>
-<head>
-    <?php require_once('universal.inc'); ?>
-    <title>Fredericksburg SPCA | Manage Profile</title>
-</head>
-<body>
-    <?php
-        require_once('header.php');
-        $isAdmin = $_SESSION['access_level'] >= 2;
-        require_once('profileEditForm.php');
-    ?>
-</body>
+<html lang="en">
+    <head>
+        <title>Micah Ministries | Edit Profile</title>
+        <link href="css/normal_tw.css" rel="stylesheet">
+        <style>
+            .date-box {
+                background: #274471;
+                padding: 7px 30px;
+                border-radius: 50px;
+                box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
+                color: white;
+                font-size: 24px;
+                font-weight: 700;
+                text-align: center;
+            }
+            .dropdown {
+                padding-right: 50px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <header class="hero-header">
+            <div class="center-header">
+                <h1>Edit Profile</h1>
+            </div>
+        </header>
+
+        <main class="main-containter-box p-8">
+            <?php
+                require_once('header.php');
+                $isAdmin = $_SESSION['access_level'] >= 2;
+                require_once('profileEditForm.php');
+            ?>
+
+        </main>
+    </body>
 </html>
