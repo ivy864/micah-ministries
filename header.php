@@ -601,6 +601,7 @@ if (date("H:i:s") > "18:19:59") {
         //pages maintenance staff can view (Level 1)
         //pages volunteers can view
         $permission_array['leaseview.php'] = 1;
+        $permission_array['leaseman.php'] = 1;
         $permission_array['maintman.php'] = 1;
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
@@ -735,6 +736,12 @@ if (date("H:i:s") > "18:19:59") {
             <div class="nav-links">
                 <div class="nav-item">Lease Management
                     <div class="dropdown">
+<a href="leaseman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Leases Hub</span>
+  </div>
+</a>
 <a href="leaseView.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/list-solid.svg">
@@ -743,7 +750,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="calendar.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/calendar.svg">
+    <img src="images/view-calendar.png">
     <span>Calendar</span>
   </div>
 </a>
@@ -761,7 +768,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="editLease.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/edit.svg">
+    <img src="images/edit-pencil.svg">
     <span>Edit Lease</span>
   </div>
 </a>
@@ -772,7 +779,7 @@ if (date("H:i:s") > "18:19:59") {
 
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>
@@ -790,7 +797,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="editMaintenanceRequest.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/edit.svg">
+    <img src="images/edit-pencil.svg">
     <span>Edit Request</span>
   </div>
 </a>
@@ -827,7 +834,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="createNewUser.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/user-plus.svg">
+    <img src="images/add-user.svg">
     <span>Add User</span>
   </div>
 </a>
@@ -897,7 +904,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="dropdown">
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>
@@ -955,7 +962,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="dropdown">
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>

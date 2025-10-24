@@ -107,7 +107,7 @@ require_once('header.php');
         </button>
 
 	<div class="text-center mt-6">
-        	<a href="index.php" class="return-button">Return to Dashboard</a>
+        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
 	</div>
 
 
