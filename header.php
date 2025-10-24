@@ -795,12 +795,6 @@ if (date("H:i:s") > "18:19:59") {
     <span>Create Request</span>
   </div>
 </a>
-<a href="editMaintenanceRequest.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/edit-pencil.svg">
-    <span>Edit Request</span>
-  </div>
-</a>
 <a href="assignMaintenanceTasks.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/user-check.svg">
