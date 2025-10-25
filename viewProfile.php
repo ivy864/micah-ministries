@@ -172,22 +172,15 @@
             <?php if ($id != $userID): ?>
                 <?php if (($accessLevel == 2 && $user->get_access_level() == 1) || $accessLevel >= 3): ?>
         <button onclick="window.location.href='resetPassword.php?id=<?php echo htmlspecialchars($_GET['id']) ?>';" class="text-lg font-medium w-full px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">Change Password</button>
+        <button onclick="window.location.href='deletePerson.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-red-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">Delete User</button>
                 <?php endif ?>
-        <button onclick="window.location.href='volunteerReport.php?id=<?php echo htmlspecialchars($_GET['id']) ?>';" class="text-lg font-medium w-full px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">View Volunteer Hours</button>
         <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-blue-700 cursor-pointer">Return to User Search</button>
             <?php else: ?>
         <button onclick="window.location.href='changePassword.php';" class="text-lg font-medium w-full px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">Change Password</button>
-        <button onclick="window.location.href='volunteerReport.php';" class="text-lg font-medium w-full px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">View Volunteer Hours</button>
-        <button onclick="window.location.href='milestonePoints.php';" class="text-lg font-medium w-full px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">View Milestones &amp Points</button>
+        <button onclick="window.location.href='deletePerson.php';" class="text-lg font-medium w-full px-4 py-2 bg-red-900 text-white rounded-md hover:bg-blue-700 cursor-pointer">Delete User</button>
             <?php endif ?>
 <!-- -->
 
-
-<?php if ($accessLevel < 2) : ?>
-        <button onclick="window.location.href='volunteerReport.php?id=<?php echo $user->get_id() ?>';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-blue-700 cursor-pointer">My Volunteering Report</button>
-<?php else : ?>
-        <button onclick="window.location.href='volunteerReport.php?id=<?php echo $user->get_id() ?>';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-blue-700 cursor-pointer"><?php echo $user->get_first_name() ?> <?php echo $user->get_last_name() ?>'s Volunteering Report</button>
-<?php endif ?>
         <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-blue-700 cursor-pointer">Return to Dashboard</button>
       </div>
     </div>
@@ -198,7 +191,6 @@
       <div class="flex border-b border-gray-300 mb-4">
         <button class="tab-button px-4 py-2 text-lg font-medium text-gray-700 border-b-4 border-blue-900" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-gray-700" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
-        <button class="tab-button px-4 py-2 text-lg font-medium text-gray-700" data-tab="volunteer" onclick="showSection('volunteer')">Volunteer Information</button>
       </div>
 
       <!-- Personal Section -->
@@ -246,47 +238,7 @@
  
       </div>
 
-      <!-- Volunteer Section -->
-      <div id="volunteer" class="profile-section space-y-4 hidden">
-        <div>
-          <span class="block text-sm font-medium text-blue-900">Account Type</span>
-          <p class="text-gray-900 font-medium text-xl"><?php
-                if ($user->get_is_community_service_volunteer()) {
-                    echo 'Community Service Volunteer';
-                } else {
-                    echo 'Standard Volunteer';
-                }
-                    ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-blue-900">Skills</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo ucfirst($user->get_skills() ?: "Not specified") ?></p>
-        </div>
-        <div>
-          <span class="block text-sm font-medium text-blue-900">Interests</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo ucfirst($user->get_interests() ?: "Not specified") ?></p>
-        </div>
-	      <div>
-          <span class="block text-sm font-medium text-blue-900">Total Hours Volunteered</span>
-          <?php if ($isAdmin && !$viewingOwnProfile): ?>
-            <form method="POST" class="mt-2 flex items-center gap-4">
-              <input type="number" step="0.01" name="new_hours" min="0" value="<?= htmlspecialchars($user->get_total_hours_volunteered()) ?>" required
-                    class="border border-gray-300 px-3 py-1 rounded-md w-32 shadow-sm">
-            
-
-              <button type="submit" class="bg-blue-900 text-white px-4 py-1 rounded-md hover:bg-blue-700">
-                Update
-              </button>
-            </form>
-          <?php else: ?>
-            <p class="text-gray-900 font-medium text-xl">
-              <?= number_format($user->get_total_hours_volunteered(), 2) ?> hours
-            </p>
-          <?php endif; ?>
-        </div>
-
-	      
-      </div>
+    
     </div>
   </div>
 </body>
