@@ -15,6 +15,22 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
+
+    require_once('domain/Comment.php');
+    require_once('database/dbComments.php');
+
+    // if writecomment is set to true in request header, write a comment to database
+    if ($_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
+        add_comment($cmnt);
+        // sends comment data back to requester so it can be rendered client-side
+        echo $cmnt->toJSON();
+        // don't render the rest of the page
+        exit();
+    }
+    if ($_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+        exit();
+    }
     
     // admin-only access
     if ($accessLevel < 2) {
@@ -161,6 +177,7 @@
         <?php require_once('universal.inc') ?>
         <title>Micah Ministries | Manage Maintenance Request</title>
         <link href="css/normal_tw.css" rel="stylesheet">
+        <script src="js/comment.js"></script>
 
         <style>
             .manage-maintenance-header {
@@ -283,6 +300,23 @@
                 min-width: 140px !important;
                 text-align: center;
             }
+
+            #comments {
+                margin: 0.5rem;
+            }  
+            #comment-container > div {
+                border: 1px solid #eee;
+                border-radius: .25rem;
+                margin-bottom: 1rem;
+                padding: .25rem;
+            }
+            .comment-head {
+                display: flex;
+                justify-content: space-between;
+            }
+            .comment-title {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
@@ -378,6 +412,25 @@
                 </table>
                 
                 </form>
+                
+                <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
+                    <?php
+                    $comments = get_comments($_GET['id']);
+                    ?>
+                    <h2>Comments</h2>
+                    <script >
+                    /*
+                     * comments are rendered client-side with js.
+                     * The array of comments is encoded in json so it can be used by the js/comment.js file
+                     */
+                    let comments = <?php echo json_encode($comments) ?>;
+                    </script>
+                    <div id="comment-container">
+                        
+                    </div>
+                    <textarea id="commentBox"></textarea>
+                    <button onclick='writeComment()'>Comment</button>
+                </div>
             </div>
         </main>
     </body>
