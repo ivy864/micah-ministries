@@ -8,7 +8,7 @@ function get_comments($requestID) {
 
 //    $query =  . $requestID;
 
-    $query = $con->prepare('SELECT * FROM db_maintenance_comments WHERE  request_id=?');
+    $query = $con->prepare('SELECT * FROM db_maintenance_comments WHERE  request_id=? ORDER BY `db_maintenance_comments`.`time` ASC');
     $query->bind_param('s', $requestID);
     $query->execute();
 
