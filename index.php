@@ -1,8 +1,4 @@
 <?php
-header("Location: micahportal.php");
-exit();
-?>
-
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
@@ -32,7 +28,8 @@ exit();
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">

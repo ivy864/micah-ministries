@@ -101,6 +101,13 @@ require_once('header.php');
 	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Clock Icon">
         </button>
 
+<button onclick="window.location.href='viewArchive.php';">
+  <div class="button-left-gray"></div>
+  <div>View Archived Requests</div>
+  <img class="button-icon h-10 w-10 left-5" src="images/book.png" alt="Archive Icon">
+</button>
+
+
 	<div class="text-center mt-6">
         	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
 	</div>

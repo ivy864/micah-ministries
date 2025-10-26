@@ -18,7 +18,8 @@ if (date("H:i:s") > "18:19:59") {
 // user cannot access anything else without 
 // logging back in
 ?>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -710,6 +711,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['settimes.php'] = 1;
         $permission_array['eventfailurebaddeparturetime.php'] = 1;
         $permission_array['micahportal.php'] = 1;
+        $permission_array['viewarchive.php'] = 2;
+        $permission_array['requesthistory.php'] = 2;
         
         // LOWERCASE
 
@@ -817,6 +820,14 @@ if (date("H:i:s") > "18:19:59") {
     <span>Pending Requests</span>
   </div>
 </a>
+<!-- View Archived Requests (Admin / Level ≥ 3) -->
+<a href="viewArchive.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/book.png" alt="Archived Requests">
+    <span>View Archived Requests</span>
+  </div>
+</a>
+
 
 
                     </div>
