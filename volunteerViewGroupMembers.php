@@ -20,7 +20,8 @@ if ($accessLevel > 1) {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <title>View Group Members</title>
     <link href="css/normal_tw.css" rel="stylesheet">

@@ -18,7 +18,8 @@ if (date("H:i:s") > "18:19:59") {
 // user cannot access anything else without 
 // logging back in
 ?>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -190,17 +191,17 @@ if (date("H:i:s") > "18:19:59") {
             gap: 20px; /* Space between logo and links */
         }
 
-        /* Logo */
+        /* Logo 
         .logo-container {
             background: #294877;
             padding: 10px 20px;
             border-radius: 50px;
             box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) inset;
-        }
+        } */
 
-        .logo-container img {
-            width: 128px;
-            height: 52px;
+        .logo-container img#logo {
+            width: 52px;
+            height: auto;
             display: block;
         }
 
@@ -235,17 +236,22 @@ if (date("H:i:s") > "18:19:59") {
 
 
         .dropdown {
-            display: none;
-            position: absolute;
-            top: 150%;
-            left: -10%;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            min-width: 150px;
-            padding: 10px;
-        }
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);   /* sit just below the nav item */
+    left: 0;                 /* align with the left edge of the nav item */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+
+    width: max-content;      
+    min-width: 150px;        
+    white-space: nowrap;     
+    box-sizing: border-box;  
+    z-index: 2000;
+    padding: 10px;
+}
         .dropdown div {
             padding: 8px;
             white-space: nowrap;
@@ -565,7 +571,10 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+                <a href="index.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
+
             </div>
             <div class="nav-links">
 		<div class="nav-item"><span class="font-change">Volunteer Management System</span>
@@ -601,6 +610,7 @@ if (date("H:i:s") > "18:19:59") {
         //pages maintenance staff can view (Level 1)
         //pages volunteers can view
         $permission_array['leaseview.php'] = 1;
+        $permission_array['leaseman.php'] = 1;
         $permission_array['maintman.php'] = 1;
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
@@ -620,6 +630,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['micahportal.php'] = 1;
         
         //pages case managers can view (Level 2) - Lease + Maintenance
+        $permission_array['editlease.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
@@ -700,6 +711,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['settimes.php'] = 1;
         $permission_array['eventfailurebaddeparturetime.php'] = 1;
         $permission_array['micahportal.php'] = 1;
+        $permission_array['viewarchive.php'] = 2;
+        $permission_array['requesthistory.php'] = 2;
         
         // LOWERCASE
 
@@ -729,11 +742,19 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Lease Management
                     <div class="dropdown">
+<a href="leaseman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Leases Hub</span>
+  </div>
+</a>
 <a href="leaseView.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/list-solid.svg">
@@ -742,7 +763,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="calendar.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/calendar.svg">
+    <img src="images/view-calendar.png">
     <span>Calendar</span>
   </div>
 </a>
@@ -760,7 +781,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="editLease.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/edit.svg">
+    <img src="images/edit-pencil.svg">
     <span>Edit Lease</span>
   </div>
 </a>
@@ -771,7 +792,7 @@ if (date("H:i:s") > "18:19:59") {
 
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>
@@ -787,12 +808,6 @@ if (date("H:i:s") > "18:19:59") {
     <span>Create Request</span>
   </div>
 </a>
-<a href="editMaintenanceRequest.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/edit.svg">
-    <span>Edit Request</span>
-  </div>
-</a>
 <a href="assignMaintenanceTasks.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/user-check.svg">
@@ -805,6 +820,14 @@ if (date("H:i:s") > "18:19:59") {
     <span>Pending Requests</span>
   </div>
 </a>
+<!-- View Archived Requests (Admin / Level ≥ 3) -->
+<a href="viewArchive.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/book.png" alt="Archived Requests">
+    <span>View Archived Requests</span>
+  </div>
+</a>
+
 
 
                     </div>
@@ -826,7 +849,7 @@ if (date("H:i:s") > "18:19:59") {
 </a>
 <a href="createNewUser.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/user-plus.svg">
+    <img src="images/add-user.svg">
     <span>Add User</span>
   </div>
 </a>
@@ -867,7 +890,9 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Lease Management
@@ -896,7 +921,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="dropdown">
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>
@@ -947,14 +972,16 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Maintenance
                     <div class="dropdown">
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/tools.svg">
+    <img src="images/dashboard.svg">
     <span>Maintenance Hub</span>
   </div>
 </a>

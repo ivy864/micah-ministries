@@ -80,7 +80,8 @@ $progress_percent = min(100, max(0, round($progress * 100)));
 
 <html>
 
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 
     <?php require_once('universal.inc'); ?>
 

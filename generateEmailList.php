@@ -47,7 +47,8 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <title>Fredericksburg SPCA | Volunteer Email List</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 

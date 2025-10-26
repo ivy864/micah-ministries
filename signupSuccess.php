@@ -5,7 +5,8 @@
 ?>
     <!DOCTYPE html>
     <html>
-        <head>
+        <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
             <?php require_once('universal.inc') ?>
             <title>Fredericksburg SPCA | Sign-Up for Event</title>
         </head>

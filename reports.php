@@ -28,7 +28,8 @@ include_once('domain/Shift.php');
 ?>
 
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 <!-- <link rel="stylesheet" href="lib\bootstrap\css\bootstrap.css" type="text/css" /> -->
 <!-- <link rel="stylesheet" href="styles.css" type="text/css" /> -->
 <!-- <link rel="stylesheet" href="lib/jquery-ui.css" /> -->

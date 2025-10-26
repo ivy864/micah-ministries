@@ -22,7 +22,8 @@ require_once 'domain/Groups.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
   	<link href="css/normal_tw.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php

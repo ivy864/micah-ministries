@@ -126,7 +126,8 @@ $pending_events = fetch_my_pending($user_id);
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <?php require_once('universal.inc'); ?>
     <title>My Upcoming Events</title>
     <link rel="stylesheet" href="css/style.css" />

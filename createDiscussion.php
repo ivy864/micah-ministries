@@ -52,7 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <title>Create a New Discussion</title>
     <link rel="stylesheet" href="css/normal_tw.css">

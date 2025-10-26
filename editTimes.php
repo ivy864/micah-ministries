@@ -276,7 +276,8 @@ if (mysqli_query($connection, $query)) {
 
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <?php require_once('universal.inc') ?>
         <title>Step VA | View Date</title>
     </head>

@@ -20,7 +20,8 @@ include_once "database/dbShifts.php";
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Micah Ministries | View Leases</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
@@ -62,6 +63,7 @@ include_once "database/dbShifts.php";
                 <a href="index.php" class="blue-button">Add a Lease</a>
             </div>
 
+            <!-- editLease.php -->
             <div class="overflow-x-auto">
 
                 <table>
@@ -84,7 +86,7 @@ include_once "database/dbShifts.php";
                             <td>10/12/25</td>
                             <td>
                                 <!-- This will be more concise in something like a for loop when backend is implemented -->
-                                <a href="index.php" class="return-button">Edit</a>
+                                <a href="editLease.php" class="return-button">Edit</a>
                                 <a href="index.php" class="delete-button">Delete</a>
                             </td>
                         </tr>
@@ -96,7 +98,7 @@ include_once "database/dbShifts.php";
                             <td>2/13/26</td>
                             <td>
                                 <!-- This will be more concise in something like a for loop when backend is implemented -->
-                                <a href="index.php" class="return-button">Edit</a>
+                                <a href="editLease.php" class="return-button">Edit</a>
                                 <a href="index.php" class="delete-button">Delete</a>
                             </td>
                         </tr>
@@ -108,7 +110,7 @@ include_once "database/dbShifts.php";
                             <td>6/4/27</td>
                             <td>
                                 <!-- This will be more concise in something like a for loop when backend is implemented -->
-                                <a href="index.php" class="return-button">Edit</a>
+                                <a href="editLease.php" class="return-button">Edit</a>
                                 <a href="index.php" class="delete-button">Delete</a>
                             </td>
                         </tr>
@@ -117,6 +119,9 @@ include_once "database/dbShifts.php";
                 </table>
             </div>
 
+            <div class="mt-10 flex justify-end">
+                <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
+            </div>
 
         </div>
 </body>

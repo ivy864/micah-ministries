@@ -14,7 +14,8 @@ if (!$loggedIn) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Micah Ministries | Portal</title>
     <link href="css/normal_tw.css" rel="stylesheet">
 
@@ -79,6 +80,8 @@ if (!$loggedIn) {
         }
     </style>
 </head>
+            <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 <body>
     <div class="hero-header">
         <div class="center-header">
