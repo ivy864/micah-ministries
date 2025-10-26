@@ -35,6 +35,133 @@ if (date("H:i:s") > "18:19:59") {
             font-family: Quicksand, sans-serif;
             padding-top: 96px;
         }
+        
+        /* Standard styling for management pages */
+        .date-box {
+            background: #274471;
+            padding: 7px 30px;
+            border-radius: 50px;
+            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .dropdown {
+            padding-right: 50px;
+        }
+        
+        /* Hero header styling */
+        .hero-header {
+            background: linear-gradient(135deg, #274471 0%, #1e3554 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .center-header h1 {
+            color: white !important;
+            font-size: 2rem !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            margin: 0 !important;
+        }
+        
+        /* Main content styling */
+        .main-content-box {
+            background-color: white !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+            padding: 1.5rem !important;
+        }
+        
+        /* Form styling */
+        .form-container {
+            max-width: none !important;
+            width: 100% !important;
+            margin: 5px auto !important;
+            padding: 10px !important;
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+            border: 2px solid #274471 !important;
+        }
+        .form-group {
+            margin-bottom: 6px !important;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #274471;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            height: 40px;
+            resize: vertical;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: #274471;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 120px;
+        }
+        .btn-primary:hover {
+            background-color: #1e3554;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Alert styling */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
         h2 {
         	font-weight: normal;
             font-size: 30px;
@@ -654,6 +781,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['reports.php'] = 3;
         $permission_array['eventedit.php'] = 3;
         $permission_array['modifyuserrole.php'] = 3;
+        $permission_array['createnewuser.php'] = 3;
         $permission_array['addevent.php'] = 2;
         $permission_array['editevent.php'] = 2;
         // $permission_array['roster.php'] = 2; //TODO DELETE

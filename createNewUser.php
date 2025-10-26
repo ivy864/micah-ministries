@@ -1,7 +1,8 @@
 <?php
-    // Create New User Page - Admin Only Access
-    // Based on VolunteerRegister.php but streamlined for staff
+    // Template for new VMS pages. Base your new page on this one
 
+    // Make session information accessible, allowing us to associate
+    // data with the logged-in user.
     session_cache_expire(30);
     session_start();
 
@@ -10,24 +11,26 @@
     $userID = null;
     if (isset($_SESSION['_id'])) {
         $loggedIn = true;
+        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    
-    // Admin-only access (level 3)
-    if ($accessLevel < 3) {
+    // admin-only access
+    if ($accessLevel < 2) {
         header('Location: index.php');
         die();
     }
 
+    // include database functions and domain object
     require_once('database/dbPersons.php');
     require_once('domain/Person.php');
     require_once('include/input-validation.php');
-
-    $showPopup = false;
-    $successMessage = '';
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $message = '';
+    $error = '';
+    
+    // handle form submission
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
@@ -36,22 +39,33 @@
         );
 
         $errors = false;
+        $errorDetails = array();
+
+        // Debug: Check what we received
+        $errorDetails[] = "DEBUG: Received POST data: " . print_r($_POST, true);
+        $errorDetails[] = "DEBUG: Sanitized args: " . print_r($args, true);
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
+            $errorDetails[] = "DEBUG: Required fields check failed";
+            foreach ($required as $field) {
+                if (!isset($args[$field]) || empty($args[$field])) {
+                    $errorDetails[] = "DEBUG: Missing or empty field: $field";
+                }
+            }
         }
 
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
         $email = strtolower($args['email']);
         if (!validateEmail($email)) {
-            echo "<p>Invalid email.</p>";
+            $errorDetails[] = "DEBUG: Email validation failed for: $email";
             $errors = true;
         }
 
         $phone1 = validateAndFilterPhoneNumber($args['phone']);
         if (!$phone1) {
-            echo "<p>Invalid phone number.</p>";
+            $errorDetails[] = "DEBUG: Phone validation failed for: " . $args['phone'];
             $errors = true;
         }
 
@@ -61,40 +75,64 @@
         
         // Validate role
         if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
-            echo "<p>Invalid user role.</p>";
+            $errorDetails[] = "DEBUG: Role validation failed for: $user_role";
             $errors = true;
         }
 
-        $password = isSecurePassword($args['password']);
-        if (!$password) {
-            echo "<p>Password is not secure enough.</p>";
+        // Detailed password validation debugging
+        $passwordInput = $args['password'];
+        $passwordErrors = array();
+        
+        // Check if password is at least 8 characters long
+        if (strlen($passwordInput) < 8) {
+            $passwordErrors[] = "Password must be at least 8 characters long (current: " . strlen($passwordInput) . ")";
+        }
+        
+        // Check if password contains at least one uppercase letter
+        if (!preg_match('/[A-Z]/', $passwordInput)) {
+            $passwordErrors[] = "Password must contain at least one uppercase letter";
+        }
+        
+        // Check if password contains at least one lowercase letter
+        if (!preg_match('/[a-z]/', $passwordInput)) {
+            $passwordErrors[] = "Password must contain at least one lowercase letter";
+        }
+        
+        // Check if password contains at least one number
+        if (!preg_match('/[0-9]/', $passwordInput)) {
+            $passwordErrors[] = "Password must contain at least one number";
+        }
+        
+        if (!empty($passwordErrors)) {
+            $errorDetails[] = "DEBUG: Password validation failed: " . implode(', ', $passwordErrors);
             $errors = true;
         } else {
-            $password = password_hash($args['password'], PASSWORD_BCRYPT);
+            $password = password_hash($passwordInput, PASSWORD_BCRYPT);
         }
 
         if ($errors) {
-            echo '<p class="error">Your form submission contained unexpected or invalid input.</p>';
-            die();
-        }
-
-        // Create new staff user with minimal required fields
-        $newperson = new Person(
-            $username, $password, date("Y-m-d"),
-            $first_name, $last_name, '1990-01-01', // Default birthday
-            'N/A', 'N/A', 'VA', '00000', // Default address
-            $phone1, $phone1type, $email,
-            'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
-            $user_role, 'Active', 0, // Active status, not archived
-            '', '', 'None', // No skills, interests, training
-            0, 0, 0.00 // Not volunteer-related fields
-        );
-
-        $result = add_person($newperson);
-        if (!$result) {
-            $showPopup = true;
+            $error = 'Validation failed. Details: ' . implode(' | ', $errorDetails);
         } else {
-            $successMessage = "User '$username' has been successfully created with role: " . ucfirst(str_replace('_', ' ', $user_role));
+            // Create new staff user with minimal required fields
+            $newperson = new Person(
+                $username, $password, date("Y-m-d"),
+                $first_name, $last_name, '1990-01-01', // Default birthday
+                'N/A', 'N/A', 'VA', '00000', // Default address
+                $phone1, $phone1type, $email,
+                'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
+                $user_role, 'Active', 0, // Active status, not archived
+                '', '', 'None', // No skills, interests, training
+                0, 0, 0.00 // Not volunteer-related fields
+            );
+
+            $result = add_person($newperson);
+            if (!$result) {
+                $error = 'That username is already taken.';
+            } else {
+                $message = "User '$username' has been successfully created with role: " . ucfirst(str_replace('_', ' ', $user_role));
+                // clear form data
+                $_POST = array();
+            }
         }
     }
 ?>
@@ -102,9 +140,17 @@
 <html lang="en">
 <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-    <title>Micah Ministries | Create New User</title>
-    <link href="css/normal_tw.css" rel="stylesheet">
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create New User</title>
+  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+
+<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+<?php
+$tailwind_mode = true;
+require_once('header.php');
+?>
+<style>
         .date-box {
             background: #274471;
             padding: 7px 30px;
@@ -114,131 +160,260 @@
             font-size: 24px;
             font-weight: 700;
             text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
-    </style>
+        }
+	.dropdown {
+	    padding-right: 50px;
+	}
+	
+	.form-container {
+	    max-width: none !important;
+	    width: 100% !important;
+	    margin: 5px auto !important;
+	    padding: 10px !important;
+	    background: white !important;
+	    border-radius: 8px !important;
+	    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+	    border: 2px solid #274471 !important;
+	}
+	
+	.form-group {
+	    margin-bottom: 6px !important;
+	}
+	
+	.form-group label {
+	    display: block;
+	    margin-bottom: 5px;
+	    font-weight: bold;
+	    color: #274471;
+	}
+	
+	.form-group input,
+	.form-group select,
+	.form-group textarea {
+	    width: 100%;
+	    padding: 8px;
+	    border: 1px solid #ddd;
+	    border-radius: 4px;
+	    font-size: 14px;
+	}
+	
+	.form-group textarea {
+	    height: 40px;
+	    resize: vertical;
+	}
+	
+	.form-row {
+	    display: flex;
+	    gap: 20px;
+	}
+	
+	.form-row .form-group {
+	    flex: 1;
+	}
+	
+	/* compact navigation buttons - override tailwind */
+	.button-section {
+	    margin-bottom: 10px !important;
+	}
+	
+	.compact-nav-btn {
+	    padding: 8px 16px !important;
+	    font-size: 14px !important;
+	    margin-right: 10px !important;
+	    margin-bottom: 5px !important;
+	    height: auto !important;
+	    width: auto !important;
+	}
+	
+	.compact-nav-btn .button-left-gray {
+	    padding: 4px 8px !important;
+	}
+	
+	.compact-nav-btn .button-icon {
+	    height: 16px !important;
+	    width: 16px !important;
+	    left: 12px !important;
+	}
+	
+	.btn-primary {
+	    background-color: #274471;
+	    color: white;
+	    padding: 10px 20px;
+	    border: none;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    font-size: 16px;
+	}
+	
+	.btn-primary:hover {
+	    background-color: #1e3554;
+	}
+	
+	.btn-secondary {
+	    background-color: #6c757d;
+	    color: white;
+	    padding: 10px 20px;
+	    border: none;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    font-size: 16px;
+	    text-decoration: none;
+	    display: inline-block;
+	}
+	
+	.btn-secondary:hover {
+	    background-color: #5a6268;
+	}
+	
+	.alert {
+	    padding: 15px;
+	    margin-bottom: 20px;
+	    border-radius: 4px;
+	}
+	
+	.alert-success {
+	    background-color: #d4edda;
+	    color: #155724;
+	    border: 1px solid #c3e6cb;
+	}
+	
+	.alert-error {
+	    background-color: #f8d7da;
+	    color: #721c24;
+	    border: 1px solid #f5c6cb;
+	}
+	
+	/* compact text section */
+	.text-section h1 {
+	    margin-bottom: 5px !important;
+	}
+	
+	.text-section p {
+	    margin-bottom: 10px !important;
+	}
+	
+	/* force layout changes - full width form */
+	.sections {
+	    flex-direction: row !important;
+	    gap: 10px !important;
+	}
+	
+	/* adjust main content since hero is removed */
+	main {
+	    margin-top: 0 !important;
+	    padding: 10px !important;
+	}
+	
+	.button-section {
+	    width: 0% !important;
+	    display: none !important;
+	}
+	
+	.text-section {
+	    width: 100% !important;
+	}
+	
+	.form-container {
+	    max-width: none !important;
+	    width: 100% !important;
+	}
+
+</style>
+<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+
 </head>
+
 <body>
 
-<header class="hero-header">
-    <div class="center-header">
+  <!-- Hero Section - Removed to save space -->
+  <!-- <header class="hero-header"></header> -->
+
+  <!-- Main Content -->
+  <main>
+    <div class="sections">
+
+      <!-- Navigation Section - Removed -->
+      <div class="button-section">
+     </div>
+
+      <!-- Text Section -->
+      <div class="text-section">
         <h1>Create New User</h1>
-    </div>
-</header>
-
-<main>
-    <div class="main-content-box w-[80%] p-8">
-
-        <?php if ($successMessage): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            <?php echo $successMessage; ?>
-        </div>
-        <?php endif; ?>
-
-        <div class="text-center mb-8">
-            <h2>Add New Staff Member</h2>
-            <p class="sub-text">Create a new user account for staff members.</p>
-        </div>
-
-        <form id="create-user-form" class="space-y-6" method="post">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="first_name">First Name *</label>
-                    <input type="text" id="first_name" name="first_name" class="w-full" required 
-                           value="<?php if (isset($first_name)) echo htmlspecialchars($first_name); ?>" 
-                           placeholder="Enter first name">
-                </div>
-
-                <div>
-                    <label for="last_name">Last Name *</label>
-                    <input type="text" id="last_name" name="last_name" class="w-full" required 
-                           value="<?php if (isset($last_name)) echo htmlspecialchars($last_name); ?>" 
-                           placeholder="Enter last name">
-                </div>
-            </div>
-
-            <div>
-                <label for="email">Email Address *</label>
-                <input type="email" id="email" name="email" class="w-full" required 
-                       value="<?php if (isset($email)) echo htmlspecialchars($email); ?>" 
-                       placeholder="Enter email address">
-            </div>
-
-            <div>
-                <label for="phone">Phone Number *</label>
-                <input type="tel" id="phone" name="phone" class="w-full" required 
-                       value="<?php if (isset($phone1)) echo htmlspecialchars($phone1); ?>" 
-                       placeholder="Enter phone number">
-            </div>
-
-            <div>
-                <label for="username">Username *</label>
-                <input type="text" id="username" name="username" class="w-full" required 
-                       value="<?php if (isset($username)) echo htmlspecialchars($username); ?>" 
-                       placeholder="Enter username (login ID)">
-            </div>
-
-            <div>
-                <label for="user_role">User Role *</label>
-                <select id="user_role" name="user_role" class="w-full" required>
-                    <option value="">Select a role</option>
-                    <option value="admin" <?php if (isset($user_role) && $user_role == 'admin') echo 'selected'; ?>>Admin - Full Access</option>
-                    <option value="case_manager" <?php if (isset($user_role) && $user_role == 'case_manager') echo 'selected'; ?>>Case Manager - Lease + Maintenance</option>
-                    <option value="maintenance" <?php if (isset($user_role) && $user_role == 'maintenance') echo 'selected'; ?>>Maintenance Staff - Maintenance Only</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="password">Password *</label>
-                <input type="password" id="password" name="password" class="w-full" required 
-                       placeholder="Enter secure password">
-                <small class="text-gray-600">Password must be at least 8 characters with letters and numbers.</small>
-            </div>
-
-            <div class="text-center pt-4">
-                <input type="submit" value="Create User" class="blue-button">
-            </div>
-
-        </form>
-    </div>
-
-    <div class="text-center mt-6">
-        <a href="personSearch.php" class="return-button">Back to User Management</a>
-    </div>
-
-    <div class="info-section">
-        <div class="blue-div"></div>
-        <p class="info-text">
-            Create new staff accounts with appropriate access levels. Admin users have full system access, 
-            Case Managers can manage leases and maintenance, and Maintenance Staff can only access maintenance functions.
+        <div class="div-blue"></div>
+        <p>
+          Create a new user account for staff members. Fill out the form below with all required information.
         </p>
+        
+        <?php if ($message): ?>
+            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
+        <?php endif; ?>
+        
+        <?php if ($error): ?>
+            <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+        
+        <div class="form-container">
+            <form method="POST" action="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" 
+                               value="<?php echo htmlspecialchars($_POST['first_name'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name *</label>
+                        <input type="text" id="last_name" name="last_name" 
+                               value="<?php echo htmlspecialchars($_POST['last_name'] ?? ''); ?>" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" 
+                               value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" 
+                               value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" 
+                               value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_role">User Role *</label>
+                        <select id="user_role" name="user_role" required>
+                            <option value="">Select a role</option>
+                            <option value="admin" <?php echo (($_POST['user_role'] ?? '') == 'admin') ? 'selected' : ''; ?>>Admin - Full Access</option>
+                            <option value="case_manager" <?php echo (($_POST['user_role'] ?? '') == 'case_manager') ? 'selected' : ''; ?>>Case Manager - Lease + Maintenance</option>
+                            <option value="maintenance" <?php echo (($_POST['user_role'] ?? '') == 'maintenance') ? 'selected' : ''; ?>>Maintenance Staff - Maintenance Only</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required>
+                    <small style="color: #666; font-size: 12px;">Password must be at least 8 characters with letters and numbers.</small>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="btn-primary">Create User</button>
+                    <a href="personSearch.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                </div>
+            </form>
+        </div>
+        
+      </div>
+
     </div>
-</main>
-
-<?php if ($showPopup): ?>
-<div id="popupMessage" class="absolute left-[40%] top-[20%] z-50 bg-red-800 p-4 text-white rounded-xl text-xl shadow-lg">
-    That username is already taken.
-</div>
-<?php endif; ?>
-
-<!-- Auto-hide popup -->
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const popup = document.getElementById('popupMessage');
-    if (popup) {
-        popup.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => {
-            popup.style.opacity = '0';
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 500);
-        }, 4000);
-    }
-});
-</script>
-
+  </main>
 </body>
 </html>
+
