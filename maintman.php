@@ -23,7 +23,8 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maintenance Management Page</title>
@@ -99,6 +100,13 @@ require_once('header.php');
 
 	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Clock Icon">
         </button>
+
+<button onclick="window.location.href='viewArchive.php';">
+  <div class="button-left-gray"></div>
+  <div>View Archived Requests</div>
+  <img class="button-icon h-10 w-10 left-5" src="images/book.png" alt="Archive Icon">
+</button>
+
 
 	<div class="text-center mt-6">
         	<a href="micahportal.php" class="return-button">Return to Dashboard</a>

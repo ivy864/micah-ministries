@@ -122,7 +122,8 @@ header("Content-Disposition: attachment; filename=volunteer_report_{$reportType}
 header("Pragma: no-cache");
 header("Expires: 0");
 
-echo "<html><head><meta charset='UTF-8'></head><body>";
+echo "<html><head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+<meta charset='UTF-8'></head><body>";
 echo "<table border='1' style='border-collapse: collapse; font-family: Arial, sans-serif; text-align: center;'>";
 
 // Report Title
