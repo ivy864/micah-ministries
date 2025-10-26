@@ -18,8 +18,7 @@ if (date("H:i:s") > "18:19:59") {
 // user cannot access anything else without 
 // logging back in
 ?>
-<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
-
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -236,17 +235,22 @@ if (date("H:i:s") > "18:19:59") {
 
 
         .dropdown {
-            display: none;
-            position: absolute;
-            top: 150%;
-            left: -10%;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            min-width: 150px;
-            padding: 10px;
-        }
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);   /* sit just below the nav item */
+    left: 0;                 /* align with the left edge of the nav item */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+
+    width: max-content;      
+    min-width: 150px;        
+    white-space: nowrap;     
+    box-sizing: border-box;  
+    z-index: 2000;
+    padding: 10px;
+}
         .dropdown div {
             padding: 8px;
             white-space: nowrap;
@@ -566,7 +570,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+                <a href="index.php"><img src="images/micah-ministries-logo.jpg"
      alt="Micah Ecumenical Ministries" id="logo"
      style="height:52px;width:auto;object-fit:contain;display:block"></a>
 
