@@ -630,6 +630,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['micahportal.php'] = 1;
         
         //pages case managers can view (Level 2) - Lease + Maintenance
+        $permission_array['userman.php'] = 2;
         $permission_array['editlease.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
@@ -835,6 +836,12 @@ if (date("H:i:s") > "18:19:59") {
                 <div class="nav-item">User Management
                     <div class="dropdown">
 
+<a href="userman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Users Hub</span>
+  </div>
+</a>
 <a href="personSearch.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/search.svg">

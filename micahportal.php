@@ -114,10 +114,10 @@ if (!$loggedIn) {
 
                 <!-- Edit Profile -->
                 <div class="portal-card">
-                    <h2 class="portal-title">Edit Profile</h2>
+                    <h2 class="portal-title">Manage Users</h2>
                     <p class="portal-desc">Update account details for users.</p>
                     <div class="portal-action">
-                        <a href="editlogin.php" class="portal-link">Edit Profile</a>
+                        <a href="userman.php" class="portal-link">Manage Users</a>
                     </div>
                 </div>
 

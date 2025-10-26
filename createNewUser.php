@@ -206,7 +206,7 @@
     </div>
 
     <div class="text-center mt-6">
-        <a href="personSearch.php" class="return-button">Back to User Management</a>
+        <a href="userman.php" class="return-button">Back to User Management</a>
     </div>
 
     <div class="info-section">
