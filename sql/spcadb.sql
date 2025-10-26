@@ -21,6 +21,15 @@ SET time_zone = "+00:00";
 -- Database: `dbkzrh4cfmxbt0`
 --
 
+-- comments table
+CREATE TABLE `db_maintenance_comments` (
+    `author_id` varchar(256) CHARACTER SET utv8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `request_id` varchar(256) NOT NULL,
+    `content` varchar(2048), 
+    `time` int NOT NULL,
+    PRIMARY KEY (`author_id`, `request_id`, `time`)
+);
+
 -- --------------------------------------------------------
 
 --
