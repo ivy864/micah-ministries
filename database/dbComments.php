@@ -8,11 +8,13 @@ function get_comments($requestID) {
 
 //    $query =  . $requestID;
 
-    $query = $con->prepare('SELECT * FROM db_maintenance_comments WHERE  request_id=:requestID');
-    $query->bindValue(':requestID', $requestID, PDO::PARAM_STR);
-    $result = mysqli_query($con, $query);
+    $query = $con->prepare('SELECT * FROM db_maintenance_comments WHERE  request_id=?');
+    $query->bind_param('s', $requestID);
+    $query->execute();
 
-    var_dump($result);
+    $result = $query->get_result();
+
+    return($result->fetch_all(MYSQLI_ASSOC));
 }
 
 /**
