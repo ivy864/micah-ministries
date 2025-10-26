@@ -75,8 +75,7 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
-
+    <head>
 	<script src="https://cdn.tailwindcss.com"></script>
     	<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
 	    <link rel="icon" type="image/png" href="images/micah-favicon.png">
@@ -108,9 +107,12 @@
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
-  <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px]"
-       style="background-image: url(images/login_background.jpg);">
-  </div>
+  <<div class="hidden md:flex md:w-1/2 items-center justify-center rounded-r-[50px] bg-white">
+  <img src="images/micah-ministries-logo.jpg"
+       alt="Micah Ecumenical Ministries"
+       class="max-w-[90%] max-h-[90%] object-contain">
+</div>
+
 
   <!-- Right: Form Section -->
 
