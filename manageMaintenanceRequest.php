@@ -296,6 +296,12 @@
                 min-width: 140px !important;
                 text-align: center;
             }
+
+             
+            .comment-head {
+                display: flex;
+                justify-content: space-between;
+            }
         </style>
     </head>
     <body>
@@ -394,7 +400,20 @@
                 
             </div>
             <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
+                <?php
+                $comments = get_comments($_GET['id']);
+                ?>
                 <h2>Comments</h2>
+                <script >
+                /*
+                 * comments are rendered client-side with js.
+                 * The array of comments is encoded in json so it can be used by the js/comment.js file
+                 */
+                let comments = <?php echo json_encode($comments) ?>;
+                </script>
+                <div id="comment-container">
+                    
+                </div>
                 <textarea id="commentBox"></textarea>
                 <button onclick='writeComment()'>Comment</button>
             </div>
