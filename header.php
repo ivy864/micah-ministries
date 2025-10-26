@@ -18,7 +18,8 @@ if (date("H:i:s") > "18:19:59") {
 // user cannot access anything else without 
 // logging back in
 ?>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -190,17 +191,17 @@ if (date("H:i:s") > "18:19:59") {
             gap: 20px; /* Space between logo and links */
         }
 
-        /* Logo */
+        /* Logo 
         .logo-container {
             background: #294877;
             padding: 10px 20px;
             border-radius: 50px;
             box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) inset;
-        }
+        } */
 
-        .logo-container img {
-            width: 128px;
-            height: 52px;
+        .logo-container img#logo {
+            width: 52px;
+            height: auto;
             display: block;
         }
 
@@ -565,7 +566,10 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+                <a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
+
             </div>
             <div class="nav-links">
 		<div class="nav-item"><span class="font-change">Volunteer Management System</span>
@@ -731,7 +735,9 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Lease Management
@@ -869,7 +875,9 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Lease Management
@@ -949,7 +957,9 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/micah-ministries-logo.jpg" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
                 <div class="nav-item">Maintenance

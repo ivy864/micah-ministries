@@ -58,7 +58,8 @@ $access_level = $_SESSION['access_level'];
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <?php require_once('universal.inc'); ?>
     <title>View Event Details | <?php echo htmlspecialchars($event_info['name']); ?></title>
     <link rel="stylesheet" href="css/messages.css" />

@@ -75,10 +75,12 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 	<script src="https://cdn.tailwindcss.com"></script>
     	<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
-	<style>
+	    <link rel="icon" type="image/png" href="images/micah-favicon.png">
+  <style>
 /* Found this on codepen :D */
 .wave {
   animation-name: wave-animation;  /* Refers to the name of your @keyframes element below */

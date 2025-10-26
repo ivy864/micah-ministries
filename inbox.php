@@ -13,7 +13,8 @@ if (isset($_SESSION['_id'])) {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <?php require_once('universal.inc') ?>
     <link rel="stylesheet" href="css/messages.css">
     <script>

@@ -19,7 +19,8 @@ session_start();
 session_cache_expire(30);
 ?>
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 <title>Search for data objects</title>
 <link rel="stylesheet" href="styles.css" type="text/css" />
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>

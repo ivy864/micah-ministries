@@ -117,7 +117,8 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Micah Ministries | Edit Lease</title>
     <link href="css/normal_tw.css" rel="stylesheet">
     <?php

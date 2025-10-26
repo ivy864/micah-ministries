@@ -20,7 +20,8 @@ include_once "database/dbShifts.php";
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Fredericksburg SPCA | Checked In Volunteers</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 

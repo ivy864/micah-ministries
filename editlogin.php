@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Edit Login Info</title>
 </head>
 <body>

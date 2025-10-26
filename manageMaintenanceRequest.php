@@ -156,7 +156,8 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <?php require_once('universal.inc') ?>
         <title>Micah Ministries | Manage Maintenance Request</title>
         <link href="css/normal_tw.css" rel="stylesheet">

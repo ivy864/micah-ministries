@@ -13,7 +13,8 @@ $currentTime = date("H:i:s");
 // Function to display the success message with an animated checkmark
 function showSuccessMessage($message, $redirectUrl = null, $shift_id=null) {
     $content = isset($shift_id) ? get_shift_hours($shift_id) : "✔";
-    echo '<html><head><style>
+    echo '<html><head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+<style>
         body {
             display: flex;
             justify-content: center;
@@ -84,7 +85,8 @@ if ($existingShift) {
     if (!isset($_POST['desc'])) {
         ?>
         <html>
-        <head>
+        <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
             <style>
                 body {
                     display: flex;

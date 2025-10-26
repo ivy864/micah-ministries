@@ -100,7 +100,8 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Micah Ministries | Create New User</title>
     <link href="css/normal_tw.css" rel="stylesheet">
     <style>

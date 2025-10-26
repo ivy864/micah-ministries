@@ -51,7 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $accessLevel == 1) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <?php require_once('universal.inc') ?>
     <link rel="stylesheet" href="css/editprofile.css" type="text/css" />
     <title>Fredericksburg SPCA | Edit Volunteer Hours</title>
