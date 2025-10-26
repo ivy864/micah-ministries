@@ -32,6 +32,7 @@ async function writeComment() {
     data.append("comment", document.getElementById("commentBox").value);
 
     try {
+        // post comment text to form
         const response = await fetch(url, {
             "method": "POST",
             "headers": {"writecomment": "True"},
@@ -41,10 +42,15 @@ async function writeComment() {
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
+        // 
+        response.json().then(data => renderComment(data));
     }
     catch (error) {
         console.error(error.message);
     }
+
+    // clear text in comment box
+    document.getElementById("commentBox").value = "";
 }
 
 async function renderComment(comment) {
@@ -53,7 +59,7 @@ async function renderComment(comment) {
     let newDiv = document.createElement("div");
     newDiv.innerHTML = `
     <div class="comment-head">
-        <div>${comment["author_id"]}</div>
+        <div class="comment-title">${comment["author_id"]}</div>
         <div>${new Date(comment["time"] * 1000).toISOString()}</div>
     </div>
     <div class="comment-body">
