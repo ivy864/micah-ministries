@@ -33,4 +33,10 @@ class Comment {
     public function getTime() {
         return $this->time;
     }
+
+    public function toJSON() {
+        $arr = array("author_id" => $this->authorID, "request_id" => $this->requestID, "content" => $this->content, "time" => $this->time);
+
+        return(json_encode($arr));
+    }
 }
