@@ -314,7 +314,6 @@ require_once('header.php');
                             <td><?php echo $lease['monthly_rent'] ? '$' . number_format($lease['monthly_rent'], 2) : 'N/A'; ?></td>
                             <td>
                                 <a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" class="return-button">Edit</a>
-                                <a href="deleteLease.php?id=<?php echo urlencode($lease['id']); ?>" class="delete-button" onclick="return confirm('Are you sure you want to delete this lease?')">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
