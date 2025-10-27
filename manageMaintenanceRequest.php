@@ -20,7 +20,7 @@
     require_once('database/dbComments.php');
 
     // if writecomment is set to true in request header, write a comment to database
-    if ($_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+    if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
         $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
         add_comment($cmnt);
         // sends comment data back to requester so it can be rendered client-side
@@ -28,7 +28,7 @@
         // don't render the rest of the page
         exit();
     }
-    if ($_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+    if (isset($_SERVER['HTTP_GETCOMMENTS']) && $_SERVER['HTTP_GETCOMMENTS'] == 'True') {
         exit();
     }
     
