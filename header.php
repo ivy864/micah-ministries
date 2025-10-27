@@ -742,6 +742,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
         $permission_array['changepassword.php'] = 1;
+        $permission_array['managepassword.php'] = 1;
         $permission_array['editprofile.php'] = 1;
         $permission_array['inbox.php'] = 1;
         $permission_array['viewprofile.php'] = 1;
@@ -854,7 +855,7 @@ if (date("H:i:s") > "18:19:59") {
         if($permission_array[$current_page]>$_SESSION['access_level']){
             //in this case, the user doesn't have permission to view this page.
             //we redirect them to the index page.
-            echo "<script type=\"text/javascript\">window.location = \"index.php\";</script>";
+            echo "<script type=\"text/javascript\">window.location = \"micahportal.php\";</script>";
             //note: if javascript is disabled for a user's browser, it would still show the page.
             //so we die().
             die();
@@ -1003,7 +1004,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon">
                         <div class="dropdown">
-                            <a href="changePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
+                            <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
                             <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
                         </div>
                     </div>
@@ -1184,7 +1185,7 @@ if (date("H:i:s") > "18:19:59") {
                             <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
                             <a href="volunteerReport.php" style="text-decoration: none;"><div>View Hours</div></a>
                             <a href="inbox.php" style="text-decoration: none;"><div>Notifications</div></a>
-                            <a href="changePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
+                            <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
                             <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
                         </div>
                     </div>

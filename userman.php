@@ -17,7 +17,7 @@
     }
     // admin-only access
     if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
 ?>
@@ -75,22 +75,11 @@ require_once('header.php');
 	  <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
         </button>
 
-        <button onclick="window.location.href='editlogin.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Modify User Role</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/user-check.svg" alt="List Icon">
-        </button>
-
         <button onclick="window.location.href='personSearch.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Search for User</div>
 	  <img class="button-icon h-10 w-10 left-5" src="images/search.svg" alt="Search Icon">
         </button>
-
-
-	<div class="text-center mt-6">
-        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
-	</div>
 
 
      </div>

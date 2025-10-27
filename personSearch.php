@@ -17,7 +17,7 @@
     }
     // admin-only access
     if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
 
@@ -49,19 +49,73 @@
     $error = '';
     $searchResults = null;
     $searchQuery = '';
+    $sortColumn = $_GET['sort'] ?? 'name';
+    $sortDirection = $_GET['direction'] ?? 'asc';
+    
+    // sorting function
+    function sortUsers($users, $column, $direction) {
+        usort($users, function($a, $b) use ($column, $direction) {
+            $valueA = '';
+            $valueB = '';
+            
+            switch($column) {
+                case 'name':
+                    $valueA = strtolower($a->get_first_name() . ' ' . $a->get_last_name());
+                    $valueB = strtolower($b->get_first_name() . ' ' . $b->get_last_name());
+                    break;
+                case 'id':
+                    $valueA = strtolower($a->get_id());
+                    $valueB = strtolower($b->get_id());
+                    break;
+                case 'email':
+                    $valueA = strtolower($a->get_email());
+                    $valueB = strtolower($b->get_email());
+                    break;
+                case 'phone':
+                    $valueA = $a->get_phone1();
+                    $valueB = $b->get_phone1();
+                    break;
+                case 'type':
+                    $valueA = strtolower($a->get_type());
+                    $valueB = strtolower($b->get_type());
+                    break;
+                case 'status':
+                    $valueA = strtolower($a->get_status());
+                    $valueB = strtolower($b->get_status());
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if ($direction === 'asc') {
+                return strcmp($valueA, $valueB);
+            } else {
+                return strcmp($valueB, $valueA);
+            }
+        });
+        
+        return $users;
+    }
     
     // determine which users to display in the table
     $usersToDisplay = getAllUsers(); // default to all users
     $tableTitle = "All Users (" . count($usersToDisplay) . " total)";
     
-    // handle form submission
+    // handle form submission or search parameters from sorting
+    $searchParams = [];
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $name = trim($_POST['name'] ?? '');
-        $id = trim($_POST['id'] ?? '');
-        $phone = trim($_POST['phone'] ?? '');
-        $zip = trim($_POST['zip'] ?? '');
-        $type = $_POST['type'] ?? '';
-        $status = $_POST['status'] ?? '';
+        $searchParams = $_POST;
+    } elseif (!empty($_GET['name']) || !empty($_GET['id']) || !empty($_GET['phone']) || !empty($_GET['zip']) || !empty($_GET['type']) || !empty($_GET['status'])) {
+        $searchParams = $_GET;
+    }
+    
+    if (!empty($searchParams)) {
+        $name = trim($searchParams['name'] ?? '');
+        $id = trim($searchParams['id'] ?? '');
+        $phone = trim($searchParams['phone'] ?? '');
+        $zip = trim($searchParams['zip'] ?? '');
+        $type = $searchParams['type'] ?? '';
+        $status = $searchParams['status'] ?? '';
         
         // basic validation - at least one search field required
         if (empty($name) && empty($id) && empty($phone) && empty($zip) && empty($type) && empty($status)) {
@@ -79,6 +133,11 @@
                 $tableTitle = "Search Results (" . count($searchResults) . " found)";
             }
         }
+    }
+    
+    // apply sorting to users
+    if (!empty($usersToDisplay)) {
+        $usersToDisplay = sortUsers($usersToDisplay, $sortColumn, $sortDirection);
     }
 
 ?>
@@ -123,13 +182,13 @@ require_once('header.php');
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" 
-                                   value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" 
+                                   value="<?php echo htmlspecialchars($searchParams['name'] ?? ''); ?>" 
                                    placeholder="First name, last name, or both">
                         </div>
                         <div class="form-group">
                             <label for="id">User ID</label>
                             <input type="text" id="id" name="id" 
-                                   value="<?php echo htmlspecialchars($_POST['id'] ?? ''); ?>" 
+                                   value="<?php echo htmlspecialchars($searchParams['id'] ?? ''); ?>" 
                                    placeholder="Username or partial ID">
                         </div>
                     </div>
@@ -138,13 +197,13 @@ require_once('header.php');
                         <div class="form-group">
                             <label for="phone">Phone Number</label>
                             <input type="text" id="phone" name="phone" 
-                                   value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" 
+                                   value="<?php echo htmlspecialchars($searchParams['phone'] ?? ''); ?>" 
                                    placeholder="Phone number">
                         </div>
                         <div class="form-group">
                             <label for="zip">Zip Code</label>
                             <input type="text" id="zip" name="zip" 
-                                   value="<?php echo htmlspecialchars($_POST['zip'] ?? ''); ?>" 
+                                   value="<?php echo htmlspecialchars($searchParams['zip'] ?? ''); ?>" 
                                    placeholder="Zip code">
                         </div>
                     </div>
@@ -154,18 +213,18 @@ require_once('header.php');
                             <label for="type">User Type</label>
                             <select id="type" name="type">
                                 <option value="">All Types</option>
-                                <option value="admin" <?php echo ($_POST['type'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
-                                <option value="case_manager" <?php echo ($_POST['type'] ?? '') === 'case_manager' ? 'selected' : ''; ?>>Case Manager</option>
-                                <option value="maintenance" <?php echo ($_POST['type'] ?? '') === 'maintenance' ? 'selected' : ''; ?>>Maintenance</option>
-                                <option value="volunteer" <?php echo ($_POST['type'] ?? '') === 'volunteer' ? 'selected' : ''; ?>>Volunteer</option>
+                                <option value="admin" <?php echo ($searchParams['type'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
+                                <option value="case_manager" <?php echo ($searchParams['type'] ?? '') === 'case_manager' ? 'selected' : ''; ?>>Case Manager</option>
+                                <option value="maintenance" <?php echo ($searchParams['type'] ?? '') === 'maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                                <option value="volunteer" <?php echo ($searchParams['type'] ?? '') === 'volunteer' ? 'selected' : ''; ?>>Volunteer</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="status">Status</label>
                             <select id="status" name="status">
                                 <option value="">All Statuses</option>
-                                <option value="Active" <?php echo ($_POST['status'] ?? '') === 'Active' ? 'selected' : ''; ?>>Active</option>
-                                <option value="Inactive" <?php echo ($_POST['status'] ?? '') === 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
+                                <option value="Active" <?php echo ($searchParams['status'] ?? '') === 'Active' ? 'selected' : ''; ?>>Active</option>
+                                <option value="Inactive" <?php echo ($searchParams['status'] ?? '') === 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
                             </select>
                         </div>
                     </div>
@@ -193,12 +252,54 @@ require_once('header.php');
                         <table class="users-table">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>User ID</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
+                                    <th>
+                                        <a href="?sort=name&direction=<?php echo ($sortColumn === 'name' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            Name
+                                            <?php if ($sortColumn === 'name'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=id&direction=<?php echo ($sortColumn === 'id' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            User ID
+                                            <?php if ($sortColumn === 'id'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=email&direction=<?php echo ($sortColumn === 'email' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            Email
+                                            <?php if ($sortColumn === 'email'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=phone&direction=<?php echo ($sortColumn === 'phone' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            Phone
+                                            <?php if ($sortColumn === 'phone'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=type&direction=<?php echo ($sortColumn === 'type' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            Type
+                                            <?php if ($sortColumn === 'type'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=status&direction=<?php echo ($sortColumn === 'status' && $sortDirection === 'asc') ? 'desc' : 'asc'; ?><?php echo !empty($searchParams) ? '&' . http_build_query($searchParams) : ''; ?>" class="sort-link">
+                                            Status
+                                            <?php if ($sortColumn === 'status'): ?>
+                                                <span class="sort-indicator"><?php echo $sortDirection === 'asc' ? '↑' : '↓'; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -226,7 +327,7 @@ require_once('header.php');
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="viewProfile.php?id=<?php echo urlencode($user->get_id()); ?>" class="btn-small">View Profile</a>
+                                            <a href="viewProfile.php?id=<?php echo urlencode($user->get_id()); ?>" class="profile-link">View Profile</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -289,6 +390,28 @@ require_once('header.php');
             text-decoration: underline;
         }
         
+        .sort-link {
+            color: white !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .sort-link:hover {
+            color: #ffd700 !important;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sort-indicator {
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
         .users-table td a {
             color: #274471;
             text-decoration: none;
@@ -330,6 +453,27 @@ require_once('header.php');
         
         .type-volunteer {
             color: #28a745;
+        }
+        
+        .profile-link {
+            color: #274471;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+            display: inline-block;
+            font-size: 14px;
+        }
+        
+        .profile-link:hover {
+            background-color: #274471;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(39, 68, 113, 0.2);
         }
         
         .search-results {
@@ -387,5 +531,26 @@ require_once('header.php');
             color: white;
         }
     </style>
+    
+    <script>
+        // preserve scroll position when sorting
+        document.addEventListener('DOMContentLoaded', function() {
+            // store scroll position before navigation
+            const sortLinks = document.querySelectorAll('.sort-link');
+            sortLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    // store current scroll position
+                    sessionStorage.setItem('scrollPosition', window.pageYOffset);
+                });
+            });
+            
+            // restore scroll position after page load
+            const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+            if (savedScrollPosition !== null) {
+                window.scrollTo(0, parseInt(savedScrollPosition));
+                sessionStorage.removeItem('scrollPosition');
+            }
+        });
+    </script>
 </body>
 </html>
