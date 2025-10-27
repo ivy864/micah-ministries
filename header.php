@@ -18,7 +18,8 @@ if (date("H:i:s") > "18:19:59") {
 // user cannot access anything else without 
 // logging back in
 ?>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -33,6 +34,133 @@ if (date("H:i:s") > "18:19:59") {
         body {
             font-family: Quicksand, sans-serif;
             padding-top: 96px;
+        }
+        
+        /* Standard styling for management pages */
+        .date-box {
+            background: #274471;
+            padding: 7px 30px;
+            border-radius: 50px;
+            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .dropdown {
+            padding-right: 50px;
+        }
+        
+        /* Hero header styling */
+        .hero-header {
+            background: linear-gradient(135deg, #274471 0%, #1e3554 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .center-header h1 {
+            color: white !important;
+            font-size: 2rem !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            margin: 0 !important;
+        }
+        
+        /* Main content styling */
+        .main-content-box {
+            background-color: white !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+            padding: 1.5rem !important;
+        }
+        
+        /* Form styling */
+        .form-container {
+            max-width: none !important;
+            width: 100% !important;
+            margin: 5px auto !important;
+            padding: 10px !important;
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+            border: 2px solid #274471 !important;
+        }
+        .form-group {
+            margin-bottom: 6px !important;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #274471;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            height: 40px;
+            resize: vertical;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: #274471;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 120px;
+        }
+        .btn-primary:hover {
+            background-color: #1e3554;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Alert styling */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
         h2 {
         	font-weight: normal;
@@ -190,17 +318,17 @@ if (date("H:i:s") > "18:19:59") {
             gap: 20px; /* Space between logo and links */
         }
 
-        /* Logo */
+        /* Logo 
         .logo-container {
             background: #294877;
             padding: 10px 20px;
             border-radius: 50px;
             box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) inset;
-        }
+        } */
 
-        .logo-container img {
-            width: 128px;
-            height: 52px;
+        .logo-container img#logo {
+            width: 52px;
+            height: auto;
             display: block;
         }
 
@@ -235,17 +363,22 @@ if (date("H:i:s") > "18:19:59") {
 
 
         .dropdown {
-            display: none;
-            position: absolute;
-            top: 150%;
-            left: -10%;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            min-width: 150px;
-            padding: 10px;
-        }
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);   /* sit just below the nav item */
+    left: 0;                 /* align with the left edge of the nav item */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+
+    width: max-content;      
+    min-width: 150px;        
+    white-space: nowrap;     
+    box-sizing: border-box;  
+    z-index: 2000;
+    padding: 10px;
+}
         .dropdown div {
             padding: 8px;
             white-space: nowrap;
@@ -565,7 +698,10 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+                <a href="index.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
+
             </div>
             <div class="nav-links">
 		<div class="nav-item"><span class="font-change">Volunteer Management System</span>
@@ -598,22 +734,19 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['volunteerregister.php'] = 0;
 	$permission_array['leaderboard.php'] = 0;
         // $permission_array['findanimal.php'] = 0; //TODO DELETE
+        //pages maintenance staff can view (Level 1)
         //pages volunteers can view
+        $permission_array['leaseview.php'] = 1;
+        $permission_array['leaseman.php'] = 1;
+        $permission_array['maintman.php'] = 1;
         $permission_array['help.php'] = 1;
         $permission_array['dashboard.php'] = 1;
-        $permission_array['calendar.php'] = 1;
-        $permission_array['eventsearch.php'] = 1;
         $permission_array['changepassword.php'] = 1;
+        $permission_array['managepassword.php'] = 1;
         $permission_array['editprofile.php'] = 1;
         $permission_array['inbox.php'] = 1;
-        $permission_array['date.php'] = 1;
-        $permission_array['event.php'] = 1;
         $permission_array['viewprofile.php'] = 1;
         $permission_array['viewnotification.php'] = 1;
-        $permission_array['volunteerreport.php'] = 1;
-        $permission_array['viewmyupcomingevents.php'] = 1;
-        $permission_array['volunteerviewgroup.php'] = 1;
-	    $permission_array['viewcheckinout.php'] = 1;
         $permission_array['viewresources.php'] = 1;
         $permission_array['discussionmain.php'] = 1;
         $permission_array['viewdiscussions.php'] = 1;
@@ -621,16 +754,36 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['milestonepoints.php'] = 1;
         $permission_array['selectvotm.php'] = 1;
         $permission_array['volunteerviewgroupmembers.php'] = 1;
+        $permission_array['managemaintenancerequest.php'] = 1;
+        $permission_array['micahportal.php'] = 1;
+        
+        //pages case managers can view (Level 2) - Lease + Maintenance
+        $permission_array['userman.php'] = 2;
+        $permission_array['editlease.php'] = 2;
+        $permission_array['leaseview.php'] = 2;
+        $permission_array['calendar.php'] = 2;
+        $permission_array['eventsearch.php'] = 2;
+        $permission_array['date.php'] = 2;
+        $permission_array['event.php'] = 2;
+        $permission_array['volunteerreport.php'] = 2;
+        $permission_array['viewmyupcomingevents.php'] = 2;
+        $permission_array['volunteerviewgroup.php'] = 2;
+	    $permission_array['viewcheckinout.php'] = 2;
+        $permission_array['milestonepoints.php'] = 2;
+        $permission_array['selectvotm.php'] = 2;
+        $permission_array['volunteerviewgroupmembers.php'] = 2;
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0;
-        $permission_array['personsearch.php'] = 2;
+        //user management - admin only (Level 3)
+        $permission_array['personsearch.php'] = 3;
         $permission_array['personedit.php'] = 0; // changed to 0 so that applicants can apply
-        $permission_array['viewschedule.php'] = 2;
-        $permission_array['addweek.php'] = 2;
-        $permission_array['log.php'] = 2;
-        $permission_array['reports.php'] = 2;
-        $permission_array['eventedit.php'] = 2;
-        $permission_array['modifyuserrole.php'] = 2;
+        $permission_array['viewschedule.php'] = 3;
+        $permission_array['addweek.php'] = 3;
+        $permission_array['log.php'] = 3;
+        $permission_array['reports.php'] = 3;
+        $permission_array['eventedit.php'] = 3;
+        $permission_array['modifyuserrole.php'] = 3;
+        $permission_array['createnewuser.php'] = 3;
         $permission_array['addevent.php'] = 2;
         $permission_array['editevent.php'] = 2;
         // $permission_array['roster.php'] = 2; //TODO DELETE
@@ -658,9 +811,17 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['groupview.php'] = 2;
         $permission_array['managemembers.php'] = 2;
         $permission_array['deleteGroup.php'] = 2;
-        $permission_array['volunteermanagement.php'] = 2;
-        $permission_array['groupmanagement.php'] = 2;
-        $permission_array['eventmanagement.php'] = 2;
+        //admin-only management pages (Level 3)
+        $permission_array['volunteermanagement.php'] = 3;
+        $permission_array['groupmanagement.php'] = 3;
+        $permission_array['eventmanagement.php'] = 3;
+        //maintenance management - all roles can access (Level 1)
+        $permission_array['maintman.php'] = 1;
+        $permission_array['viewallmaintenancerequests.php'] = 1;
+        $permission_array['addmaintenancerequest.php'] = 1;
+        $permission_array['editmaintenancerequest.php'] = 1;
+        $permission_array['assignmaintenancetasks.php'] = 1;
+        $permission_array['viewpendingmaintenancerequests.php'] = 1;
         $permission_array['creatediscussion.php'] = 2;
         $permission_array['checkedinvolunteers.php'] = 2;
         $permission_array['deletediscussion.php'] = 2;
@@ -679,6 +840,9 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['requestfailed.php'] = 1;
         $permission_array['settimes.php'] = 1;
         $permission_array['eventfailurebaddeparturetime.php'] = 1;
+        $permission_array['micahportal.php'] = 1;
+        $permission_array['viewarchive.php'] = 2;
+        $permission_array['requesthistory.php'] = 2;
         
         // LOWERCASE
 
@@ -691,7 +855,7 @@ if (date("H:i:s") > "18:19:59") {
         if($permission_array[$current_page]>$_SESSION['access_level']){
             //in this case, the user doesn't have permission to view this page.
             //we redirect them to the index page.
-            echo "<script type=\"text/javascript\">window.location = \"index.php\";</script>";
+            echo "<script type=\"text/javascript\">window.location = \"micahportal.php\";</script>";
             //note: if javascript is disabled for a user's browser, it would still show the page.
             //so we die().
             die();
@@ -702,92 +866,121 @@ if (date("H:i:s") > "18:19:59") {
         
         //they're logged in and session variables are set.
 	//
-	// SUPER ADMIN ONLY HEADER
-        if ($_SESSION['access_level'] >= 2) {
+	// ADMIN NAVIGATION (Level 3) - Full Access
+        if ($_SESSION['access_level'] >= 3) {
 		echo('<div class="navbar">
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
-                <a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>
             <div class="nav-links">
-                <div class="nav-item">Volunteers
+                <div class="nav-item">Lease Management
                     <div class="dropdown">
-            
-<a href="VolunteerRegister.php" style="text-decoration: none;">
+<a href="leaseman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/add-person.svg">
-    <span style="font-size:24px;">Register Volunteer</span>
+    <img src="images/dashboard.svg">
+    <span>Leases Hub</span>
   </div>
 </a>
-
-<a href="personSearch.php" style="text-decoration: none;">
+<a href="leaseView.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/person-search.svg">
-    <span>Search Volunteers</span>
+    <img src="images/list-solid.svg">
+    <span>View Leases</span>
   </div>
 </a>
-<a href="checkedInVolunteers.php" style="text-decoration: none;">
+<a href="calendar.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/clipboard-regular.svg">
-    <span>View Check-Ins</span>
+    <img src="images/view-calendar.png">
+    <span>Calendar</span>
   </div>
 </a>
-			
-                    </div>
-                </div>
-                <div class="nav-item">Events
-                    <div class="dropdown">
-
-<a href="addEvent.php" style="text-decoration: none;">
+<a href="eventsearch.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/search.svg">
+    <span>Search Events</span>
+  </div>
+</a>
+<a href="addLease.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/plus-solid.svg">
-    <span>Create Event</span>
+    <span>Add Lease</span>
   </div>
 </a>
-<a href="viewAllEvents.php" style="text-decoration: none;">
+<a href="editLease.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/edit-pencil.svg">
+    <span>Edit Lease</span>
+  </div>
+</a>
+                    </div>
+                </div>
+                <div class="nav-item">Maintenance
+                    <div class="dropdown">
+
+<a href="maintman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Maintenance Hub</span>
+  </div>
+</a>
+<a href="viewAllMaintenanceRequests.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/list-solid.svg">
-    <span>View Events</span>
+    <span>View Requests</span>
   </div>
 </a>
-<a href="editHours.php" style="text-decoration: none;">
+<a href="addMaintenanceRequest.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/plus-solid.svg">
+    <span>Create Request</span>
+  </div>
+</a>
+<a href="assignMaintenanceTasks.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/user-check.svg">
+    <span>Assign Tasks</span>
+  </div>
+</a>
+<a href="viewPendingMaintenanceRequests.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/clock-regular.svg">
-    <span>Change Event Hours</span>
+    <span>Pending Requests</span>
   </div>
 </a>
-<a href="viewAllEventSignUps.php" style="text-decoration: none;">
+<!-- View Archived Requests (Admin / Level ≥ 3) -->
+<a href="viewArchive.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/users-solid.svg">
-    <span>Pending Sign-Ups</span>
+    <img src="images/book.png" alt="Archived Requests">
+    <span>View Archived Requests</span>
   </div>
 </a>
-<a href="adminViewingEvents.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/list-solid.svg">
-    <span>Edit Event</span>
-  </div>
-</a>
+
 
 
                     </div>
                 </div>
-                <div class="nav-item">Groups
+                <div class="nav-item">User Management
                     <div class="dropdown">
 
-<a href="createGroup.php" style="text-decoration: none;">
+<a href="userman.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/creategroup.svg">
-    <span>Create Group</span>
+    <img src="images/dashboard.svg">
+    <span>Users Hub</span>
   </div>
 </a>
-
-<a href="showGroups.php" style="text-decoration: none;">
+<a href="personSearch.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/group.svg">
-    <span>View Groups</span>
+    <img src="images/search.svg">
+    <span>Search Users</span>
+  </div>
+</a>
+<a href="createNewUser.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/add-user.svg">
+    <span>Add User</span>
   </div>
 </a>
 
@@ -811,7 +1004,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon">
                         <div class="dropdown">
-                            <a href="changePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
+                            <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
                             <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
                         </div>
                     </div>
@@ -821,47 +1014,155 @@ if (date("H:i:s") > "18:19:59") {
     </div>');
 	}
 
-        // VOLUNTEER ONLY HEADER
-        if ($_SESSION['access_level'] <= 1) {
+        // CASE MANAGER NAVIGATION (Level 2) - Lease + Maintenance
+        if ($_SESSION['access_level'] == 2) {
 		echo('<div class="navbar">
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-                <a href="index.php"><img src="images/actual_log.png" alt="Logo"></a>
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
             <div class="nav-links">
-                <div class="nav-item">Events
+                <div class="nav-item">Lease Management
                     <div class="dropdown">
-<a href="viewMyUpcomingEvents.php" style="text-decoration: none;">
+<a href="leaseView.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/list-solid.svg">
-    <span>My Upcoming</span>
+    <span>View Leases</span>
   </div>
 </a>
-<a href="viewAllEvents.php" style="text-decoration: none;">
+<a href="calendar.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/new-event.svg">
-    <span>Sign-Up</span>
+    <img src="images/calendar.svg">
+    <span>Calendar</span>
   </div>
 </a>
-<a href="editHours.php" style="text-decoration: none;">
+<a href="eventsearch.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Edit Hours</span>
-  </div>
-</a>
-                   </div>
-                </div>
-                <div class="nav-item">Groups
-                    <div class="dropdown">
-<a href="volunteerViewGroup.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/group.svg">
-    <span>My Groups</span>
+    <img src="images/search.svg">
+    <span>Search Events</span>
   </div>
 </a>
                     </div>
-               </div>
+                </div>
+                <div class="nav-item">Maintenance
+                    <div class="dropdown">
+<a href="maintman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Maintenance Hub</span>
+  </div>
+</a>
+<a href="viewAllMaintenanceRequests.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/list-solid.svg">
+    <span>View Requests</span>
+  </div>
+</a>
+<a href="addMaintenanceRequest.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/plus-solid.svg">
+    <span>Create Request</span>
+  </div>
+</a>
+                    </div>
+                </div>
+                <div class="nav-item">Profile
+                    <div class="dropdown">
+<a href="viewProfile.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/user.svg">
+    <span>My Profile</span>
+  </div>
+</a>
+<a href="editProfile.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/edit.svg">
+    <span>Edit Profile</span>
+  </div>
+</a>
+<a href="logout.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/logout.svg">
+    <span>Logout</span>
+  </div>
+</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>');
+	}
+
+        // MAINTENANCE STAFF NAVIGATION (Level 1) - Maintenance Only
+        if ($_SESSION['access_level'] == 1) {
+		echo('<div class="navbar">
+        <!-- Left Section: Logo & Nav Links -->
+        <div class="left-section">
+            <div class="logo-container">
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
+     alt="Micah Ecumenical Ministries" id="logo"
+     style="height:52px;width:auto;object-fit:contain;display:block"></a>
+            </div>
+            <div class="nav-links">
+                <div class="nav-item">Maintenance
+                    <div class="dropdown">
+<a href="maintman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Maintenance Hub</span>
+  </div>
+</a>
+<a href="viewAllMaintenanceRequests.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/list-solid.svg">
+    <span>View All Requests</span>
+  </div>
+</a>
+<a href="addMaintenanceRequest.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/plus-solid.svg">
+    <span>Create Request</span>
+  </div>
+</a>
+<a href="viewPendingMaintenanceRequests.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/clock-regular.svg">
+    <span>Pending Requests</span>
+  </div>
+</a>
+<a href="assignMaintenanceTasks.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/user-check.svg">
+    <span>Assign Tasks</span>
+  </div>
+</a>
+                    </div>
+                </div>
+                <div class="nav-item">Profile
+                    <div class="dropdown">
+<a href="viewProfile.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/user.svg">
+    <span>My Profile</span>
+  </div>
+</a>
+<a href="editProfile.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/edit.svg">
+    <span>Edit Profile</span>
+  </div>
+</a>
+<a href="logout.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/logout.svg">
+    <span>Logout</span>
+  </div>
+</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -884,7 +1185,7 @@ if (date("H:i:s") > "18:19:59") {
                             <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
                             <a href="volunteerReport.php" style="text-decoration: none;"><div>View Hours</div></a>
                             <a href="inbox.php" style="text-decoration: none;"><div>Notifications</div></a>
-                            <a href="changePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
+                            <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
                             <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
                         </div>
                     </div>

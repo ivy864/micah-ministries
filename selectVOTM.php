@@ -70,7 +70,8 @@ if ($isAdmin && !empty($topVolunteers)) {
 
 <!DOCTYPE html>
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <title>Volunteer of the Month</title>
     <style>
         .votm-container {

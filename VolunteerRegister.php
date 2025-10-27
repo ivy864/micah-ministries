@@ -4,9 +4,10 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Fredericksburg SPCA | Register</title>
+    <title>Micah Ecumenical Ministries | Add User</title>
     <link href="css/normal_tw.css" rel="stylesheet">
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php

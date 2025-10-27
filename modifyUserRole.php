@@ -31,19 +31,19 @@
     
     // Is user authorized to view this page?
     if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
     // Was an ID supplied?
     if ($_SERVER["REQUEST_METHOD"] == "GET" && !isset($_GET['id'])) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     } else if ($_SERVER["REQUEST_METHOD"] == "POST"){
         require_once('database/dbPersons.php');
         require_once('database/dbMessages.php');
         $post = sanitize($_POST);
         $new_role = $post['s_role'];
-        if (!valueConstrainedTo($new_role, ['volunteer', 'participant'])) {
+        if (!valueConstrainedTo($new_role, ['admin', 'case_manager', 'maintenance'])) {
             die();
         }
         if (empty($new_role)){
@@ -89,9 +89,10 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <?php require_once('universal.inc') ?>
-        <title>Fredericksburg SPCA | Archive User</title>
+        <title>Micah Ministries | Modify User Role</title>
         <style>
             .modUser{
                 display: flex;
@@ -118,10 +119,10 @@
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1>Modify Archive Status and Role</h1>
+        <h1>Modify User Role and Status</h1>
         <main class="user-role">
             <?php if ($accessLevel == 3): ?>
-                <h2>Modify <?php echo $thePerson->get_first_name() . " " . $thePerson->get_last_name(); ?>'s Archive Status and Role</h2>
+                <h2>Modify <?php echo $thePerson->get_first_name() . " " . $thePerson->get_last_name(); ?>'s Role and Status</h2>
             <?php else: ?>
                 <h2>Modify <?php echo $thePerson->get_first_name() . " " . $thePerson->get_last_name(); ?>'s Status</h2>
             <?php endif ?>
@@ -133,10 +134,14 @@
                         // Provides drop down of the role types to select and change the role
 			//other than the person's current role type is displayed
             if ($accessLevel == 3) {
-				$roles = array('volunteer' => 'Volunteer', 'participant' => 'Participant');
+				$roles = array(
+                    'admin' => 'Admin (Lease + Maintenance + User Management)', 
+                    'case_manager' => 'Case Manager (Lease + Maintenance)', 
+                    'maintenance' => 'Maintenance Staff (Maintenance Only)'
+                );
                 echo '<label for="role">Change Role</label><select id="role" class="form-select-sm" name="s_role">' ;
                 // echo '<option value="" SELECTED></option>' ;
-                $currentRole = $thePerson->get_type()[0];
+                $currentRole = $thePerson->get_type();
                 foreach ($roles as $role => $typename) {
                     if($role != $currentRole) {
                         echo '<option value="'. $role .'">'. $typename .'</option>';

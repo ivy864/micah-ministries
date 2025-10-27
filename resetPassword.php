@@ -16,7 +16,7 @@
         header('Location: login.php');
         die();
     } else if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
     require_once('include/input-validation.php');
@@ -54,7 +54,8 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <?php require_once('universal.inc') ?>
         <title>Fredericksburg SPCA | Reset Password</title>
     </head>

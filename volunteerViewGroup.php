@@ -22,7 +22,8 @@ $groups = get_groups_from_user($userID);
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
     <link href="css/normal_tw.css" rel="stylesheet">
     <?php 
         $tailwind_mode = true;

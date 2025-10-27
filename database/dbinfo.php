@@ -15,6 +15,7 @@ date_default_timezone_set('America/New_York');
  * This file will be modified for every installation.
  * @author Max Palmer <mpalmer@bowdoin.edu>
  * @version updated 2/12/08
+ * @return mysqli
  */
 date_default_timezone_set('America/New_York');
 

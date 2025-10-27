@@ -52,7 +52,8 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
+    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
         <?php require('universal.inc'); ?>
         <?php require('header.php'); ?>
         <script src="js/calendar.js"></script>

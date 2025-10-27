@@ -58,7 +58,8 @@ mysqli_close($con);
 
 <html lang="en">
 
-<head>
+<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+
 
     <?php require_once('universal.inc'); ?>
 

@@ -11,5 +11,11 @@
         <link rel="stylesheet" href="css/base.css" type="text/css" />
         <script src="css/header.js"></script>
         
+        <!-- Default CSS - can be overridden by pages -->
+        <?php if (empty($tailwind_mode)): ?>
+        <link href="css/normal_tw.css" rel="stylesheet">
+        <?php else: ?>
+        <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+        <?php endif; ?>
 
         <link rel="icon" type="image/x-icon" href="images/micahecumenicallogo.jpg">
