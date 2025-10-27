@@ -193,17 +193,20 @@ INSERT INTO `dbgroups` (`group_name`, `color_level`) VALUES
 -- Table structure for table `leases`
 --
 
-CREATE TABLE `leases` (
+CREATE TABLE `dbleases` (
   `id` varchar(256) NOT NULL,
-  `tenant_name` varchar(255) NOT NULL,
-  `property_address` varchar(255) NOT NULL,
-  `unit_number` varchar(50) DEFAULT NULL,
+  `tenant_first_name` varchar(100) NOT NULL,
+  `tenant_last_name` varchar(100) NOT NULL,
+  `property_street` varchar(255) NOT NULL,
+  `unit_number` varchar(50) NOT NULL,
+  `property_city` varchar(100) NOT NULL,
+  `property_state` varchar(2) NOT NULL,
+  `property_zip` varchar(10) NOT NULL,
   `start_date` date NOT NULL,
   `expiration_date` date NOT NULL,
   `monthly_rent` decimal(10,2) DEFAULT NULL,
   `security_deposit` decimal(10,2) DEFAULT NULL,
   `program_type` varchar(100) DEFAULT NULL,
-  `notes` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` enum('Active','Expired','Terminated') DEFAULT 'Active',

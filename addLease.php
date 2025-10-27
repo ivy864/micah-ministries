@@ -29,19 +29,22 @@
     
     // handle form submission
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $tenant_name = $_POST['tenant_name'] ?? '';
-        $property_address = $_POST['property_address'] ?? '';
+        $tenant_first_name = $_POST['tenant_first_name'] ?? '';
+        $tenant_last_name = $_POST['tenant_last_name'] ?? '';
+        $property_street = $_POST['property_street'] ?? '';
+        $property_city = $_POST['property_city'] ?? '';
+        $property_state = $_POST['property_state'] ?? '';
+        $property_zip = $_POST['property_zip'] ?? '';
         $unit_number = $_POST['unit_number'] ?? '';
         $start_date = $_POST['start_date'] ?? '';
         $expiration_date = $_POST['expiration_date'] ?? '';
         $monthly_rent = $_POST['monthly_rent'] ?? '';
         $security_deposit = $_POST['security_deposit'] ?? '';
         $program_type = $_POST['program_type'] ?? '';
-        $notes = $_POST['notes'] ?? '';
         
         // basic validation
-        if (empty($tenant_name) || empty($property_address) || empty($start_date) || empty($expiration_date)) {
-            $error = 'Tenant name, property address, start date, and expiration date are required.';
+        if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || empty($unit_number) || empty($property_city) || empty($property_state) || empty($property_zip) || empty($start_date) || empty($expiration_date)) {
+            $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
         } else {
             // connect to database
             $con = connect();
@@ -51,14 +54,13 @@
                 $lease_id = 'L' . date('YmdHis') . rand(100, 999);
                 
                 // insert lease into database
-                $query = "INSERT INTO leases (id, tenant_name, property_address, unit_number, start_date, expiration_date, monthly_rent, security_deposit, program_type, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                $query = "INSERT INTO dbleases (id, tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, expiration_date, monthly_rent, security_deposit, program_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
                 
                 $stmt = mysqli_prepare($con, $query);
                 if ($stmt) {
-                    mysqli_stmt_bind_param($stmt, "ssssssssss", 
-                        $lease_id, $tenant_name, $property_address, $unit_number, 
-                        $start_date, $expiration_date, $monthly_rent, $security_deposit, 
-                        $program_type, $notes);
+                    mysqli_stmt_bind_param($stmt, "sssssssssssss", 
+                        $lease_id, $tenant_first_name, $tenant_last_name, $property_street, $unit_number, $property_city, $property_state, $property_zip, 
+                        $start_date, $expiration_date, $monthly_rent, $security_deposit, $program_type);
                     
                     if (mysqli_stmt_execute($stmt)) {
                         $message = 'Lease created successfully! Lease ID: ' . $lease_id;
@@ -94,43 +96,39 @@ require_once('header.php');
 ?>
 <style>
         .form-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .form-section {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: calc(100vh - 200px);
-            padding: 20px;
-        }
-        
-        .form-header {
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        
-        .form-header h1 {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .form-header p {
-            font-size: 16px;
-            color: #666;
+            max-width: none !important;
+            width: 100% !important;
             margin: 0;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        /* force layout changes - full width form */
+        .sections {
+            flex-direction: row !important;
+            gap: 10px !important;
+        }
+        
+        /* adjust main content since hero is removed */
+        main {
+            margin-top: 0 !important;
+            padding: 10px !important;
+        }
+        
+        .button-section {
+            width: 0% !important;
+            display: none !important;
+        }
+        
+        .text-section {
+            width: 100% !important;
         }
         
         .form-row {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             margin-bottom: 25px;
         }
         
@@ -164,9 +162,7 @@ require_once('header.php');
         
         .form-buttons {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            margin-top: 30px;
         }
         
         .btn-primary {
@@ -225,55 +221,87 @@ require_once('header.php');
 
 <body>
 
-  <!-- Larger Hero Section -->
-  <header class="hero-header"></header>
-
+  <!-- Hero Section - Removed to save space -->
+  <!-- <header class="hero-header"></header> -->
 
   <!-- Main Content -->
   <main>
     <div class="sections">
 
-      <!-- Form Section -->
-      <div class="form-section">
+      <!-- Navigation Section - Removed -->
+      <div class="button-section">
+     </div>
+
+      <!-- Text Section -->
+      <div class="text-section">
+        <h1>Create New Lease</h1>
+        <div class="div-blue"></div>
+        <p>
+          Submit a new lease agreement. Fill out the form below with all required information.
+        </p>
         
         <?php if ($message): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
+            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
         
         <?php if ($error): ?>
-            <div class="alert alert-error">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
+            <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         
         <div class="form-container">
-            <div class="form-header">
-                <h1>Create New Lease</h1>
-                <p>Submit a new lease agreement. Fill out the form below with all required information.</p>
-            </div>
             
             <form method="POST" action="">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="tenant_name">Tenant Name <span class="required">*</span></label>
-                        <input type="text" id="tenant_name" name="tenant_name" 
-                               value="<?php echo htmlspecialchars($_POST['tenant_name'] ?? ''); ?>" required>
+                        <label for="tenant_first_name">Tenant First Name <span class="required">*</span></label>
+                        <input type="text" id="tenant_first_name" name="tenant_first_name" 
+                               value="<?php echo htmlspecialchars($_POST['tenant_first_name'] ?? ''); ?>" required>
                     </div>
                     <div class="form-group">
-                        <label for="property_address">Property Address <span class="required">*</span></label>
-                        <input type="text" id="property_address" name="property_address" 
-                               value="<?php echo htmlspecialchars($_POST['property_address'] ?? ''); ?>" required>
+                        <label for="tenant_last_name">Tenant Last Name <span class="required">*</span></label>
+                        <input type="text" id="tenant_last_name" name="tenant_last_name" 
+                               value="<?php echo htmlspecialchars($_POST['tenant_last_name'] ?? ''); ?>" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="unit_number">Unit Number</label>
-                        <input type="text" id="unit_number" name="unit_number" 
-                               value="<?php echo htmlspecialchars($_POST['unit_number'] ?? ''); ?>">
+                        <label for="property_street">Property Street Address <span class="required">*</span></label>
+                        <input type="text" id="property_street" name="property_street" 
+                               value="<?php echo htmlspecialchars($_POST['property_street'] ?? ''); ?>" required>
                     </div>
+                    <div class="form-group">
+                        <label for="unit_number">Unit Number <span class="required">*</span></label>
+                        <input type="text" id="unit_number" name="unit_number" 
+                               value="<?php echo htmlspecialchars($_POST['unit_number'] ?? ''); ?>" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="property_city">City <span class="required">*</span></label>
+                        <input type="text" id="property_city" name="property_city" 
+                               value="<?php echo htmlspecialchars($_POST['property_city'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="property_state">State <span class="required">*</span></label>
+                        <input type="text" id="property_state" name="property_state" maxlength="2" 
+                               value="<?php echo htmlspecialchars($_POST['property_state'] ?? ''); ?>" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="property_zip">ZIP Code <span class="required">*</span></label>
+                        <input type="text" id="property_zip" name="property_zip" 
+                               value="<?php echo htmlspecialchars($_POST['property_zip'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <!-- Empty div for spacing -->
+                    </div>
+                </div>
+                
+                <div class="form-row">
                     <div class="form-group">
                         <label for="program_type">Program Type</label>
                         <select id="program_type" name="program_type">
@@ -283,6 +311,11 @@ require_once('header.php');
                             <option value="Emergency Housing" <?php echo (($_POST['program_type'] ?? '') == 'Emergency Housing') ? 'selected' : ''; ?>>Emergency Housing</option>
                             <option value="Transitional Housing" <?php echo (($_POST['program_type'] ?? '') == 'Transitional Housing') ? 'selected' : ''; ?>>Transitional Housing</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="monthly_rent">Monthly Rent Amount</label>
+                        <input type="number" step="0.01" id="monthly_rent" name="monthly_rent" 
+                               value="<?php echo htmlspecialchars($_POST['monthly_rent'] ?? ''); ?>">
                     </div>
                 </div>
                 
@@ -301,25 +334,22 @@ require_once('header.php');
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="monthly_rent">Monthly Rent Amount</label>
-                        <input type="number" step="0.01" id="monthly_rent" name="monthly_rent" 
-                               value="<?php echo htmlspecialchars($_POST['monthly_rent'] ?? ''); ?>">
-                    </div>
-                    <div class="form-group">
                         <label for="security_deposit">Security Deposit</label>
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit" 
                                value="<?php echo htmlspecialchars($_POST['security_deposit'] ?? ''); ?>">
                     </div>
+                    <div class="form-group">
+                        <!-- Empty div for spacing -->
+                    </div>
+                    <div class="form-group">
+                        <!-- Empty div for spacing -->
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="notes">Additional Notes</label>
-                    <textarea id="notes" name="notes"><?php echo htmlspecialchars($_POST['notes'] ?? ''); ?></textarea>
-                </div>
                 
-                <div class="form-buttons">
+                <div style="text-align: center; margin-top: 30px;">
                     <button type="submit" class="btn-primary">Create Lease</button>
-                    <a href="leaseman.php" class="btn-secondary">Cancel</a>
+                    <a href="leaseman.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
                 </div>
             </form>
         </div>

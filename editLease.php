@@ -20,9 +20,13 @@ if ($accessLevel < 2) {
 $pdo = null;
 $db_notice = null;
 $lease = [
-    'tenant_name' => '',
-    'property_address' => '',
+    'tenant_first_name' => '',
+    'tenant_last_name' => '',
+    'property_street' => '',
     'unit_number' => '',
+    'property_city' => '',
+    'property_state' => '',
+    'property_zip' => '',
     'start_date' => '',
     'expiration_date' => '',
     'monthly_rent' => '',
@@ -58,9 +62,9 @@ $lease_id = $_GET['id'] ?? null;
 if ($pdo && $lease_id) {
     try {
         $stmt = $pdo->prepare("
-            SELECT tenant_name, property_address, unit_number, start_date, 
+            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, 
                    expiration_date, monthly_rent, security_deposit 
-            FROM leases 
+            FROM dbleases 
             WHERE id = :id 
             LIMIT 1
         ");
@@ -77,9 +81,13 @@ if ($pdo && $lease_id) {
 
 if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
     $fields = [
-        'tenant_name',
-        'property_address',
+        'tenant_first_name',
+        'tenant_last_name',
+        'property_street',
         'unit_number',
+        'property_city',
+        'property_state',
+        'property_zip',
         'start_date',
         'expiration_date',
         'monthly_rent',
@@ -103,7 +111,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         }
 
         try {
-            $sql = "UPDATE leases SET " . implode(", ", $sets) . " WHERE id = :id";
+            $sql = "UPDATE dbleases SET " . implode(", ", $sets) . " WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $lease = array_merge($lease, $data);
