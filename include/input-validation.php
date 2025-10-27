@@ -233,4 +233,41 @@
         return $pass;
     }
 
+    // enhanced password validation with detailed error messages
+    function validatePasswordWithDetails($pass) {
+        $errors = [];
+        
+        // Check if password is at least 8 characters long
+        if (strlen($pass) < 8) {
+            $errors[] = "Password must be at least 8 characters long (current: " . strlen($pass) . ")";
+        }
+        
+        // Check if password contains at least one uppercase letter
+        if (!preg_match('/[A-Z]/', $pass)) {
+            $errors[] = "Password must contain at least one uppercase letter";
+        }
+        
+        // Check if password contains at least one lowercase letter
+        if (!preg_match('/[a-z]/', $pass)) {
+            $errors[] = "Password must contain at least one lowercase letter";
+        }
+        
+        // Check if password contains at least one number
+        if (!preg_match('/[0-9]/', $pass)) {
+            $errors[] = "Password must contain at least one number";
+        }
+        
+        // Check if password contains at least one special character (optional enhancement)
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $pass)) {
+            $errors[] = "Password should contain at least one special character for better security";
+        }
+        
+        // Check for common weak patterns
+        if (preg_match('/123|abc|qwe|password|admin|user/i', $pass)) {
+            $errors[] = "Password contains common weak patterns";
+        }
+        
+        return empty($errors) ? true : $errors;
+    }
+
 //There was a question mark followed by a > here before
