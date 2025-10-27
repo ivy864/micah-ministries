@@ -969,12 +969,6 @@ if (date("H:i:s") > "18:19:59") {
     <span>Search Users</span>
   </div>
 </a>
-<a href="modifyUserRole.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/user-check.svg">
-    <span>Modify User Role</span>
-  </div>
-</a>
 <a href="createNewUser.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/add-user.svg">
