@@ -210,10 +210,6 @@
                                 Delete User
                             </button>
                         <?php endif ?>
-                        <button onclick="window.location.href='personSearch.php';" 
-                                class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors duration-200 font-medium">
-                            Return to User Search
-                        </button>
                     <?php else: ?>
                         <button onclick="window.location.href='managePassword.php';" 
                                 class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
@@ -224,11 +220,6 @@
                             Delete User
                         </button>
                     <?php endif ?>
-
-                    <button onclick="window.location.href='micahportal.php';" 
-                            class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors duration-200 font-medium">
-                        Return to Dashboard
-                    </button>
                 </div>
     </div>
 

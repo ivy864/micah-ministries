@@ -24,8 +24,7 @@
 
         $editingSelf = true;
         if ($_SESSION['access_level'] >= 2 && isset($_POST['id'])) {
-            $id = $_POST['id'];
-            $editingSelf = $id == $_SESSION['_id'];
+            $editingSelf = $_POST['id'] == $_SESSION['_id'];
             $id = $args['id'];
             // Check to see if user is a lower-level manager here
         } else {

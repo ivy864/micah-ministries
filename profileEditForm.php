@@ -67,12 +67,8 @@
 <html lang="en">
 <body>
     <main>
-        <?php if (isset($updateSuccess)): ?>
-            <?php if ($updateSuccess): ?>
-                <div class="alert alert-success">Profile updated successfully!</div>
-            <?php else: ?>
-                <div class="alert alert-error">An error occurred.</div>
-            <?php endif ?>
+        <?php if (isset($updateSuccess) && !$updateSuccess): ?>
+            <div class="alert alert-error">An error occurred.</div>
         <?php endif ?>
         
         <?php if ($isAdmin): ?>
