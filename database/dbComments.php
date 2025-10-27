@@ -1,7 +1,6 @@
 <?php
 
 include_once('dbinfo.php');
-include_once('../domain/Comment.php');
 
 function get_comments($requestID) {
     $con = connect();
