@@ -190,6 +190,29 @@ INSERT INTO `dbgroups` (`group_name`, `color_level`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `leases`
+--
+
+CREATE TABLE `leases` (
+  `id` varchar(256) NOT NULL,
+  `tenant_name` varchar(255) NOT NULL,
+  `property_address` varchar(255) NOT NULL,
+  `unit_number` varchar(50) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `expiration_date` date NOT NULL,
+  `monthly_rent` decimal(10,2) DEFAULT NULL,
+  `security_deposit` decimal(10,2) DEFAULT NULL,
+  `program_type` varchar(100) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` enum('Active','Expired','Terminated') DEFAULT 'Active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `dbmaintenancerequests`
 --
 
