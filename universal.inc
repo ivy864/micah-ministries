@@ -18,4 +18,4 @@
         <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
         <?php endif; ?>
 
-        <link rel="icon" type="image/x-icon" href="images/Cropped-Logo-FredSPCA.png">
+        <link rel="icon" type="image/x-icon" href="images/micahecumenicallogo.jpg">

@@ -1,3 +1,4 @@
+Names of all group members: Madelyn Winfrey, Luke Busch, Ileana Perez, Jakob Ayers, CJ Purtan, Alexander Young, and Abe Kassem
 
 # Fredericksburg SPCA Volunteer Management Web Application 
 

@@ -339,9 +339,6 @@ require_once('header.php');
       <!-- Text Section -->
       <div class="text-section">
         <h1>Create New User</h1>
-        <div class="div-blue"></div>
-        <p>
-          Create a new user account for staff members. Fill out the form below with all required information.
         </p>
         
         <?php if ($message): ?>
