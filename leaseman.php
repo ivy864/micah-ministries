@@ -71,7 +71,7 @@ require_once('header.php');
 
 
         <!-- Link add button to add page -->
-        <button onclick="window.location.href='addMaintenanceRequest.php';">
+        <button onclick="window.location.href='addLease.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Add Lease</div>
 	  <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
