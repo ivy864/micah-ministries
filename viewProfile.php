@@ -132,8 +132,8 @@
                 <?php die() ?>
             <?php endif ?>
             <?php if (isset($_GET['editSuccess'])): ?>
-                <div class="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg">
-                    Profile updated successfully!
+                <div class="bg-green-100 border border-greed-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
+                        Profile Updated Successfully!
                 </div>
                 <script>
                     setTimeout(() => {
@@ -141,18 +141,6 @@
                         if (msg) msg.remove();
                     }, 5000);
                 </script>
-            <?php endif ?>
-            
-            <!-- Debug: Check if editSuccess parameter is present -->
-            <?php if (isset($_GET['editSuccess'])): ?>
-                <div style="position: fixed; top: 100px; right: 20px; background: yellow; padding: 10px; z-index: 9999;">
-                    DEBUG: editSuccess parameter detected!
-                </div>
-            <?php endif ?>
-            <?php if (isset($_GET['rscSuccess'])): ?>
-                <div class="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg">
-                    User role/status updated successfully!
-                </div>
             <?php endif ?>
 
 <body class="bg-gray-50 font-quicksand">
