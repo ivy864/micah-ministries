@@ -672,19 +672,6 @@ require_once('header.php');
              * The array of comments is encoded in json so it can be used by the js/comment.js file
              */
             let comments = <?php echo json_encode($comments) ?>;
-            
-            // Force refresh comments with new formatting
-            window.addEventListener('load', function() {
-                // Clear existing comments
-                const container = document.getElementById('comment-container');
-                if (container) {
-                    container.innerHTML = '';
-                }
-                // Re-render with new formatting
-                if (typeof renderComments === 'function') {
-                    renderComments(comments);
-                }
-            });
             </script>
             <div id="comment-container">
                 
