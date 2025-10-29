@@ -42,7 +42,7 @@ function create_dbMaintenanceRequests() {
         requester_phone varchar(20),
         location varchar(100),
         building varchar(50),
-        room varchar(50),
+        unit varchar(50),
         description text NOT NULL,
         priority enum('Low','Medium','High','Emergency') DEFAULT 'Medium',
         status enum('Pending','In Progress','Completed','Cancelled') DEFAULT 'Pending',

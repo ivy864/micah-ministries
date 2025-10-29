@@ -759,6 +759,7 @@ if (date("H:i:s") > "18:19:59") {
         
         //pages case managers can view (Level 2) - Lease + Maintenance
         $permission_array['userman.php'] = 2;
+        $permission_array['addlease.php'] = 2;
         $permission_array['editlease.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
