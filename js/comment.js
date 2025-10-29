@@ -17,8 +17,6 @@ async function getComments(id) {
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
-
-        console.log(response);
     }
     catch (error) {
         console.error(error.message);
@@ -46,17 +44,13 @@ async function writeComment() {
             "body": data,
         });
 
-        console.log("Response status:", response.status);
-        console.log("Response ok:", response.ok);
         
         // Get the response text first to check if it's valid JSON
         const responseText = await response.text();
-        console.log("Raw response:", responseText);
         
         let responseData;
         try {
             responseData = JSON.parse(responseText);
-            console.log("Parsed response data:", responseData);
         } catch (parseError) {
             console.error("JSON parse error:", parseError);
             console.error("Response was not valid JSON:", responseText);
@@ -79,10 +73,6 @@ async function writeComment() {
         
         // clear text in comment box
         document.getElementById("commentBox").value = "";
-        
-        // Show success message (optional)
-        console.log("Comment added successfully!");
-        
     }
     catch (error) {
         console.error("Error adding comment:", error.message);
@@ -119,7 +109,6 @@ async function renderComment(comment) {
 }
 
 function renderComments(comments) {
-    console.log("Comments length:", comments.length);
     for (i = 0; i < comments.length; i++) {
         renderComment(comments[i]);
     }
