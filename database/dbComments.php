@@ -1,6 +1,7 @@
 <?php
 
 include_once('dbinfo.php');
+include_once(dirname(__FILE__) . '/../domain/Comment.php');
 
 function get_comments($requestID) {
     $con = connect();
@@ -24,5 +25,12 @@ function add_comment($comment) {
     $query = $con->prepare('INSERT INTO `db_maintenance_comments` (`author_id`, `request_id`, `content`, `time`) VALUES (?, ?, ?, ?)');
     $query->bind_param('sssi', $comment->getAuthorID(), $comment->getRequestID(), $comment->getContent(), $comment->getTime());
     
-    $query->execute();
+    $result = $query->execute();
+    
+    if (!$result) {
+        error_log("Database error: " . $con->error);
+        return false;
+    }
+    
+    return true;
 }
