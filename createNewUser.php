@@ -35,7 +35,7 @@
         $args = sanitize($_POST, $ignoreList);
 
         $required = array(
-            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role'
+            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday'
         );
 
         $errors = false;
@@ -58,6 +58,7 @@
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
         $email = strtolower($args['email']);
+        $birthday = $args['birthday'];
         if (!validateEmail($email)) {
             $errorDetails[] = "DEBUG: Email validation failed for: $email";
             $errors = true;
@@ -116,7 +117,7 @@
             // Create new staff user with minimal required fields
             $newperson = new Person(
                 $username, $password, date("Y-m-d"),
-                $first_name, $last_name, '1990-01-01', // Default birthday
+                $first_name, $last_name, $birthday,
                 'N/A', 'N/A', 'VA', '00000', // Default address
                 $phone1, $phone1type, $email,
                 'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
@@ -372,6 +373,11 @@ require_once('header.php');
                         <input type="text" id="last_name" name="last_name" required 
                                value="<?php if (isset($last_name)) echo htmlspecialchars($last_name); ?>" 
                                placeholder="Enter last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="birthday">Date of Birth *</label>
+                        <input type="date" id="birthday" name="birthday" required 
+                               value="<?php if (isset($birthday)) echo htmlspecialchars($birthday); ?>">
                     </div>
                 </div>
 
