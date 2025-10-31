@@ -322,6 +322,20 @@ require_once('header.php');
 	    flex-direction: row !important;
 	    gap: 10px !important;
 	}
+
+    .section-box {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #f9f9f9;
+    }
+    
+    .section-box h3 {
+        color: #274471;
+        margin-bottom: 15px;
+        text-align: center;
+    }
 	
 	/* adjust main content since hero is removed */
 	main {
@@ -348,6 +362,7 @@ require_once('header.php');
 	    color: #666;
 	    margin-top: 5px;
 	}
+
 
 </style>
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
@@ -385,112 +400,128 @@ require_once('header.php');
 
         <div class="form-container">
             <form id="create-user-form" method="post">
-                <div class="form-row">
+
+                <div class="section-box">
+                    <h3>Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first_name">First Name *</label>
+                                <input type="text" id="first_name" name="first_name" required 
+                                    value="<?php if (isset($first_name)) echo htmlspecialchars($first_name); ?>" 
+                                    placeholder="Enter first name">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Last Name *</label>
+                                <input type="text" id="last_name" name="last_name" required 
+                                    value="<?php if (isset($last_name)) echo htmlspecialchars($last_name); ?>" 
+                                    placeholder="Enter last name">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                <label for="birthday">Date of Birth *</label>
+                                <input type="date" id="birthday" name="birthday" required 
+                                    value="<?php if (isset($birthday)) echo htmlspecialchars($birthday); ?>">
+                        </div>
+
+                        <div class="form-group">
+                                <label for="street_address">Street Address *</label>
+                                <input type="text" id="street_address" name="street_address" required 
+                                    value="<?php if (isset($street_address)) echo htmlspecialchars($street_address); ?>" 
+                                    placeholder="Enter your street address">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City *</label>
+                                <input type="text" id="city" name="city" required 
+                                    value="<?php if (isset($city)) echo htmlspecialchars($city); ?>" 
+                                    placeholder="Enter your city">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="state">State *</label>
+                                <select id="state" name="state" required>
+                                            <?php
+                                                $states = array(
+                                                    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+                                                );
+                                                $abbrevs = array(
+                                                    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+                                                );
+                                                $length = count($states);
+                                                for ($i = 0; $i < $length; $i++) {
+                                                    if ($abbrevs[$i] == $state) {
+                                                        echo '<option value="' . $abbrevs[$i] . '" selected>' . $states[$i] . '</option>';
+                                                    } else {
+                                                        echo '<option value="' . $abbrevs[$i] . '">' . $states[$i] . '</option>';
+                                                    }
+                                                }
+                                            ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                                <label for="zip_code">Zip Code *</label>
+                                <input type="text" id="zip_code" name="zip_code"  
+                                pattern="[0-9]{5}" title="5-digit zip code" required value="<?php if (isset($zip_code)) echo htmlspecialchars($zip_code); ?>"
+                                placeholder="Enter your zip code">
+                        </div>
+                </div>
+                <div class="section-box">
+                    <h3>Contact Information</h3>
+
                     <div class="form-group">
-                        <label for="first_name">First Name *</label>
-                        <input type="text" id="first_name" name="first_name" required 
-                               value="<?php if (isset($first_name)) echo htmlspecialchars($first_name); ?>" 
-                               placeholder="Enter first name">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required 
+                            value="<?php if (isset($email)) echo htmlspecialchars($email); ?>" 
+                            placeholder="Enter email address">
                     </div>
+
                     <div class="form-group">
-                        <label for="last_name">Last Name *</label>
-                        <input type="text" id="last_name" name="last_name" required 
-                               value="<?php if (isset($last_name)) echo htmlspecialchars($last_name); ?>" 
-                               placeholder="Enter last name">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required 
+                            value="<?php if (isset($phone1)) echo htmlspecialchars($phone1); ?>" 
+                            placeholder="Enter phone number">
                     </div>
                 </div>
 
-                <div class="form-group">
-                        <label for="birthday">Date of Birth *</label>
-                        <input type="date" id="birthday" name="birthday" required 
-                               value="<?php if (isset($birthday)) echo htmlspecialchars($birthday); ?>">
+                <div class="section-box">
+                    <h3>Emergency Contact Information</h3>
+
                 </div>
 
-                <div class="form-group">
-                        <label for="street_address">Street Address *</label>
-                        <input type="text" id="street_address" name="street_address" required 
-                               value="<?php if (isset($street_address)) echo htmlspecialchars($street_address); ?>" 
-                               placeholder="Enter your street address">
-                </div>
-
-                <div class="form-row">
+                <div class="section-box">
+                    <h3>Login Credentials</h3>
                     <div class="form-group">
-                        <label for="city">City *</label>
-                        <input type="text" id="city" name="city" required 
-                               value="<?php if (isset($city)) echo htmlspecialchars($city); ?>" 
-                               placeholder="Enter your city">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" required 
+                            value="<?php if (isset($username)) echo htmlspecialchars($username); ?>" 
+                            placeholder="Enter username (login ID)">
                     </div>
 
                     <div class="form-group">
-                        <label for="state">State *</label>
-                        <select id="state" name="state" required>
-                                    <?php
-                                        $states = array(
-                                            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-                                        );
-                                        $abbrevs = array(
-                                            'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-                                        );
-                                        $length = count($states);
-                                        for ($i = 0; $i < $length; $i++) {
-                                            if ($abbrevs[$i] == $state) {
-                                                echo '<option value="' . $abbrevs[$i] . '" selected>' . $states[$i] . '</option>';
-                                            } else {
-                                                echo '<option value="' . $abbrevs[$i] . '">' . $states[$i] . '</option>';
-                                            }
-                                        }
-                                    ?>
+                        <label for="user_role">User Role *</label>
+                        <select id="user_role" name="user_role" required>
+                            <option value="">Select a role</option>
+                            <option value="admin" <?php if (isset($user_role) && $user_role == 'admin') echo 'selected'; ?>>Admin - Full Access</option>
+                            <option value="case_manager" <?php if (isset($user_role) && $user_role == 'case_manager') echo 'selected'; ?>>Case Manager - Lease + Maintenance</option>
+                            <option value="maintenance" <?php if (isset($user_role) && $user_role == 'maintenance') echo 'selected'; ?>>Maintenance Staff - Maintenance Only</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                        <label for="zip_code">Zip Code *</label>
-                        <input type="text" id="zip_code" name="zip_code"  
-                        pattern="[0-9]{5}" title="5-digit zip code" required value="<?php if (isset($zip_code)) echo htmlspecialchars($zip_code); ?>"
-                        placeholder="Enter your zip code">
-                    </div>
-                
 
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required 
-                           value="<?php if (isset($email)) echo htmlspecialchars($email); ?>" 
-                           placeholder="Enter email address">
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required 
-                           value="<?php if (isset($phone1)) echo htmlspecialchars($phone1); ?>" 
-                           placeholder="Enter phone number">
-                </div>
-
-                <div class="form-group">
-                    <label for="username">Username *</label>
-                    <input type="text" id="username" name="username" required 
-                           value="<?php if (isset($username)) echo htmlspecialchars($username); ?>" 
-                           placeholder="Enter username (login ID)">
-                </div>
-
-                <div class="form-group">
-                    <label for="user_role">User Role *</label>
-                    <select id="user_role" name="user_role" required>
-                        <option value="">Select a role</option>
-                        <option value="admin" <?php if (isset($user_role) && $user_role == 'admin') echo 'selected'; ?>>Admin - Full Access</option>
-                        <option value="case_manager" <?php if (isset($user_role) && $user_role == 'case_manager') echo 'selected'; ?>>Case Manager - Lease + Maintenance</option>
-                        <option value="maintenance" <?php if (isset($user_role) && $user_role == 'maintenance') echo 'selected'; ?>>Maintenance Staff - Maintenance Only</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password *</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="Enter secure password">
-                    <div class="password-help">
-                        Password must be at least 8 characters with uppercase, lowercase, number, and special character
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required 
+                            placeholder="Enter secure password">
+                        <div class="password-help">
+                            Password must be at least 8 characters with uppercase, lowercase, number, and special character
+                        </div>
                     </div>
                 </div>
+
+                
 
                 <div style="text-align: center; margin-top: 30px;">
                     <button type="submit" class="btn-primary">Create User</button>
