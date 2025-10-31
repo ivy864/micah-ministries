@@ -36,7 +36,7 @@
 
         $required = array(
             'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday', 'street_address',
-            'city'
+            'city', 'state', 'zip_code'
         );
 
         $errors = false;
@@ -59,10 +59,30 @@
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
         $email = strtolower($args['email']);
-        $birthday = $args['birthday'];
+        $birthday = validateDate($args['birthday']);
+        if (!$birthday) {
+            $errors = true;
+            // echo 'bad dob';
+        }
+        
         $street_address = $args['street_address'];
+
         $city = $args['city'];
+
         $state = $args['state'];
+        if (!valueConstrainedTo($state, array('AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
+                'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
+                'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
+                'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
+                'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY'))) {
+            $errors = true;
+        }
+
+        $zip_code = $args['zip_code'];
+        if (!validateZipcode($zip_code)) {
+            $errors = true;
+            // echo 'bad zip';
+        }
         if (!validateEmail($email)) {
             $errorDetails[] = "DEBUG: Email validation failed for: $email";
             $errors = true;
@@ -122,7 +142,7 @@
             $newperson = new Person(
                 $username, $password, date("Y-m-d"),
                 $first_name, $last_name, $birthday,
-                $street_address, $city, $state, '00000', // Default address
+                $street_address, $city, $state, $zip_code,
                 $phone1, $phone1type, $email,
                 'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
                 $user_role, 'Active', 0, // Active status, not archived
@@ -399,30 +419,37 @@ require_once('header.php');
                         <input type="text" id="city" name="city" required 
                                value="<?php if (isset($city)) echo htmlspecialchars($city); ?>" 
                                placeholder="Enter your city">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">State *</label>
+                        <select id="state" name="state" required>
+                                    <?php
+                                        $states = array(
+                                            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+                                        );
+                                        $abbrevs = array(
+                                            'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+                                        );
+                                        $length = count($states);
+                                        for ($i = 0; $i < $length; $i++) {
+                                            if ($abbrevs[$i] == $state) {
+                                                echo '<option value="' . $abbrevs[$i] . '" selected>' . $states[$i] . '</option>';
+                                            } else {
+                                                echo '<option value="' . $abbrevs[$i] . '">' . $states[$i] . '</option>';
+                                            }
+                                        }
+                                    ?>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="state">State *</label>
-                    <select id="state" name="state" required>
-                                <?php
-                                    $states = array(
-                                        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-                                    );
-                                    $abbrevs = array(
-                                        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-                                    );
-                                    $length = count($states);
-                                    for ($i = 0; $i < $length; $i++) {
-                                        if ($abbrevs[$i] == $state) {
-                                            echo '<option value="' . $abbrevs[$i] . '" selected>' . $states[$i] . '</option>';
-                                        } else {
-                                            echo '<option value="' . $abbrevs[$i] . '">' . $states[$i] . '</option>';
-                                        }
-                                    }
-                                ?>
-                            </select>
-                </div>
-                </div>
+                        <label for="zip_code">Zip Code *</label>
+                        <input type="text" id="zip_code" name="zip_code"  
+                        pattern="[0-9]{5}" title="5-digit zip code" required value="<?php if (isset($zip_code)) echo htmlspecialchars($zip_code); ?>"
+                        placeholder="Enter your zip code">
+                    </div>
                 
 
                 <div class="form-group">
