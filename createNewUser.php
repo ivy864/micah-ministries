@@ -36,7 +36,7 @@
 
         $required = array(
             'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday', 'street_address',
-            'city', 'state', 'zip_code'
+            'city', 'state', 'zip_code', 'phone1type'
         );
 
         $errors = false;
@@ -94,7 +94,12 @@
             $errors = true;
         }
 
-        $phone1type = 'cellphone'; // Default for staff
+        $phone1type = $args['phone1type'];
+        if (!valueConstrainedTo($phone1type, array('cellphone', 'home', 'work'))) {
+            $errors = true;
+            // echo 'bad phone type';
+        }
+
         $username = $args['username'];
         $user_role = $args['user_role'];
         
@@ -363,6 +368,23 @@ require_once('header.php');
 	    margin-top: 5px;
 	}
 
+    .radio-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 5px;
+    }
+    
+    .radio-group input[type="radio"] {
+        width: auto;
+        margin-right: 5px;
+    }
+    
+    .radio-group label {
+        margin-bottom: 0;
+        font-weight: normal;
+        color: #333;
+    }
+
 
 </style>
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
@@ -484,6 +506,24 @@ require_once('header.php');
                         <input type="tel" id="phone" name="phone" required 
                             value="<?php if (isset($phone1)) echo htmlspecialchars($phone1); ?>" 
                             placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Type *</label>
+                        <div class="radio-group">
+                            <input type="radio" id="phone-type-cellphone" name="phone1type" value="cell" 
+                                <?php if (isset($phone1type) && $phone1type === 'cell') echo 'checked'; ?> required>
+                            <label for="phone-type-cellphone">Cell</label>
+
+                            <input type="radio" id="phone-type-home" name="phone1type" value="home" 
+                                <?php if (isset($phone1type) && $phone1type === 'home') echo 'checked'; ?> required>
+                            <label for="phone-type-home">Home</label>
+
+                            <input type="radio" id="phone-type-work" name="phone1type" value="work" 
+                                <?php if (isset($phone1type) && $phone1type === 'work') echo 'checked'; ?> required>
+                            <label for="phone-type-work">Work</label>
+                        </div>
+
                     </div>
                 </div>
 
