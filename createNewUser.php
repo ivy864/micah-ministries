@@ -35,7 +35,7 @@
         $args = sanitize($_POST, $ignoreList);
 
         $required = array(
-            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday'
+            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday', 'street_address'
         );
 
         $errors = false;
@@ -59,6 +59,7 @@
         $last_name = $args['last_name'];
         $email = strtolower($args['email']);
         $birthday = $args['birthday'];
+        $street_address = $args['street_address'];
         if (!validateEmail($email)) {
             $errorDetails[] = "DEBUG: Email validation failed for: $email";
             $errors = true;
@@ -118,7 +119,7 @@
             $newperson = new Person(
                 $username, $password, date("Y-m-d"),
                 $first_name, $last_name, $birthday,
-                'N/A', 'N/A', 'VA', '00000', // Default address
+                $street_address, 'N/A', 'VA', '00000', // Default address
                 $phone1, $phone1type, $email,
                 'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
                 $user_role, 'Active', 0, // Active status, not archived
@@ -374,11 +375,19 @@ require_once('header.php');
                                value="<?php if (isset($last_name)) echo htmlspecialchars($last_name); ?>" 
                                placeholder="Enter last name">
                     </div>
-                    <div class="form-group">
+                </div>
+
+                <div class="form-group">
                         <label for="birthday">Date of Birth *</label>
                         <input type="date" id="birthday" name="birthday" required 
                                value="<?php if (isset($birthday)) echo htmlspecialchars($birthday); ?>">
-                    </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="street_address">Street Address *</label>
+                        <input type="text" id="street_address" name="street_address" required 
+                               value="<?php if (isset($street_address)) echo htmlspecialchars($street_address); ?>" 
+                               placeholder="Enter your street address">
                 </div>
 
                 <div class="form-group">
