@@ -35,8 +35,10 @@
         $args = sanitize($_POST, $ignoreList);
 
         $required = array(
-            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 'birthday', 'street_address',
-            'city', 'state', 'zip_code', 'phone1type'
+            'first_name', 'last_name', 'email', 'phone', 'username', 'password', 'user_role', 
+            'birthday', 'street_address', 'city', 'state', 'zip_code', 'phone1type', 
+            'emergency_contact_first_name', 'emergency_contact_last_name', 'emergency_contact_phone',
+            'emergency_contact_phone_type', 'emergency_contact_relation'
         );
 
         $errors = false;
@@ -100,6 +102,24 @@
             // echo 'bad phone type';
         }
 
+        $emergency_contact_first_name = $args['emergency_contact_first_name'];
+        
+        $emergency_contact_last_name = $args['emergency_contact_last_name'];
+        
+        $emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
+        if (!$emergency_contact_phone) {
+            $errors = true;
+            // echo 'bad e-contact phone';
+        }
+
+        $emergency_contact_phone_type = $args['emergency_contact_phone_type'];
+        if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
+            $errors = true;
+            // echo 'bad phone type';
+        }
+
+        $emergency_contact_relation = $args['emergency_contact_relation'];
+
         $username = $args['username'];
         $user_role = $args['user_role'];
         
@@ -149,7 +169,8 @@
                 $first_name, $last_name, $birthday,
                 $street_address, $city, $state, $zip_code,
                 $phone1, $phone1type, $email,
-                'N/A', 'N/A', '0000000000', 'cellphone', 'N/A', // Default emergency contact
+                $emergency_contact_first_name, $emergency_contact_last_name, $emergency_contact_phone,
+                $emergency_contact_phone_type, $emergency_contact_relation,
                 $user_role, 'Active', 0, // Active status, not archived
                 '', '', 'None', // No skills, interests, training
                 0, 0, 0.00 // Not volunteer-related fields
@@ -373,7 +394,7 @@ require_once('header.php');
         gap: 15px;
         margin-top: 5px;
     }
-    
+
     .radio-group input[type="radio"] {
         width: auto;
         margin-right: 5px;
@@ -530,6 +551,50 @@ require_once('header.php');
                 <div class="section-box">
                     <h3>Emergency Contact Information</h3>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emergency_contact_first_name">Emergency Contact First Name *</label>
+                            <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" 
+                            value="<?php if(isset($emergency_contact_first_name)) echo htmlspecialchars($emergency_contact_first_name); ?>" required
+                            placeholder="Enter First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="emergency_contact_last_name">Emergency Contact Last Name *</label>
+                            <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" 
+                            value="<?php if(isset($emergency_contact_last_name)) echo htmlspecialchars($emergency_contact_last_name); ?>" required
+                            placeholder="Enter Last Name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emergency_contact_phone">Emergency Contact Phone *</label>
+                        <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php if(isset($emergency_contact_phone)) echo htmlspecialchars($emergency_contact_phone); ?>" required
+                        placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Emergency Contact Phone Type *</label>
+                        <div class="radio-group">
+                            <input type="radio" id="emergency-phone-type-cellphone" name="emergency_contact_phone_type" value="cell" 
+                                <?php if (isset($emergency_contact_phone_type) && $emergency_contact_phone_type === 'cell') echo 'checked'; ?> required>
+                            <label for="phone-type-cellphone">Cell</label>
+
+                            <input type="radio" id="emergency-phone-type-home" name="emergency_contact_phone_type" value="home" 
+                                <?php if (isset($emergency_contact_phone_type) && $emergency_contact_phone_type === 'home') echo 'checked'; ?> required>
+                            <label for="phone-type-home">Home</label>
+
+                            <input type="radio" id="emergency-phone-type-work" name="emergency_contact_phone_type" value="work" 
+                                <?php if (isset($emergency_contact_phone_type) && $emergency_contact_phone_type === 'work') echo 'checked'; ?> required>
+                            <label for="phone-type-work">Work</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emergency_contact_relation">Emergency Contact Relation *</label>
+                        <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" 
+                        value="<?php if(isset($emergency_contact_relation)) echo htmlspecialchars($emergency_contact_relation); ?>" required
+                        placeholder="Enter Relationship Type">
+                    </div>
                 </div>
 
                 <div class="section-box">
