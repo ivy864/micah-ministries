@@ -34,3 +34,21 @@ function add_comment($comment) {
     
     return true;
 }
+
+/**
+ * @param Comment $comment
+ */
+function delete_comment($comment) {
+    $con = connect();
+    $query = $con->prepare('DELETE FROM db_maintenance_comments WHERE `author_id`=?  AND `request_id`=?  AND `time`=?');
+    $query->bind_param('ssi', $comment->getAuthorID(), $comment->getRequestID(), $comment->getTime());
+
+    $result = $query->execute();
+
+    if (!$result) {
+        error_log("Database error: " . $con->error);
+        return false;
+    }
+
+    return true;
+}
