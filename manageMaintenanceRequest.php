@@ -77,6 +77,12 @@
         ob_end_flush();
         exit();
     }
+    if (isset($_SERVER['HTTP_DELETECOMMENT']) && $_SERVER['HTTP_DELETECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], '', $_POST['time']);
+        delete_comment($cmnt);
+
+        exit();
+    }
     if (isset($_SERVER['HTTP_GETCOMMENTS']) && $_SERVER['HTTP_GETCOMMENTS'] == 'True') {
         exit();
     }
