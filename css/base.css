@@ -84,7 +84,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --error-color: red;
 
     /* Global rules */
-    font-size: 40px;
+    font-size: 18px;
     font-family: Montserrat;
     font-weight: 300;
 }
