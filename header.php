@@ -1,4 +1,3 @@
-<!-- This looks really, really great!  -Thomas -->
 <?php
 date_default_timezone_set('America/New_York');
 /*
@@ -761,6 +760,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['userman.php'] = 2;
         $permission_array['addlease.php'] = 2;
         $permission_array['editlease.php'] = 2;
+        $permission_array['deletelease.php'] = 2;
+        $permission_array['archivemaintenancerequest.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
