@@ -761,6 +761,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['userman.php'] = 2;
         $permission_array['addlease.php'] = 2;
         $permission_array['editlease.php'] = 2;
+        $permission_array['deletelease.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;

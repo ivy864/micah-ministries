@@ -91,6 +91,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View All Leases</title>
   <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/normal_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
@@ -314,6 +315,7 @@ require_once('header.php');
                             <td><?php echo $lease['monthly_rent'] ? '$' . number_format($lease['monthly_rent'], 2) : 'N/A'; ?></td>
                             <td>
                                 <a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" class="return-button">Edit</a>
+                                <a href="deletelease.php?id=<?php echo urlencode($lease['id']); ?>" class="delete-button">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -1058,7 +1058,7 @@
     padding-block: calc(var(--spacing) * 2);
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
+    color: white;
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-700);
