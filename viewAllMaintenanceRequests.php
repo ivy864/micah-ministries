@@ -299,6 +299,7 @@ require_once('header.php');
                         <th><a href="<?php echo getSortUrl('status'); ?>" style="color: #274471; text-decoration: none;">Status<?php echo getSortArrow('status'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('assigned_to'); ?>" style="color: #274471; text-decoration: none;">Assigned To<?php echo getSortArrow('assigned_to'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('created_at'); ?>" style="color: #274471; text-decoration: none;">Created<?php echo getSortArrow('created_at'); ?></a></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -332,6 +333,9 @@ require_once('header.php');
                             </td>
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
+                            <td>
+                                <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>" class="return-button">Archive</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
