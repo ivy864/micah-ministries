@@ -236,19 +236,6 @@
                 </div>
 
                 <!-- Skills and Interests Section -->
-                <div class="section-box">
-                    <h3>Additional Information</h3>
-
-                    <div class="form-group">
-                        <label for="skills">Skills</label>
-                        <input type="text" id="skills" name="skills" value="<?php echo htmlspecialchars($person->get_skills()); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="interests">Interests</label>
-                        <input type="text" id="interests" name="interests" value="<?php echo htmlspecialchars($person->get_interests()); ?>">
-                    </div>
-                </div>
 
                 <div style="text-align: center; margin-top: 30px;">
                     <input type="hidden" name="id" value="<?php echo $id; ?>">
