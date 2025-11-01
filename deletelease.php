@@ -61,51 +61,6 @@ try {
 }
 
 $lease_id = $_GET['id'] ?? null;
-
-if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
-    $fields = [
-        'tenant_first_name',
-        'tenant_last_name',
-        'property_street',
-        'property_city',
-        'property_state',
-        'property_zip',
-        'unit_number',
-        'start_date',
-        'expiration_date',
-        'monthly_rent',
-        'security_deposit',
-        'program_type',
-        'status'
-    ];
-    $data = [];
-
-    foreach ($fields as $f) {
-        if (isset($_POST[$f])) {
-            $data[$f] = $_POST[$f];
-        }
-    }
-
-    if (!empty($data)) {
-        $sets = [];
-        $params = [':id' => $lease_id];
-
-        foreach ($data as $k => $v) {
-            $sets[] = "$k = :$k";
-            $params[":$k"] = $v;
-        }
-
-        try {
-            $sql = "UPDATE dbleases SET " . implode(", ", $sets) . " WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $lease = array_merge($lease, $data);
-            $db_notice = "✅ Lease updated successfully.";
-        } catch (Throwable $e) {
-            $db_notice = "❌ Update failed: " . htmlspecialchars($e->getMessage());
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
