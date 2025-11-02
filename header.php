@@ -762,6 +762,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['editlease.php'] = 2;
         $permission_array['deletelease.php'] = 2;
         $permission_array['archivemaintenancerequest.php'] = 2;
+        $permission_array['unarchivemaintenancerequest.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
@@ -952,12 +953,7 @@ if (date("H:i:s") > "18:19:59") {
     <span>Pending Requests</span>
   </div>
 </a>
-<!-- View Archived Requests (Admin / Level ≥ 3) -->
-<a href="viewArchive.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/book.png" alt="Archived Requests">
-    <span>View Archived Requests</span>
-  </div>
+
 </a>
 
 
