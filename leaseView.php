@@ -27,24 +27,38 @@
     // pagination and sorting settings
     $items_per_page = 15;
     $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    
-    // ensure current_page is at least 1
-    if ($current_page < 1) {
-        $current_page = 1;
-    }
-    
+    if ($current_page < 1) { $current_page = 1; }
     $offset = ($current_page - 1) * $items_per_page;
     
     // sorting parameters
     $sort_by = $_GET['sort'] ?? 'created_at';
     $sort_order = $_GET['order'] ?? 'DESC';
+
+    // NEW: month filter (1..12). Keep empty => all months
+    $exp_month = $_GET['exp_month'] ?? '';
+    $month_int = null;
+    if ($exp_month !== '' && ctype_digit($exp_month)) {
+        $m = (int)$exp_month;
+        if ($m >= 1 && $m <= 12) { $month_int = $m; }
+    }
+
+    // Build WHERE for month filter
+    $where = '';
+    if ($month_int !== null) {
+        $where = " WHERE MONTH(expiration_date) = " . $month_int;
+    }
     
-    // get total leases first to validate page number
+    // get total leases first to validate page number (with filter)
     $con = connect();
-    $count_query = "SELECT COUNT(*) as total FROM dbleases";
-    $count_result = mysqli_query($con, $count_query);
-    $total_leases = mysqli_fetch_assoc($count_result)['total'];
-    $total_pages = ceil($total_leases / $items_per_page);
+    $total_leases = 0;
+    if ($con) {
+        $count_query = "SELECT COUNT(*) as total FROM dbleases" . $where;
+        $count_result = mysqli_query($con, $count_query);
+        if ($count_result) {
+            $total_leases = (int)mysqli_fetch_assoc($count_result)['total'];
+        }
+    }
+    $total_pages = $items_per_page > 0 ? (int)ceil($total_leases / $items_per_page) : 1;
     
     // ensure current_page doesn't exceed total pages
     if ($current_page > $total_pages && $total_pages > 0) {
@@ -52,25 +66,29 @@
         $offset = ($current_page - 1) * $items_per_page;
     }
     
-    // get paginated and sorted leases
+    // get paginated and sorted leases (with filter)
     $leases = [];
     if ($con) {
-        $query = "SELECT * FROM dbleases ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
+        $query = "SELECT * FROM dbleases" . $where . " ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
         $result = mysqli_query($con, $query);
-        
         if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $leases[] = $row;
-            }
+            while ($row = mysqli_fetch_assoc($result)) { $leases[] = $row; }
         }
         mysqli_close($con);
     }
     
-    // helper function to generate sort URLs
+    // helper: keep month param in links
+    function monthQS() {
+        return (isset($_GET['exp_month']) && $_GET['exp_month'] !== '')
+            ? "&exp_month=" . urlencode($_GET['exp_month'])
+            : "";
+    }
+
+    // helper function to generate sort URLs (preserve month + page)
     function getSortUrl($column) {
         global $sort_by, $sort_order, $current_page;
         $new_order = ($sort_by == $column && $sort_order == 'ASC') ? 'DESC' : 'ASC';
-        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order;
+        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order . monthQS();
     }
     
     // helper function to get sort arrow
@@ -81,6 +99,12 @@
         }
         return '';
     }
+
+    // month names for dropdown
+    $month_names = [
+        1=>'January',2=>'February',3=>'March',4=>'April',5=>'May',6=>'June',
+        7=>'July',8=>'August',9=>'September',10=>'October',11=>'November',12=>'December'
+    ];
 ?>
 
 <!DOCTYPE html>
@@ -244,6 +268,25 @@ require_once('header.php');
 	    padding: 1.5rem !important;
 	}
 
+    /* minimal, on-brand filter bar */
+    .filter-bar {
+        display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+        margin: 6px 0 4px 0; padding: 8px 10px;
+        background: #f7f9fc; border: 1px solid #e5e7eb; border-radius: 8px;
+    }
+    .filter-bar label { font-weight: 600; color: #274471; }
+    .filter-bar select {
+        padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff;
+    }
+    .filter-bar .apply-btn,
+    .filter-bar .reset-btn {
+        display:inline-block; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:600;
+        border: 1px solid transparent;
+    }
+    .filter-bar .apply-btn { background:#274471; color:#fff; }
+    .filter-bar .apply-btn:hover { opacity: .95; }
+    .filter-bar .reset-btn { background:#9aa7bd; color:#fff; }
+    .filter-bar .reset-btn:hover { opacity: .95; }
 </style>
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
@@ -268,14 +311,36 @@ require_once('header.php');
       <!-- Text Section -->
       <div class="text-section">
         <div class="main-content-box p-6">
-          <p style="margin-bottom: 20px;">
+          <p style="margin-bottom: 10px;">
             View and manage all leases. Use the table below to see lease details, tenant information, and property details.
           </p>
+
+          <!-- NEW: Month filter (adds on top of existing features; preserves look) -->
+          <form class="filter-bar" method="get">
+            <!-- preserve current sort when filtering -->
+            <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort_by, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="order" value="<?php echo htmlspecialchars($sort_order, ENT_QUOTES, 'UTF-8'); ?>">
+            <!-- when applying a filter, start at page 1 -->
+            <input type="hidden" name="page" value="1">
+
+            <label for="exp_month">Expires in (month):</label>
+            <select id="exp_month" name="exp_month">
+              <option value="">All months</option>
+              <?php foreach ($month_names as $num=>$name): ?>
+                <option value="<?php echo $num; ?>" <?php echo ($month_int === $num ? 'selected' : ''); ?>>
+                  <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+
+            <button class="apply-btn" type="submit">Apply</button>
+            <a class="reset-btn" href="?page=1&sort=<?php echo urlencode($sort_by); ?>&order=<?php echo urlencode($sort_order); ?>">Reset</a>
+          </form>
         
         <?php if (empty($leases)): ?>
-            <div style="margin-top: 20px; padding: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+            <div style="margin-top: 10px; padding: 14px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
                 <p><strong>No leases found.</strong></p>
-                <p>Click "Add a Lease" to add the first lease.</p>
+                <p>Try a different month, or click “Reset”.</p>
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
@@ -332,8 +397,8 @@ require_once('header.php');
                     
                     <div class="pagination-buttons">
                         <?php if ($current_page > 1): ?>
-                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
-                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
+                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
+                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
                         <?php endif; ?>
                         
                         <?php
@@ -342,15 +407,15 @@ require_once('header.php');
                         
                         for ($i = $start_page; $i <= $end_page; $i++):
                         ?>
-                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
+                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
                                style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: <?php echo $i == $current_page ? '#1e3554' : '#274471'; ?>; color: white; text-decoration: none; border-radius: 4px;">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
                         
                         <?php if ($current_page < $total_pages): ?>
-                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
-                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
+                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
+                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
                         <?php endif; ?>
                     </div>
                 </div>
