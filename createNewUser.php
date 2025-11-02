@@ -61,6 +61,14 @@
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
         $email = strtolower($args['email']);
+        $allowedDomain = "dolovewalk.net";
+
+        function emailAllowedDomain($email, $allowedDomain) {
+            $domain = substr(strrchr($email, "@"), 1);
+
+            return strtolower($domain) === strtolower($allowedDomain);
+        }
+
         $birthday = validateDate($args['birthday']);
         if (!$birthday) {
             $errors = true;
@@ -87,6 +95,11 @@
         }
         if (!validateEmail($email)) {
             $errorDetails[] = "DEBUG: Email validation failed for: $email";
+            $errors = true;
+        }
+
+        if(!emailAllowedDomain($email, $allowedDomain)) {
+            $errorDetails[] = "DEBUG: Email must be a '$allowedDomain' email address";
             $errors = true;
         }
 
