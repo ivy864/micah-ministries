@@ -28,11 +28,23 @@ if ($request_id) {
     if (!$request) $error = 'Maintenance request not found.';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive']) && $request_id) {
-    if (delete_maintenance_request($request_id)) {
-        header("Location: viewAllMaintenanceRequests.php");
+if (!function_exists('unarchive_maintenance_request')) {
+    function unarchive_maintenance_request($id) {
+        $req = get_maintenance_request_by_id($id);
+        if (!$req) return false;
+        $con = connect();
+        $qry = "UPDATE dbmaintenancerequests SET archived = 0 WHERE id = '" . mysqli_real_escape_string($con, $id) . "'";
+        $ok = mysqli_query($con, $qry);
+        mysqli_close($con);
+        return (bool)$ok;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unarchive']) && $request_id) {
+    if (unarchive_maintenance_request($request_id)) {
+        header("Location: viewAllMaintenanceRequests.php?archived=1");
         exit();
-    } else $error = 'Failed to archive the maintenance request. Please try again.';
+    } else $error = 'Failed to unarchive the maintenance request. Please try again.';
 }
 ?>
 <!DOCTYPE html>
@@ -41,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive']) && $reques
     <link rel="icon" type="image/png" href="images/micah-favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive Maintenance Request</title>
+    <title>Unarchive Maintenance Request</title>
     <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
 <?php
 $tailwind_mode = true;
@@ -119,9 +131,9 @@ require_once('header.php');
     <div class="sections">
       <div class="button-section"></div>
       <div class="text-section">
-        <h1>Archive Maintenance Request</h1>
+        <h1>Unarchive Maintenance Request</h1>
         <div class="div-blue"></div>
-        <p>Confirm archival of this maintenance request.</p>
+        <p>Confirm unarchiving of this maintenance request.</p>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
         <?php if ($error): ?><div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
@@ -129,18 +141,18 @@ require_once('header.php');
         <div class="form-container">
           <?php if ($request): ?>
             <div class="confirm-card">
-              <strong>Are you sure you want to archive this request?</strong><br>
+              <strong>Are you sure you want to unarchive this request?</strong><br>
               Description: <em><?php echo htmlspecialchars(substr($request->getDescription(), 0, 120)); ?><?php echo strlen($request->getDescription()) > 120 ? '...' : ''; ?></em><br>
               ID: <code><?php echo htmlspecialchars($request->getID()); ?></code>
             </div>
 
             <form method="POST" action="">
-              <button type="submit" name="archive" class="btn-primary">Archive Maintenance Request</button>
-              <a href="viewAllMaintenanceRequests.php" class="btn-danger">Cancel</a>
+              <button type="submit" name="unarchive" class="btn-primary">Unarchive Maintenance Request</button>
+              <a href="viewAllMaintenanceRequests.php?archived=1" class="btn-danger">Cancel</a>
             </form>
           <?php else: ?>
             <div class="confirm-card">
-              We couldn’t find that maintenance request. <a href="viewAllMaintenanceRequests.php" class="btn-primary" style="margin-left:8px;">Back to List</a>
+              We couldn’t find that maintenance request. <a href="viewAllMaintenanceRequests.php?archived=1" class="btn-primary" style="margin-left:8px;">Back to Archived List</a>
             </div>
           <?php endif; ?>
         </div>
