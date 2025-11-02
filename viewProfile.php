@@ -200,7 +200,7 @@
                         Edit Profile
                     </button>
 
-                    <?php if ($id != $userID): ?>
+                    <?php /*if ($id != $userID): ?>
                         <?php if (($accessLevel == 2 && $user->get_access_level() == 1) || $accessLevel >= 3): ?>
                             <button onclick="window.location.href='managePassword.php?user_id=<?php echo htmlspecialchars($id) ?>';" 
                                     class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
@@ -220,7 +220,7 @@
                                 class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200 font-medium">
                             Delete User
                         </button>
-                    <?php endif ?>
+                    <?php endif */?>
                 </div>
     </div>
 

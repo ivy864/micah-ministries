@@ -17,7 +17,70 @@
  */
 ?>
 <?PHP
+<?php
+/*
+ * deletePerson.php 2.0
+ * Handles profile deletion and redirects appropriately
+ */
+
 session_cache_expire(30);
+session_start();
+
+$loggedIn = false;
+$accessLevel = 0;
+$userID = null;
+$isAdmin = false;
+
+// Access control
+if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
+    header('Location: login.php');
+    exit();
+}
+
+if (isset($_SESSION['_id'])) {
+    $loggedIn = true;
+    $accessLevel = $_SESSION['access_level'];
+    $isAdmin = $accessLevel >= 2;
+    $userID = $_SESSION['_id'];
+} else {
+    header('Location: login.php');
+    exit();
+}
+
+// Determine target user (self or other)
+if ($isAdmin && isset($_GET['id'])) {
+    require_once('include/input-validation.php');
+    $args = sanitize($_GET);
+    $id = strtolower($args['id']);
+} else {
+    $id = $userID;
+}
+
+require_once('database/dbPersons.php');
+$user = retrieve_person($id);
+$viewingOwnProfile = $id == $userID;
+
+// Delete user if found
+if ($user) {
+    remove_person($user->get_id());
+} else {
+    echo "<p style='color:red;text-align:center;'>User not found.</p>";
+    exit();
+}
+
+// Redirect logic
+if ($viewingOwnProfile) {
+    // Self-deletion: destroy session and return to login
+    session_destroy();
+    header('Location: login.php');
+    exit();
+} else {
+    // Admin deletion: return to dashboard
+    header('Location: dashboard.php');
+    exit();
+}
+?>
+/*session_cache_expire(30);
 session_start();
 
 $loggedIn = false;
@@ -83,4 +146,4 @@ $loggedIn = false;
                 ?>
         </main>
     </body>
-</html>
+</html> */
