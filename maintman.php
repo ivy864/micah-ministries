@@ -94,7 +94,7 @@ require_once('header.php');
 	  <img class="button-icon left-4" src="images/new-event.svg" alt="List Icon">
         </button>
 
-        <button onclick="window.location.href='viewArchive.php';">
+        <button onclick="window.location.href='viewAllMaintenanceRequests.php?archived=1';">
 	  <div class="button-left-gray"></div>
 	  <div>View Archived Requests</div>
 	  <img class="button-icon h-10 w-10 left-5" src="images/book.png" alt="Archive Icon">
