@@ -132,12 +132,23 @@
                 <?php die() ?>
             <?php endif ?>
             <?php if (isset($_GET['editSuccess'])): ?>
-                <div class="bg-green-100 border border-greed-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
                         Profile Updated Successfully!
                 </div>
                 <script>
                     setTimeout(() => {
-                        const msg = document.querySelector('.fixed.top-4.right-4');
+                        const msg = document.querySelector('.bg-green-100');
+                        if (msg) msg.remove();
+                    }, 5000);
+                </script>
+            <?php endif ?>
+            <?php if (isset($_GET['noChanges'])): ?>
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-6 py-4 rounded-lg shadow-lg text-center">
+                        No changes were made to the profile.
+                </div>
+                <script>
+                    setTimeout(() => {
+                        const msg = document.querySelector('.bg-blue-100');
                         if (msg) msg.remove();
                     }, 5000);
                 </script>
