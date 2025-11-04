@@ -15,8 +15,8 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    // admin-only access
-    if ($accessLevel < 2) {
+    // maintenance staff and above can access
+    if ($accessLevel < 1) {
         header('Location: micahportal.php');
         die();
     }
@@ -69,6 +69,19 @@ require_once('header.php');
       <!-- Buttons Section -->
       <div class="button-section">
 
+        <button onclick="window.location.href='viewPendingMaintenanceRequests.php';">
+	  <div class="button-left-gray"></div>
+	  <div>Pending Maintenance Requests <?php 
+                        // TODO: Add database call for pending maintenance requests
+                        // require_once('database/dbMaintenance.php');
+                        // $pendingrequests = all_pending_maintenance_requests();
+                        // if (sizeof($pendingrequests) > 0) {
+                        //     echo '(' . sizeof($pendingrequests) . ')';
+                        // }   
+                    ?></div>
+	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Clock Icon">
+        </button>
+
         <button onclick="window.location.href='addMaintenanceRequest.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Create Maintenance Request</div>
@@ -86,26 +99,13 @@ require_once('header.php');
 	  <div>Assign Maintenance Tasks</div>
 	  <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="Task Icon">
         </button>
-
-        <button onclick="window.location.href='viewPendingMaintenanceRequests.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Pending Maintenance Requests <?php 
-                        // TODO: Add database call for pending maintenance requests
-                        // require_once('database/dbMaintenance.php');
-                        // $pendingrequests = all_pending_maintenance_requests();
-                        // if (sizeof($pendingrequests) > 0) {
-                        //     echo '(' . sizeof($pendingrequests) . ')';
-                        // }   
-                    ?></div>
-
-	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Clock Icon">
-        </button>
-
+<?php if ($accessLevel >= 2): ?>
 <button onclick="window.location.href='viewArchive.php';">
   <div class="button-left-gray"></div>
   <div>View Archived Requests</div>
   <img class="button-icon h-10 w-10 left-5" src="images/book.png" alt="Archive Icon">
 </button>
+<?php endif; ?>
 
 
 	<div class="text-center mt-6">
