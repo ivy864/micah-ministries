@@ -444,7 +444,16 @@ require_once('header.php');
 
             <!-- Text Section -->
             <div class="text-section">
-                <h1>Edit Profile</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h1 style="margin: 0;">Edit Profile</h1>
+                    <?php 
+                    $backUrl = 'viewProfile.php';
+                    if (isset($_GET['id']) && $_GET['id'] != $_SESSION['_id']) {
+                        $backUrl = 'viewProfile.php?id=' . htmlspecialchars($_GET['id']);
+                    }
+                    ?>
+                    <a href="<?php echo $backUrl; ?>" class="btn-secondary" style="text-decoration: none; display: inline-block;">Back to Profile</a>
+                </div>
                 <div class="div-blue"></div>
                 <p>
                     Update user account information. Fill out the form below with the required information.
