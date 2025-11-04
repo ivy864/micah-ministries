@@ -99,14 +99,6 @@ require_once('header.php');
 	  <div>Assign Maintenance Tasks</div>
 	  <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="Task Icon">
         </button>
-<?php if ($accessLevel >= 2): ?>
-<button onclick="window.location.href='viewArchive.php';">
-  <div class="button-left-gray"></div>
-  <div>View Archived Requests</div>
-  <img class="button-icon h-10 w-10 left-5" src="images/book.png" alt="Archive Icon">
-</button>
-<?php endif; ?>
-
 
 	<div class="text-center mt-6">
         	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
