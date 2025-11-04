@@ -47,22 +47,38 @@
             $errors = true;
         }
 
-        $first_name = $args['first_name'];
+        // Only admins (Level 3) can change user roles, first name, last name, and date of birth
+        $isAdmin = $_SESSION['access_level'] >= 3;
         
-        $last_name = $args['last_name'];
-
-        $user_role = $args['user_role'];
-        
-        // Validate role
-        if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
-            echo "<p>Invalid user role.</p>";
-            $errors = true;
-        }
-        
-        $birthday = validateDate($args['birthday']);
-        if (!$birthday) {
-            $errors = true;
-            // echo 'bad dob';
+        if ($isAdmin) {
+            // Admins can change all fields
+            $first_name = $args['first_name'];
+            $last_name = $args['last_name'];
+            $user_role = $args['user_role'];
+            
+            // Validate role
+            if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
+                echo "<p>Invalid user role.</p>";
+                $errors = true;
+            }
+            
+            $birthday = validateDate($args['birthday']);
+            if (!$birthday) {
+                $errors = true;
+                // echo 'bad dob';
+            }
+        } else {
+            // Non-admins cannot change user role, first name, last name, or date of birth - keep existing values
+            require_once('database/dbPersons.php');
+            $person = retrieve_person($id);
+            if (!$person) {
+                header('Location: viewProfile.php');
+                die();
+            }
+            $first_name = $person->get_first_name();
+            $last_name = $person->get_last_name();
+            $user_role = $person->get_type();
+            $birthday = $person->get_birthday();
         }
         
         $street_address = $args['street_address'];
@@ -137,7 +153,9 @@
         }
         @*/
 
-       $type = 'v';
+        // Use user_role as type (admin, case_manager, maintenance)
+        // This is set earlier in the code based on whether user is admin
+        $type = $user_role;
 
 
        
