@@ -38,11 +38,19 @@ if (!$loggedIn) {
                 justify-items: stretch;
             }
         }
-        /* when there's only one card (maintenance staff), center it */
-        .portal-grid-single {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* when there are 2 cards (maintenance staff), center them */
+        .portal-grid-two-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            justify-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .portal-grid-two-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         .portal-card {
             background: #fff;
@@ -109,7 +117,7 @@ if (!$loggedIn) {
 
     <main>
         <div class="main-content-box p-6">
-            <div class="portal-grid <?php echo ($accessLevel == 1) ? 'portal-grid-single' : ''; ?>">
+            <div class="portal-grid <?php echo ($accessLevel == 1) ? 'portal-grid-two-cards' : ''; ?>">
 
                 <!-- Lease Management - Level 2+ only -->
                 <?php if ($accessLevel >= 2): ?>
@@ -130,6 +138,17 @@ if (!$loggedIn) {
                         <a href="maintman.php" class="portal-link">Go to Maintenance</a>
                     </div>
                 </div>
+
+                <!-- Profile Management - Level 1 only (maintenance staff) -->
+                <?php if ($accessLevel == 1): ?>
+                <div class="portal-card">
+                    <h2 class="portal-title">Manage Profile</h2>
+                    <p class="portal-desc">Update your account information and preferences.</p>
+                    <div class="portal-action">
+                        <a href="editProfile.php" class="portal-link">Edit My Profile</a>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <!-- User Management - Level 2+ only -->
                 <?php if ($accessLevel >= 2): ?>
