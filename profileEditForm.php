@@ -66,18 +66,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+    <?php if (isset($errorDetails) && count($errorDetails) > 0): ?>
+        <div class="alert alert-error">
+            Please correct the following errors:
+            <ul style="margin: 10px 0 0 20px;">
+                <?php foreach ($errorDetails as $field => $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
     <main>
-        <?php if (isset($updateSuccess) && !$updateSuccess): ?>
-            <div class="alert alert-error">An error occurred.</div>
-        <?php endif ?>
-        
-        <?php if ($isAdmin): ?>
-            <?php if (strtolower($id) == 'vmsroot') : ?>
-                <div class="alert alert-error">The root user profile cannot be modified</div>
-            <?php die() ?>
-            <?php endif ?>
-        <?php endif ?>
-
         <div class="form-container">
             <form id="edit-user-form" method="post">
                 
@@ -175,6 +174,9 @@
                     <div class="form-group">
                         <label for="email">Email Address *</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($person->get_email()); ?>" required>
+                        <?php if (isset($errorDetails['email'])): ?>
+                            <p style="color: #721c24; margin-top: 5px; font-size: 14px;"><?php echo htmlspecialchars($errorDetails['email']); ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
