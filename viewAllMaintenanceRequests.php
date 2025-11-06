@@ -15,9 +15,9 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: index.php');
+    // maintenance staff and above can access
+    if ($accessLevel < 1) {
+        header('Location: micahportal.php');
         die();
     }
 

@@ -30,10 +30,26 @@ if (!$loggedIn) {
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
+            justify-items: center;
         }
         @media (min-width: 768px) {
             .portal-grid {
                 grid-template-columns: repeat(3, 1fr);
+                justify-items: stretch;
+            }
+        }
+        /* when there are 2 cards (maintenance staff), center them */
+        .portal-grid-two-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            justify-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .portal-grid-two-cards {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
         .portal-card {
@@ -45,6 +61,16 @@ if (!$loggedIn) {
             flex-direction: column;
             gap: 8px;
             transition: box-shadow .15s ease, transform .15s ease;
+            max-width: 400px;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .portal-card {
+                max-width: none;
+            }
+            .portal-grid-single .portal-card {
+                max-width: 400px;
+            }
         }
         .portal-card:hover {
             box-shadow: 0 6px 18px rgba(0,0,0,.08);
@@ -91,19 +117,20 @@ if (!$loggedIn) {
 
     <main>
         <div class="main-content-box p-6">
-            <div class="portal-grid">
+            <div class="portal-grid <?php echo ($accessLevel == 1) ? 'portal-grid-two-cards' : ''; ?>">
 
-                <!-- Lease Management -->
+                <!-- Lease Management - Level 2+ only -->
+                <?php if ($accessLevel >= 2): ?>
                 <div class="portal-card">
                     <h2 class="portal-title">Lease Management</h2>
                     <p class="portal-desc">View and manage leases across programs and units.</p>
                     <div class="portal-action">
-                        <!-- Point directly to the teammate’s page -->
                         <a href="leaseView.php" class="portal-link">Go to Lease Management</a>
                     </div>
                 </div>
+                <?php endif; ?>
 
-                <!-- Maintenance Management -->
+                <!-- Maintenance Management - All logged in users -->
                 <div class="portal-card">
                     <h2 class="portal-title">Maintenance Management</h2>
                     <p class="portal-desc">Create, assign, and track maintenance requests.</p>
@@ -112,7 +139,19 @@ if (!$loggedIn) {
                     </div>
                 </div>
 
-                <!-- Edit Profile -->
+                <!-- Profile Management - Level 1 only (maintenance staff) -->
+                <?php if ($accessLevel == 1): ?>
+                <div class="portal-card">
+                    <h2 class="portal-title">Manage Profile</h2>
+                    <p class="portal-desc">Update your account information and preferences.</p>
+                    <div class="portal-action">
+                        <a href="editProfile.php" class="portal-link">Edit My Profile</a>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- User Management - Level 2+ only -->
+                <?php if ($accessLevel >= 2): ?>
                 <div class="portal-card">
                     <h2 class="portal-title">Manage Users</h2>
                     <p class="portal-desc">Update account details for users.</p>
@@ -120,6 +159,8 @@ if (!$loggedIn) {
                         <a href="userman.php" class="portal-link">Manage Users</a>
                     </div>
                 </div>
+                <?php endif; ?>
+
 
             </div>
         </div>

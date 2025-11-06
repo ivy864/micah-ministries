@@ -81,6 +81,9 @@ require_once('header.php');
 	  <img class="button-icon h-10 w-10 left-5" src="images/search.svg" alt="Search Icon">
         </button>
 
+	<div class="text-center mt-6">
+        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
+	</div>
 
      </div>
 
