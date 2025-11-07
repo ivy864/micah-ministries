@@ -11,7 +11,7 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
 if ($accessLevel < 2) {
-    header('Location: micahportal.php');
+    header('Location: index.php');
     die();
 }
 

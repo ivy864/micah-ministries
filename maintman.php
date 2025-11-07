@@ -17,7 +17,7 @@
     }
     // maintenance staff and above can access
     if ($accessLevel < 1) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
 ?>
@@ -101,7 +101,7 @@ require_once('header.php');
         </button>
 
 	<div class="text-center mt-6">
-        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
+        	<a href="index.php" class="return-button">Return to Dashboard</a>
 	</div>
 
 
