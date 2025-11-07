@@ -17,7 +17,7 @@
     }
     // maintenance staff and above can access
     if ($accessLevel < 1) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
 
@@ -368,20 +368,63 @@ require_once('header.php');
 
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
-                            <td>
-                                <?php if (!$view_archived): ?>
-                                    <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
-   Archive
-</a>
-                                <?php else: ?>
-                                    <a href="unarchiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
-   Unarchive
-</a>
+                           <td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
+    <?php if (!$view_archived): ?>
+        <!-- Mark Complete (active view only) -->
+        <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Mark Complete
+        </a>
 
-                                <?php endif; ?>
-                            </td>
+        <!-- Edit (gray button, always shown) -->
+        <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
+           style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
+           onmouseover="this.style.backgroundColor='#5a6268';"
+           onmouseout="this.style.backgroundColor='#6c757d';">
+           Edit
+        </a>
+
+        <!-- Delete (active view only) -->
+        <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Delete
+        </a>
+
+        <!-- Archive (active view only; far right) -->
+        <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Archive
+        </a>
+    <?php else: ?>
+        <!-- Edit (gray button, archived view) -->
+        <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
+           style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
+           onmouseover="this.style.backgroundColor='#5a6268';"
+           onmouseout="this.style.backgroundColor='#6c757d';">
+           Edit
+        </a>
+
+        <!-- Delete (archived view) -->
+        <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Delete
+        </a>
+
+        <!-- Restore (archived view only; far right) -->
+        <a href="restoreMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Restore
+        </a>
+    <?php endif; ?>
+</td>
+
 
                         </tr>
                     <?php endforeach; ?>

@@ -11,7 +11,7 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
 if ($accessLevel < 2) {
-    header('Location: index.php');
+    header('Location: micahportal.php');
     die();
 }
 
@@ -28,8 +28,8 @@ if ($request_id) {
     if (!$request) $error = 'Maintenance request not found.';
 }
 
-if (!function_exists('unarchive_maintenance_request')) {
-    function unarchive_maintenance_request($id) {
+if (!function_exists('restore_maintenance_request')) {
+    function restore_maintenance_request($id) {
         $req = get_maintenance_request_by_id($id);
         if (!$req) return false;
         $con = connect();
@@ -40,11 +40,11 @@ if (!function_exists('unarchive_maintenance_request')) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unarchive']) && $request_id) {
-    if (unarchive_maintenance_request($request_id)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && $request_id) {
+    if (restore_maintenance_request($request_id)) {
         header("Location: viewAllMaintenanceRequests.php?archived=1");
         exit();
-    } else $error = 'Failed to unarchive the maintenance request. Please try again.';
+    } else $error = 'Failed to restore the maintenance request. Please try again.';
 }
 ?>
 <!DOCTYPE html>
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unarchive']) && $requ
     <link rel="icon" type="image/png" href="images/micah-favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unarchive Maintenance Request</title>
+    <title>Restore Maintenance Request</title>
     <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
 <?php
 $tailwind_mode = true;
@@ -131,7 +131,7 @@ require_once('header.php');
     <div class="sections">
       <div class="button-section"></div>
       <div class="text-section">
-        <h1>Unarchive Maintenance Request</h1>
+        <h1>Restore Maintenance Request</h1>
         <div class="div-blue"></div>
         <p>Confirm unarchiving of this maintenance request.</p>
 
@@ -141,13 +141,13 @@ require_once('header.php');
         <div class="form-container">
           <?php if ($request): ?>
             <div class="confirm-card">
-              <strong>Are you sure you want to unarchive this request?</strong><br>
+              <strong>Are you sure you want to restore this request?</strong><br>
               Description: <em><?php echo htmlspecialchars(substr($request->getDescription(), 0, 120)); ?><?php echo strlen($request->getDescription()) > 120 ? '...' : ''; ?></em><br>
               ID: <code><?php echo htmlspecialchars($request->getID()); ?></code>
             </div>
 
             <form method="POST" action="">
-              <button type="submit" name="unarchive" class="btn-primary">Unarchive Maintenance Request</button>
+              <button type="submit" name="restore" class="btn-primary">Restore Maintenance Request</button>
               <a href="viewAllMaintenanceRequests.php?archived=1" class="btn-danger">Cancel</a>
             </form>
           <?php else: ?>

@@ -754,7 +754,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['selectvotm.php'] = 1;
         $permission_array['volunteerviewgroupmembers.php'] = 1;
         $permission_array['managemaintenancerequest.php'] = 1;
-        $permission_array['index.php'] = 1;
+        $permission_array['micahportal.php'] = 1;
         
         //pages case managers can view (Level 2) - Lease + Maintenance
         $permission_array['userman.php'] = 2;
@@ -762,7 +762,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['editlease.php'] = 2;
         $permission_array['deletelease.php'] = 2;
         $permission_array['archivemaintenancerequest.php'] = 2;
-        $permission_array['unarchivemaintenancerequest.php'] = 2;
+        $permission_array['restoreMaintenancerequest.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
@@ -843,9 +843,10 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['requestfailed.php'] = 1;
         $permission_array['settimes.php'] = 1;
         $permission_array['eventfailurebaddeparturetime.php'] = 1;
-        $permission_array['index.php'] = 1;
+        $permission_array['micahportal.php'] = 1;
         $permission_array['viewarchive.php'] = 2;
         $permission_array['requesthistory.php'] = 2;
+        $permission_array['completemaintenancerequest.php'] = 1;
         
         // LOWERCASE
 
@@ -858,7 +859,7 @@ if (date("H:i:s") > "18:19:59") {
         if($permission_array[$current_page]>$_SESSION['access_level']){
             //in this case, the user doesn't have permission to view this page.
             //we redirect them to the index page.
-            echo "<script type=\"text/javascript\">window.location = \"index.php\";</script>";
+            echo "<script type=\"text/javascript\">window.location = \"micahportal.php\";</script>";
             //note: if javascript is disabled for a user's browser, it would still show the page.
             //so we die().
             die();
@@ -875,7 +876,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-<a href="index.php"><img src="images/micah-ministries-logo.jpg"
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
      alt="Micah Ecumenical Ministries" id="logo"
      style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
@@ -1018,7 +1019,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-<a href="index.php"><img src="images/micah-ministries-logo.jpg"
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
      alt="Micah Ecumenical Ministries" id="logo"
      style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
@@ -1100,7 +1101,7 @@ if (date("H:i:s") > "18:19:59") {
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
             <div class="logo-container">
-<a href="index.php"><img src="images/micah-ministries-logo.jpg"
+<a href="micahportal.php"><img src="images/micah-ministries-logo.jpg"
      alt="Micah Ecumenical Ministries" id="logo"
      style="height:52px;width:auto;object-fit:contain;display:block"></a>
             </div>
