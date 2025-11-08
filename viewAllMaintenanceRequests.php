@@ -369,12 +369,12 @@ require_once('header.php');
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
                             <td>
-                                <?php if (!$view_archived): ?>
+                                <?php if (!$view_archived && ($request->getStatus() == 'Completed')): ?>
                                     <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
    style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
    Archive
 </a>
-                                <?php else: ?>
+                                <?php elseif($view_archived): ?>
                                     <a href="unarchiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
    style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
    Unarchive
