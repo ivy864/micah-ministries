@@ -819,6 +819,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['groupmanagement.php'] = 3;
         $permission_array['eventmanagement.php'] = 3;
         //maintenance management - all roles can access (Level 1)
+        $permission_array['startmaintenancerequest.php'] = 1;
         $permission_array['maintman.php'] = 1;
         $permission_array['viewallmaintenancerequests.php'] = 1;
         $permission_array['addmaintenancerequest.php'] = 1;
