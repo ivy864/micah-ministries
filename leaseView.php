@@ -1,431 +1,127 @@
 <?php
-    // Template for new VMS pages. Base your new page on this one
+session_cache_expire(30);
+session_start();
+$loggedIn = false;
+$accessLevel = 0;
+$userID = null;
+if (isset($_SESSION['_id'])) {
+    $loggedIn = true;
+    $accessLevel = $_SESSION['access_level'];
+    $userID = $_SESSION['_id'];
+}
+if ($accessLevel < 2) {
+    header('Location: index.php');
+    die();
+}
+include_once "database/dbPersons.php";
+include_once "database/dbShifts.php";
 
-    // Make session information accessible, allowing us to associate
-    // data with the logged-in user.
-    session_cache_expire(30);
-    session_start();
-
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
-    }
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: index.php');
-        die();
-    }
-
-    // include database functions
-    require_once('database/dbinfo.php');
-    
-    // pagination and sorting settings
-    $items_per_page = 15;
-    $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    if ($current_page < 1) { $current_page = 1; }
-    $offset = ($current_page - 1) * $items_per_page;
-    
-    // sorting parameters
-    $sort_by = $_GET['sort'] ?? 'created_at';
-    $sort_order = $_GET['order'] ?? 'DESC';
-
-    // NEW: month filter (1..12). Keep empty => all months
-    $exp_month = $_GET['exp_month'] ?? '';
-    $month_int = null;
-    if ($exp_month !== '' && ctype_digit($exp_month)) {
-        $m = (int)$exp_month;
-        if ($m >= 1 && $m <= 12) { $month_int = $m; }
-    }
-
-    // Build WHERE for month filter
-    $where = '';
-    if ($month_int !== null) {
-        $where = " WHERE MONTH(expiration_date) = " . $month_int;
-    }
-    
-    // get total leases first to validate page number (with filter)
-    $con = connect();
-    $total_leases = 0;
-    if ($con) {
-        $count_query = "SELECT COUNT(*) as total FROM dbleases" . $where;
-        $count_result = mysqli_query($con, $count_query);
-        if ($count_result) {
-            $total_leases = (int)mysqli_fetch_assoc($count_result)['total'];
-        }
-    }
-    $total_pages = $items_per_page > 0 ? (int)ceil($total_leases / $items_per_page) : 1;
-    
-    // ensure current_page doesn't exceed total pages
-    if ($current_page > $total_pages && $total_pages > 0) {
-        $current_page = $total_pages;
-        $offset = ($current_page - 1) * $items_per_page;
-    }
-    
-    // get paginated and sorted leases (with filter)
-    $leases = [];
-    if ($con) {
-        $query = "SELECT * FROM dbleases" . $where . " ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
-        $result = mysqli_query($con, $query);
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) { $leases[] = $row; }
-        }
-        mysqli_close($con);
-    }
-    
-    // helper: keep month param in links
-    function monthQS() {
-        return (isset($_GET['exp_month']) && $_GET['exp_month'] !== '')
-            ? "&exp_month=" . urlencode($_GET['exp_month'])
-            : "";
-    }
-
-    // helper function to generate sort URLs (preserve month + page)
-    function getSortUrl($column) {
-        global $sort_by, $sort_order, $current_page;
-        $new_order = ($sort_by == $column && $sort_order == 'ASC') ? 'DESC' : 'ASC';
-        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order . monthQS();
-    }
-    
-    // helper function to get sort arrow
-    function getSortArrow($column) {
-        global $sort_by, $sort_order;
-        if ($sort_by == $column) {
-            return $sort_order == 'ASC' ? ' ↑' : ' ↓';
-        }
-        return '';
-    }
-
-    // month names for dropdown
-    $month_names = [
-        1=>'January',2=>'February',3=>'March',4=>'April',5=>'May',6=>'June',
-        7=>'July',8=>'August',9=>'September',10=>'October',11=>'November',12=>'December'
-    ];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View All Leases</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
-  <link href="css/normal_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <title>Micah Ministries | View Leases</title>
+  	<link href="css/normal_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-<style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	.dropdown {
-	    padding-right: 50px;
-	}
-	
-	.lease-table {
-	    width: 100%;
-	    border-collapse: collapse;
-	    margin-top: 20px;
-	}
-	
-	.lease-table th,
-	.lease-table td {
-	    border: 1px solid #ddd;
-	    padding: 8px;
-	    text-align: left;
-	}
-	
-	.lease-table th {
-	    background-color: #274471;
-	    color: white;
-	    font-weight: bold;
-	}
-	
-	.lease-table th a {
-	    color: white !important;
-	    text-decoration: none;
-	    display: block;
-	    width: 100%;
-	}
-	
-	.lease-table th a:hover {
-	    color: #ffd700 !important;
-	    text-decoration: underline;
-	}
-	
-	.lease-table td a {
-	    color: #274471;
-	    text-decoration: none;
-	    font-weight: bold;
-	}
-	
-	.lease-table td a:hover {
-	    color: #1e3554;
-	    text-decoration: underline;
-	}
-	
-	.lease-table tr:nth-child(even) {
-	    background-color: #f2f2f2;
-	}
-	
-	.status-active {
-	    color: #28a745;
-	    font-weight: bold;
-	}
-	
-	.status-expired {
-	    color: #dc3545;
-	    font-weight: bold;
-	}
-	
-	.status-terminated {
-	    color: #6c757d;
-	    font-weight: bold;
-	}
-	
-	/* full width layout overrides */
-	.sections {
-	    flex-direction: row !important;
-	    gap: 10px !important;
-	}
-	
-	.button-section {
-	    width: 0% !important;
-	    display: none !important;
-	}
-	
-	.text-section {
-	    width: 100% !important;
-	}
-	
-	/* adjust main content with hero - closer spacing */
-	main {
-	    margin-top: calc(var(--spacing) * -20) !important;
-	    padding: 10px !important;
-	}
-	
-	/* make hero header shorter to move heading closer to content */
-	.hero-header {
-	    height: calc(var(--spacing) * 50) !important;
-	}
-	
-	/* compact text section */
-	.text-section h1 {
-	    margin-bottom: 5px !important;
-	}
-	
-	.text-section p {
-	    margin-bottom: 10px !important;
-	}
-	
-	/* table improvements */
-	.lease-table {
-	    width: 100% !important;
-	    margin-top: 10px !important;
-	}
-	
-	.lease-table th,
-	.lease-table td {
-	    padding: 6px !important;
-	    font-size: 13px !important;
-	}
-	
-	/* ensure table fits in box */
-	.overflow-x-auto {
-	    overflow-x: auto !important;
-	}
-	
-	/* ensure center header text is white and centered */
-	.center-header h1 {
-	    color: white !important;
-	    font-size: 2rem !important;
-	    font-weight: bold !important;
-	    text-align: center !important;
-	    margin-top: 5rem !important;
-	}
-	
-	/* ensure main-content-box styling is applied */
-	.main-content-box {
-	    background-color: white !important;
-	    border: 2px solid #d1d5db !important;
-	    border-radius: 0.75rem !important;
-	    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
-	    padding: 1.5rem !important;
-	}
+    <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+    <?php
+    $tailwind_mode = true;
+    require_once('header.php');
+    ?>
+    <style>
+            .date-box {
+                background: #274471;
+                padding: 7px 30px;
+                border-radius: 50px;
+                box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
+                color: white;
+                font-size: 24px;
+                font-weight: 700;
+                text-align: center;
+            }
+            .dropdown {
+                padding-right: 50px;
+            }
 
-    /* minimal, on-brand filter bar */
-    .filter-bar {
-        display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-        margin: 6px 0 4px 0; padding: 8px 10px;
-        background: #f7f9fc; border: 1px solid #e5e7eb; border-radius: 8px;
-    }
-    .filter-bar label { font-weight: 600; color: #274471; }
-    .filter-bar select {
-        padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff;
-    }
-    .filter-bar .apply-btn,
-    .filter-bar .reset-btn {
-        display:inline-block; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:600;
-        border: 1px solid transparent;
-    }
-    .filter-bar .apply-btn { background:#274471; color:#fff; }
-    .filter-bar .apply-btn:hover { opacity: .95; }
-    .filter-bar .reset-btn { background:#9aa7bd; color:#fff; }
-    .filter-bar .reset-btn:hover { opacity: .95; }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
-
+    </style>
+    <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 </head>
 <body>
-
-  <!-- Hero Section with Ribbon -->
-  <div class="hero-header">
-    <div class="center-header">
-      <h1>All Leases</h1>
+    <div class="hero-header">
+        <div class="center-header">
+            <h1>List of Leases</h1>
+        </div>
     </div>
-  </div>
 
-  <!-- Main Content -->
-  <main>
-    <div class="sections">
-
-      <!-- Navigation Section - Removed -->
-      <div class="button-section">
-     </div>
-
-      <!-- Text Section -->
-      <div class="text-section">
+    <main>
         <div class="main-content-box p-6">
-          <p style="margin-bottom: 10px;">
-            View and manage all leases. Use the table below to see lease details, tenant information, and property details.
-          </p>
 
-          <!-- NEW: Month filter (adds on top of existing features; preserves look) -->
-          <form class="filter-bar" method="get">
-            <!-- preserve current sort when filtering -->
-            <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort_by, ENT_QUOTES, 'UTF-8'); ?>">
-            <input type="hidden" name="order" value="<?php echo htmlspecialchars($sort_order, ENT_QUOTES, 'UTF-8'); ?>">
-            <!-- when applying a filter, start at page 1 -->
-            <input type="hidden" name="page" value="1">
-
-            <label for="exp_month">Expires in (month):</label>
-            <select id="exp_month" name="exp_month">
-              <option value="">All months</option>
-              <?php foreach ($month_names as $num=>$name): ?>
-                <option value="<?php echo $num; ?>" <?php echo ($month_int === $num ? 'selected' : ''); ?>>
-                  <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-
-            <button class="apply-btn" type="submit">Apply</button>
-            <a class="reset-btn" href="?page=1&sort=<?php echo urlencode($sort_by); ?>&order=<?php echo urlencode($sort_order); ?>">Reset</a>
-          </form>
-        
-        <?php if (empty($leases)): ?>
-            <div style="margin-top: 10px; padding: 14px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
-                <p><strong>No leases found.</strong></p>
-                <p>Try a different month, or click “Reset”.</p>
+            <div class="d-flex justify-content-end mb-4">
+                <!-- Replace index.php with the add page for leases -->
+                <a href="index.php" class="blue-button">Add a Lease</a>
             </div>
-        <?php else: ?>
+
+            <!-- editLease.php -->
             <div class="overflow-x-auto">
-                <table class="lease-table">
-                <thead>
-                    <tr>
-                        <th><a href="<?php echo getSortUrl('id'); ?>" style="color: #274471; text-decoration: none;">Lease ID<?php echo getSortArrow('id'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('tenant_first_name'); ?>" style="color: #274471; text-decoration: none;">Tenant Name<?php echo getSortArrow('tenant_first_name'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('property_street'); ?>" style="color: #274471; text-decoration: none;">Property Address<?php echo getSortArrow('property_street'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('unit_number'); ?>" style="color: #274471; text-decoration: none;">Unit<?php echo getSortArrow('unit_number'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('program_type'); ?>" style="color: #274471; text-decoration: none;">Program Type<?php echo getSortArrow('program_type'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('expiration_date'); ?>" style="color: #274471; text-decoration: none;">Expiration Date<?php echo getSortArrow('expiration_date'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('status'); ?>" style="color: #274471; text-decoration: none;">Status<?php echo getSortArrow('status'); ?></a></th>
-                        <th><a href="<?php echo getSortUrl('monthly_rent'); ?>" style="color: #274471; text-decoration: none;">Monthly Rent<?php echo getSortArrow('monthly_rent'); ?></a></th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($leases as $lease): ?>
+
+                <table>
+                    <thead>
                         <tr>
-                            <td><a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" style="color: #274471; text-decoration: none; font-weight: bold;"><?php echo htmlspecialchars($lease['id']); ?></a></td>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Unit Number</th>
+                            <th>Program Type</th>
+                            <th>Expiration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ryan Reynolds</td>
+                            <td>123 Free Guy St.</td>
+                            <td>23</td>
+                            <td>Program #1</td>
+                            <td>10/12/25</td>
                             <td>
-                                <?php echo htmlspecialchars($lease['tenant_first_name'] . ' ' . $lease['tenant_last_name']); ?>
-                            </td>
-                            <td>
-                                <?php echo htmlspecialchars($lease['property_street']); ?><br>
-                                <small><?php echo htmlspecialchars($lease['property_city'] . ', ' . $lease['property_state'] . ' ' . $lease['property_zip']); ?></small>
-                            </td>
-                            <td><?php echo htmlspecialchars($lease['unit_number']); ?></td>
-                            <td><?php echo htmlspecialchars($lease['program_type'] ?: 'N/A'); ?></td>
-                            <td><?php echo date('M j, Y', strtotime($lease['expiration_date'])); ?></td>
-                            <td>
-                                <span class="status-<?php echo strtolower($lease['status']); ?>">
-                                    <?php echo htmlspecialchars($lease['status']); ?>
-                                </span>
-                            </td>
-                            <td><?php echo $lease['monthly_rent'] ? '$' . number_format($lease['monthly_rent'], 2) : 'N/A'; ?></td>
-                            <td>
-                                <a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" class="return-button">Edit</a>
-                                <a href="deletelease.php?id=<?php echo urlencode($lease['id']); ?>" class="delete-button">Delete</a>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                        <tr>
+                            <td>Moth Man</td>
+                            <td>456 Forest Road</td>
+                            <td>76</td>
+                            <td>Program #2</td>
+                            <td>2/13/26</td>
+                            <td>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tony Stark</td>
+                            <td>789 Avengers Tower</td>
+                            <td>54</td>
+                            <td>Program #1</td>
+                            <td>6/4/27</td>
+                            <td>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
+                            </td>
+                        </tr>
+                        <!-- Look at checkedInVolunteers.php for ideas on how to implement the backend -->
+                    </tbody>
                 </table>
             </div>
-            
-            <!-- Pagination Controls -->
-            <?php if ($total_pages > 1): ?>
-                <div class="pagination-container" style="margin-top: 20px; text-align: center;">
-                    <div class="pagination-info" style="margin-bottom: 10px; color: #666;">
-                        Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $items_per_page, $total_leases); ?> of <?php echo $total_leases; ?> leases
-                    </div>
-                    
-                    <div class="pagination-buttons">
-                        <?php if ($current_page > 1): ?>
-                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
-                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
-                        <?php endif; ?>
-                        
-                        <?php
-                        $start_page = max(1, $current_page - 2);
-                        $end_page = min($total_pages, $current_page + 2);
-                        
-                        for ($i = $start_page; $i <= $end_page; $i++):
-                        ?>
-                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
-                               style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: <?php echo $i == $current_page ? '#1e3554' : '#274471'; ?>; color: white; text-decoration: none; border-radius: 4px;">
-                                <?php echo $i; ?>
-                            </a>
-                        <?php endfor; ?>
-                        
-                        <?php if ($current_page < $total_pages): ?>
-                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
-                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
-        
-        </div>
-      </div>
 
-    </div>
-  </main>
+            <div class="mt-10 flex justify-end">
+                <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
+            </div>
+
+        </div>
 </body>
-</html>

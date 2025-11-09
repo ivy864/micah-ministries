@@ -17,7 +17,7 @@
     }
     // admin-only access
     if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
 ?>
@@ -71,7 +71,7 @@ require_once('header.php');
 
 
         <!-- Link add button to add page -->
-        <button onclick="window.location.href='addLease.php';">
+        <button onclick="window.location.href='addMaintenanceRequest.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Add Lease</div>
 	  <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
@@ -90,7 +90,7 @@ require_once('header.php');
         </button>
 
 	<div class="text-center mt-6">
-        	<a href="index.php" class="return-button">Return to Dashboard</a>
+        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
 	</div>
 
 
