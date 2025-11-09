@@ -6,7 +6,7 @@
 </head>
 <body>
     <h2>This is where you edit user login info.</h2>
-    <a href="index.php">Return to Portal</a>
+    <a href="micahportal.php">Return to Portal</a>
 </body>
 </html>
 
