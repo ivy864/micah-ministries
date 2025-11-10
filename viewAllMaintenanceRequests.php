@@ -369,6 +369,31 @@ require_once('header.php');
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
                             <td>
+                                <?php 
+                                    // [ADDED 2025-11-09] Start button: mark Pending requests as In Progress.
+                                    // Visible to Maintenance Staff (1), Case Managers (2), and Admin (3) on non-archived "Pending" items.
+                                    if (!$view_archived 
+                                        && (strtolower($request->getStatus()) === 'pending') 
+                                        && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)) : ?>
+                                    <a href="startMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+   style="background-color:#007bff;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">
+   Start
+</a>
+                                <?php endif; ?>
+
+                                
+                                <?php 
+                                    // [UPDATED 2025-11-09] Complete button: now rendered as <a> with the same inline styles as Archive for identical sizing.
+                                    // Visible to Maintenance Staff (1), Case Managers (2), and Admin (3) on non-archived "In Progress" items.
+                                    if (!$view_archived 
+                                        && (strtolower($request->getStatus()) === 'in progress') 
+                                        && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)) : ?>
+                                    <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+   style="background-color:#22863a;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">
+   Complete
+</a>
+                                <?php endif; ?>
+
                                 <?php if (!$view_archived && ($request->getStatus() == 'Completed')): ?>
                                     <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
    style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
