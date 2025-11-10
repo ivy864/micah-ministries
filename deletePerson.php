@@ -45,6 +45,13 @@ $loggedIn = false;
     } else {
         $id = $userID;
     }
+
+    // Prevent users from deleting their own profile
+    if ($id == $userID) {
+        header('Location: viewProfile.php');
+        die();
+    }
+
     require_once('database/dbPersons.php');
     if (isset($_GET['removePic'])) {
       if ($_GET['removePic'] === 'true') {
