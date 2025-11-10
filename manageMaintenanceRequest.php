@@ -227,7 +227,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Micah Ministries | Manage Maintenance Request</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
   <script src="js/comment.js?v=<?php echo time(); ?>"></script>
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
@@ -558,9 +558,8 @@ require_once('header.php');
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>Manage Maintenance Request</h1>
-        <div class="div-blue"></div>
-        <p>
+        <h1 class="main-text">Manage Maintenance Request</h1>
+        <p class="secondary-text">
           View and edit maintenance request details. Use the form below to update request information.
         </p>
         

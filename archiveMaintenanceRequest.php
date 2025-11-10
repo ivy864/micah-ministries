@@ -42,86 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive']) && $reques
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archive Maintenance Request</title>
-    <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-  .confirm-card {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    border-radius: 6px;
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  .btn-primary {
-    background-color: #274471;
-    color: white !important;
-    padding: 10px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    display: inline-block;
-  }
-  .btn-primary:hover { background-color: #1e3554; }
-  .btn-danger {
-    background-color: #dc3545;
-    color: white !important;
-    padding: 10px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    display: inline-block;
-    margin-left: 10px;
-  }
-  .btn-danger:hover { background-color: #b02a37; }
-  .form-container {
-    max-width: 720px;
-    width: 100%;
-    margin: 10px auto;
-    padding: 16px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.10);
-    border: 2px solid #274471;
-  }
-  .alert {
-    padding: 12px 16px;
-    border-radius: 6px;
-    margin-bottom: 16px;
-  }
-  .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-  }
-  .alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-  }
-  .sections { flex-direction: row !important; gap: 10px !important; }
-  main { margin-top: 0 !important; padding: 10px !important; }
-  .button-section { width: 0% !important; display: none !important; }
-  .text-section { width: 100% !important; }
-  .text-section h1 { margin-bottom: 6px !important; }
-  .text-section p { margin-bottom: 10px !important; }
-</style>
 </head>
 <body>
   <main>
     <div class="sections">
       <div class="button-section"></div>
       <div class="text-section">
-        <h1>Archive Maintenance Request</h1>
-        <div class="div-blue"></div>
-        <p>Confirm archival of this maintenance request.</p>
+        <h1 class="main-text">Archive Maintenance Request</h1>
+        <p class="secondary-text">Confirm archival of this maintenance request.</p>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
         <?php if ($error): ?><div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
@@ -135,12 +68,12 @@ require_once('header.php');
             </div>
 
             <form method="POST" action="">
-              <button type="submit" name="archive" class="btn-primary">Archive Maintenance Request</button>
-              <a href="viewAllMaintenanceRequests.php" class="btn-danger">Cancel</a>
+              <button type="submit" name="archive" class="blue-button">Archive Maintenance Request</button>
+              <a href="viewAllMaintenanceRequests.php" class="delete-button">Cancel</a>
             </form>
           <?php else: ?>
             <div class="confirm-card">
-              We couldn’t find that maintenance request. <a href="viewAllMaintenanceRequests.php" class="btn-primary" style="margin-left:8px;">Back to List</a>
+              We couldn’t find that maintenance request. <a href="viewAllMaintenanceRequests.php" class="blue-button" style="margin-left:8px;">Back to List</a>
             </div>
           <?php endif; ?>
         </div>

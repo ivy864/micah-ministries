@@ -87,142 +87,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Lease</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/base.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .form-container {
-            max-width: none !important;
-            width: 100% !important;
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            border-radius: 0;
-            box-shadow: none;
-        }
-        
-        /* force layout changes - full width form */
-        .sections {
-            flex-direction: row !important;
-            gap: 10px !important;
-        }
-        
-        /* adjust main content since hero is removed */
-        main {
-            margin-top: 0 !important;
-            padding: 10px !important;
-        }
-        
-        .button-section {
-            width: 0% !important;
-            display: none !important;
-        }
-        
-        .text-section {
-            width: 100% !important;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 25px;
-        }
-        
-        .form-group {
-            flex: 1;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        
-        .form-group textarea {
-            height: 100px;
-            resize: vertical;
-        }
-        
-        .form-buttons {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .btn-primary {
-            background: #274471;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 15px;
-        }
-        
-        .btn-primary:hover {
-            background: #1e3554;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            padding: 12px 30px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .required {
-            color: #dc3545;
-        }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
-
 </head>
 
 <body>
-
-  <!-- Hero Section - Removed to save space -->
-  <!-- <header class="hero-header"></header> -->
 
   <!-- Main Content -->
   <main>
@@ -234,9 +108,9 @@ require_once('header.php');
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>Create New Lease</h1>
+        <h1 class="main-text">Create New Lease</h1>
         <div class="div-blue"></div>
-        <p>
+        <p class="secondary-text">
           Submit a new lease agreement. Fill out the form below with all required information.
         </p>
         
@@ -348,8 +222,8 @@ require_once('header.php');
                 
                 
                 <div style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="btn-primary">Create Lease</button>
-                    <a href="leaseman.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                    <button type="submit" class="blue-button">Create Lease</button>
+                    <a href="leaseman.php" class="gray-button" style="margin-left: 10px;">Cancel</a>
                 </div>
             </form>
         </div>

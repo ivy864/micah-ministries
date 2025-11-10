@@ -53,15 +53,17 @@
 ?>
 <!DOCTYPE html>
 <html>
-    <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+    <head>     
+        
+        <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
         <?php require_once('universal.inc') ?>
         <title>Fredericksburg SPCA | Event Search</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1>Event Search</h1>
-        <main class="search-form">
+        <h1 class="main-text">Event Search</h1>
+        <div class="form-container">
             <?php
                 if (isset($events)) {
                     echo '<h2>' . $search . '</h2>';
@@ -92,21 +94,33 @@
                     }
                 }
             ?>
-            <h2>Search for an Event</h2>
+            <p class="secondary-text">Search for an Event</p>
             <form method="post">
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" placeholder="Enter event name" required>
-                <input type="submit" name="submitName" id="submitName" value="Search by Name">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" id="name" placeholder="Enter event name" required>
+                    </div>
+                </div>
+                <input type="submit" class="blue-button" name="submitName" id="submitName" value="Search by Name">
             </form>
             <form id="event-date-range-search" method="post">
-                <label for="date-start">Date Range Start</label>
-                <input type="date" name="date-start" id="date-start" required>
-                <label for="date-end">Date Range End</label>
-                <input type="date" name="date-end" id="date-end" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date-start">Date Range Start</label>
+                        <input type="date" name="date-start" id="date-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date-end">Date Range End</label>
+                        <input type="date" name="date-end" id="date-end" required>
+                    </div>
+                </div>
                 <p id="date-range-error" class="error hidden">Start date must come before end date</p>
-                <input type="submit" name="submitDateRange" id="submitDateRange" value="Search by Date Range">
+                <div>
+                    <input type="submit" class="blue-button" name="submitDateRange" id="submitDateRange" value="Search by Date Range">
+                    <a class="gray-button" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
+                </div>
             </form>
-            <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
-        </main>
+            </div>
     </body>
 </html>
