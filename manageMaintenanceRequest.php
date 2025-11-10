@@ -15,12 +15,7 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: micahportal.php');
-        die();
-    }
-
+    
     require_once('domain/Comment.php');
     require_once('database/dbComments.php');
 
@@ -87,9 +82,9 @@
         exit();
     }
     
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: micahportal.php');
+    // maintenance staff and above can access
+    if ($accessLevel < 1) {
+        header('Location: index.php');
         die();
     }
 

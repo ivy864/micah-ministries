@@ -16,7 +16,7 @@
         header('Location: login.php');
         die();
     } else if ($accessLevel < 2) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
     require_once('include/input-validation.php');

@@ -132,12 +132,23 @@
                 <?php die() ?>
             <?php endif ?>
             <?php if (isset($_GET['editSuccess'])): ?>
-                <div class="bg-green-100 border border-greed-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
                         Profile Updated Successfully!
                 </div>
                 <script>
                     setTimeout(() => {
-                        const msg = document.querySelector('.fixed.top-4.right-4');
+                        const msg = document.querySelector('.bg-green-100');
+                        if (msg) msg.remove();
+                    }, 5000);
+                </script>
+            <?php endif ?>
+            <?php if (isset($_GET['noChanges'])): ?>
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-6 py-4 rounded-lg shadow-lg text-center">
+                        No changes were made to the profile.
+                </div>
+                <script>
+                    setTimeout(() => {
+                        const msg = document.querySelector('.bg-blue-100');
                         if (msg) msg.remove();
                     }, 5000);
                 </script>
@@ -200,15 +211,11 @@
                         Edit Profile
                     </button>
 
-                    <?php if ($id != $userID): ?>
+                    <?php if ($viewingOwnProfile): ?>
                         <?php if (($accessLevel == 2 && $user->get_access_level() == 1) || $accessLevel >= 3): ?>
                             <button onclick="window.location.href='managePassword.php?user_id=<?php echo htmlspecialchars($id) ?>';" 
                                     class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
                                 Change Password
-                            </button>
-                            <button onclick="window.location.href='deletePerson.php<?php if ($id != $userID) echo '?id=' . $id ?>';" 
-                                    class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200 font-medium">
-                                Delete User
                             </button>
                         <?php endif ?>
                     <?php else: ?>
