@@ -412,7 +412,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                 </div>
                 
                 <div style="margin-top: 20px; text-align: center;">
-                    <a href="micahportal.php" class="btn-secondary">Return to Dashboard</a>
+                    <a href="index.php" class="btn-secondary">Return to Dashboard</a>
                 </div>
             </form>
         </div>

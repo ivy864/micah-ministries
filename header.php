@@ -762,7 +762,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['editlease.php'] = 2;
         $permission_array['deletelease.php'] = 2;
         $permission_array['archivemaintenancerequest.php'] = 2;
-        $permission_array['unarchivemaintenancerequest.php'] = 2;
+        $permission_array['restoreMaintenancerequest.php'] = 2;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
@@ -847,6 +847,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['micahportal.php'] = 1;
         $permission_array['viewarchive.php'] = 2;
         $permission_array['requesthistory.php'] = 2;
+        $permission_array['completemaintenancerequest.php'] = 1;
         
         // LOWERCASE
 

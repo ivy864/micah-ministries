@@ -368,46 +368,71 @@ require_once('header.php');
 
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
-                            <td>
-                                <?php 
-                                    // [ADDED 2025-11-09] Start button: mark Pending requests as In Progress.
-                                    // Visible to Maintenance Staff (1), Case Managers (2), and Admin (3) on non-archived "Pending" items.
-                                    if (!$view_archived 
-                                        && (strtolower($request->getStatus()) === 'pending') 
-                                        && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)) : ?>
-                                    <a href="startMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#007bff;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">
-   Start
-</a>
-                                <?php endif; ?>
+<td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
+    <?php if (!$view_archived): ?>
+        <!-- Start (only for Pending requests) -->
+        <?php if (strtolower($request->getStatus()) === 'pending' && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)): ?>
+            <a href="startMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+               style="background-color:#007bff;color:white;padding:6px 12px;border-radius:4px;
+                      text-decoration:none;font-weight:bold;flex-shrink:0;">
+               Start
+            </a>
+        <?php endif; ?>
 
-                                
-                                <?php 
-                                    // [UPDATED 2025-11-09] Complete button: now rendered as <a> with the same inline styles as Archive for identical sizing.
-                                    // Visible to Maintenance Staff (1), Case Managers (2), and Admin (3) on non-archived "In Progress" items.
-                                    if (!$view_archived 
-                                        && (strtolower($request->getStatus()) === 'in progress') 
-                                        && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)) : ?>
-                                    <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#22863a;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">
-   Complete
-</a>
-                                <?php endif; ?>
+        <!-- Mark Complete -->
+        <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Mark Complete
+        </a>
 
-                                <?php if (!$view_archived && ($request->getStatus() == 'Completed')): ?>
-                                    <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
-   Archive
-</a>
-                                <?php elseif($view_archived): ?>
-                                    <a href="unarchiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-   style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-weight:bold;">
-   Unarchive
-</a>
+        <!-- Edit -->
+        <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
+           style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
+           onmouseover="this.style.backgroundColor='#5a6268';"
+           onmouseout="this.style.backgroundColor='#6c757d';">
+           Edit
+        </a>
 
-                                <?php endif; ?>
-                            </td>
+        <!-- Delete -->
+        <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Delete
+        </a>
 
+        <!-- Archive -->
+        <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Archive
+        </a>
+    <?php else: ?>
+        <!-- Edit -->
+        <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
+           style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
+           onmouseover="this.style.backgroundColor='#5a6268';"
+           onmouseout="this.style.backgroundColor='#6c757d';">
+           Edit
+        </a>
+
+        <!-- Delete (Archived view: permanent delete) -->
+        <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Delete
+        </a>
+
+        <!-- Restore -->
+        <a href="restoreMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
+                  text-decoration:none;font-weight:bold;flex-shrink:0;">
+           Restore
+        </a>
+    <?php endif; ?>
+</td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
