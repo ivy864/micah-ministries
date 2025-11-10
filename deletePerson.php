@@ -45,10 +45,16 @@ $loggedIn = false;
     } else {
         $id = $userID;
     }
+
+    // Prevent users from deleting their own profile
+    if ($id == $userID) {
+        header('Location: viewProfile.php');
+        die();
+    }
+
     require_once('database/dbPersons.php');
     if (isset($_GET['removePic'])) {
       if ($_GET['removePic'] === 'true') {
-        remove_profile_picture($id);
       }
     }
 
@@ -60,7 +66,7 @@ $loggedIn = false;
 <html>
     <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-        <meta HTTP-EQUIV="REFRESH" content="2; url=index.php">
+        <meta HTTP-EQUIV="REFRESH" content="2; url=micahportal.php">
 
         <?php require('universal.inc') ?>
     </head>

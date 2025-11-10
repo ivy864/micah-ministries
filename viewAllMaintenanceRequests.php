@@ -368,16 +368,25 @@ require_once('header.php');
 
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
-                           <td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
+<td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
     <?php if (!$view_archived): ?>
-        <!-- Mark Complete (active view only) -->
+        <!-- Start (only for Pending requests) -->
+        <?php if (strtolower($request->getStatus()) === 'pending' && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)): ?>
+            <a href="startMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
+               style="background-color:#007bff;color:white;padding:6px 12px;border-radius:4px;
+                      text-decoration:none;font-weight:bold;flex-shrink:0;">
+               Start
+            </a>
+        <?php endif; ?>
+
+        <!-- Mark Complete -->
         <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
            style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Mark Complete
         </a>
 
-        <!-- Edit (gray button, always shown) -->
+        <!-- Edit -->
         <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
            style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
@@ -386,21 +395,21 @@ require_once('header.php');
            Edit
         </a>
 
-        <!-- Delete (active view only) -->
+        <!-- Delete -->
         <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
            style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Delete
         </a>
 
-        <!-- Archive (active view only; far right) -->
+        <!-- Archive -->
         <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
            style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Archive
         </a>
     <?php else: ?>
-        <!-- Edit (gray button, archived view) -->
+        <!-- Edit -->
         <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
            style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;transition:background-color 0.2s;flex-shrink:0;"
@@ -409,14 +418,14 @@ require_once('header.php');
            Edit
         </a>
 
-        <!-- Delete (archived view) -->
+        <!-- Delete (Archived view: permanent delete) -->
         <a href="deleteMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
            style="background-color:#dc3545;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Delete
         </a>
 
-        <!-- Restore (archived view only; far right) -->
+        <!-- Restore -->
         <a href="restoreMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
            style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
@@ -424,8 +433,6 @@ require_once('header.php');
         </a>
     <?php endif; ?>
 </td>
-
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
