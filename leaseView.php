@@ -109,186 +109,21 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
+<head>     
+    
+  <link rel="icon" type="image/png" href="images/micah-favicon.png">
+  <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View All Leases</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
-  <link href="css/normal_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+ 
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	.dropdown {
-	    padding-right: 50px;
-	}
-	
-	.lease-table {
-	    width: 100%;
-	    border-collapse: collapse;
-	    margin-top: 20px;
-	}
-	
-	.lease-table th,
-	.lease-table td {
-	    border: 1px solid #ddd;
-	    padding: 8px;
-	    text-align: left;
-	}
-	
-	.lease-table th {
-	    background-color: #274471;
-	    color: white;
-	    font-weight: bold;
-	}
-	
-	.lease-table th a {
-	    color: white !important;
-	    text-decoration: none;
-	    display: block;
-	    width: 100%;
-	}
-	
-	.lease-table th a:hover {
-	    color: #ffd700 !important;
-	    text-decoration: underline;
-	}
-	
-	.lease-table td a {
-	    color: #274471;
-	    text-decoration: none;
-	    font-weight: bold;
-	}
-	
-	.lease-table td a:hover {
-	    color: #1e3554;
-	    text-decoration: underline;
-	}
-	
-	.lease-table tr:nth-child(even) {
-	    background-color: #f2f2f2;
-	}
-	
-	.status-active {
-	    color: #28a745;
-	    font-weight: bold;
-	}
-	
-	.status-expired {
-	    color: #dc3545;
-	    font-weight: bold;
-	}
-	
-	.status-terminated {
-	    color: #6c757d;
-	    font-weight: bold;
-	}
-	
-	/* full width layout overrides */
-	.sections {
-	    flex-direction: row !important;
-	    gap: 10px !important;
-	}
-	
-	.button-section {
-	    width: 0% !important;
-	    display: none !important;
-	}
-	
-	.text-section {
-	    width: 100% !important;
-	}
-	
-	/* adjust main content with hero - closer spacing */
-	main {
-	    margin-top: calc(var(--spacing) * -20) !important;
-	    padding: 10px !important;
-	}
-	
-	/* make hero header shorter to move heading closer to content */
-	.hero-header {
-	    height: calc(var(--spacing) * 50) !important;
-	}
-	
-	/* compact text section */
-	.text-section h1 {
-	    margin-bottom: 5px !important;
-	}
-	
-	.text-section p {
-	    margin-bottom: 10px !important;
-	}
-	
-	/* table improvements */
-	.lease-table {
-	    width: 100% !important;
-	    margin-top: 10px !important;
-	}
-	
-	.lease-table th,
-	.lease-table td {
-	    padding: 6px !important;
-	    font-size: 13px !important;
-	}
-	
-	/* ensure table fits in box */
-	.overflow-x-auto {
-	    overflow-x: auto !important;
-	}
-	
-	/* ensure center header text is white and centered */
-	.center-header h1 {
-	    color: white !important;
-	    font-size: 2rem !important;
-	    font-weight: bold !important;
-	    text-align: center !important;
-	    margin-top: 5rem !important;
-	}
-	
-	/* ensure main-content-box styling is applied */
-	.main-content-box {
-	    background-color: white !important;
-	    border: 2px solid #d1d5db !important;
-	    border-radius: 0.75rem !important;
-	    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
-	    padding: 1.5rem !important;
-	}
-
-    /* minimal, on-brand filter bar */
-    .filter-bar {
-        display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-        margin: 6px 0 4px 0; padding: 8px 10px;
-        background: #f7f9fc; border: 1px solid #e5e7eb; border-radius: 8px;
-    }
-    .filter-bar label { font-weight: 600; color: #274471; }
-    .filter-bar select {
-        padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff;
-    }
-    .filter-bar .apply-btn,
-    .filter-bar .reset-btn {
-        display:inline-block; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:600;
-        border: 1px solid transparent;
-    }
-    .filter-bar .apply-btn { background:#274471; color:#fff; }
-    .filter-bar .apply-btn:hover { opacity: .95; }
-    .filter-bar .reset-btn { background:#9aa7bd; color:#fff; }
-    .filter-bar .reset-btn:hover { opacity: .95; }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 <body>
@@ -311,7 +146,7 @@ require_once('header.php');
       <!-- Text Section -->
       <div class="text-section">
         <div class="main-content-box p-6">
-          <p style="margin-bottom: 10px;">
+          <p class="secondary-text" style="margin-bottom: 10px; text-align: left;">
             View and manage all leases. Use the table below to see lease details, tenant information, and property details.
           </p>
 
@@ -344,7 +179,7 @@ require_once('header.php');
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
-                <table class="lease-table">
+                <table class="sortable-table">
                 <thead>
                     <tr>
                         <th><a href="<?php echo getSortUrl('id'); ?>" style="color: #274471; text-decoration: none;">Lease ID<?php echo getSortArrow('id'); ?></a></th>

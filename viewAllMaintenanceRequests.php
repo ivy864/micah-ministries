@@ -82,187 +82,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View All Maintenance Requests</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	.dropdown {
-	    padding-right: 50px;
-	}
-	
-	.maintenance-table {
-	    width: 100%;
-	    border-collapse: collapse;
-	    margin-top: 20px;
-	}
-	
-	.maintenance-table th,
-	.maintenance-table td {
-	    border: 1px solid #ddd;
-	    padding: 8px;
-	    text-align: left;
-	}
-	
-	.maintenance-table th {
-	    background-color: #274471;
-	    color: white;
-	    font-weight: bold;
-	}
-	
-	.maintenance-table th a {
-	    color: white !important;
-	    text-decoration: none;
-	    display: block;
-	    width: 100%;
-	}
-	
-	.maintenance-table th a:hover {
-	    color: #ffd700 !important;
-	    text-decoration: underline;
-	}
-	
-	.maintenance-table td a {
-	    color: #274471;
-	    text-decoration: none;
-	    font-weight: bold;
-	}
-	
-	.maintenance-table td a:hover {
-	    color: #1e3554;
-	    text-decoration: underline;
-	}
-	
-	.maintenance-table tr:nth-child(even) {
-	    background-color: #f2f2f2;
-	}
-	
-	.priority-high {
-	    color: #dc3545;
-	    font-weight: bold;
-	}
-	
-	.priority-medium {
-	    color: #ffc107;
-	    font-weight: bold;
-	}
-	
-	.priority-low {
-	    color: #28a745;
-	}
-	
-	.priority-emergency {
-	    color: #dc3545;
-	    font-weight: bold;
-	    background-color: #f8d7da;
-	}
-	
-	.status-pending {
-	    color: #ffc107;
-	    font-weight: bold;
-	}
-	
-	.status-in-progress {
-	    color: #17a2b8;
-	    font-weight: bold;
-	}
-	
-	.status-completed {
-	    color: #28a745;
-	    font-weight: bold;
-	}
-	
-	.status-cancelled {
-	    color: #6c757d;
-	}
-	
-	/* full width layout overrides */
-	.sections {
-	    flex-direction: row !important;
-	    gap: 10px !important;
-	}
-	
-	.button-section {
-	    width: 0% !important;
-	    display: none !important;
-	}
-	
-	.text-section {
-	    width: 100% !important;
-	}
-	
-	/* adjust main content with hero - closer spacing */
-	main {
-	    margin-top: calc(var(--spacing) * -20) !important;
-	    padding: 10px !important;
-	}
-	
-	/* make hero header shorter to move heading closer to content */
-	.hero-header {
-	    height: calc(var(--spacing) * 50) !important;
-	}
-	
-	/* compact text section */
-	.text-section h1 {
-	    margin-bottom: 5px !important;
-	}
-	
-	.text-section p {
-	    margin-bottom: 10px !important;
-	}
-	
-	/* table improvements */
-	.maintenance-table {
-	    width: 100% !important;
-	    margin-top: 10px !important;
-	}
-	
-	.maintenance-table th,
-	.maintenance-table td {
-	    padding: 6px !important;
-	    font-size: 13px !important;
-	}
-	
-	/* ensure table fits in box */
-	.overflow-x-auto {
-	    overflow-x: auto !important;
-	}
-	
-	/* ensure center header text is white and centered */
-	.center-header h1 {
-	    color: white !important;
-	    font-size: 2rem !important;
-	    font-weight: bold !important;
-	    text-align: center !important;
-	    margin-top: 5rem !important;
-	}
-	
-	/* ensure main-content-box styling is applied */
-	.main-content-box {
-	    background-color: white !important;
-	    border: 2px solid #d1d5db !important;
-	    border-radius: 0.75rem !important;
-	    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
-	    padding: 1.5rem !important;
-	}
-</style>
-
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 
@@ -289,7 +115,7 @@ require_once('header.php');
         <div class="main-content-box p-6">
            
 
-          <p style="margin-bottom: 20px;">
+          <p class="secondary-text" style="margin-bottom: 20px;">
             View and manage all maintenance requests. Use the table below to see request details, status, and priority levels.
           </p>
         
@@ -300,12 +126,12 @@ require_once('header.php');
         <div style="margin-bottom: 15px;">
         <?php if (!$view_archived): ?>
             <a href="<?php echo $self; ?>?archived=1"
-            style="background-color:#274471;color:white;padding:8px 15px;border-radius:5px;text-decoration:none;">
+            style="background-color: var(--main-color);color:white;padding:8px 15px;border-radius:5px;text-decoration:none;">
             View Archived Requests
             </a>
         <?php else: ?>
             <a href="<?php echo $self; ?>"
-            style="background-color:#274471;color:white;padding:8px 15px;border-radius:5px;text-decoration:none;">
+            style="background-color: var(--main-color);color:white;padding:8px 15px;border-radius:5px;text-decoration:none;">
             Back to Active Requests
             </a>
         <?php endif; ?>
@@ -319,7 +145,7 @@ require_once('header.php');
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
-                <table class="maintenance-table">
+                <table class="sortable-table">
                 <thead>
                     <tr>
                         <th><a href="<?php echo getSortUrl('id'); ?>" style="color: #274471; text-decoration: none;">ID<?php echo getSortArrow('id'); ?></a></th>

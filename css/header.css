@@ -1,0 +1,497 @@
+@import 'base.css';
+
+body {
+    font-family: Quicksand, sans-serif;
+    padding-top: 96px;
+}
+
+/* Standard styling for management pages */
+.date-box {
+    background: var(--main-color);
+    padding: 7px 30px;
+    border-radius: 50px;
+    box-shadow: -4px 4px 4px var(--box-shadow) inset;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+.dropdown {
+    padding-right: 50px;
+}
+
+/* Hero header styling */
+.hero-header {
+    background: var(--main-color);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+.center-header h1 {
+    color: white !important;
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin: 0 !important;
+}
+
+/* Main content styling */
+.main-content-box {
+    background-color: white !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 10px 15px -3px var(--box-shadow), 0 4px 6px -4px var(--box-shadow) !important;
+    padding: 1.5rem !important;
+}
+
+.full-width-bar {
+    width: 100%;
+    background: var(--main-color);
+    padding: 17px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.full-width-bar-sub {
+    width: 100%;
+    background: white;
+    padding: 17px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.content-box {
+    flex: 1 1 280px; /* Adjusts width dynamically */
+    max-width: 375px;
+    padding: 10px 2px; /* Altered padding to make closer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.content-box-sub {
+    flex: 1 1 300px; /* Adjusts width dynamically */
+    max-width: 470px;
+    padding: 10px 10px; /* Altered padding to make closer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.content-box img {
+    width: 100%;
+    height: auto;
+    background: white;
+    border-radius: 5px;
+    border-bottom-right-radius: 50px;
+    border: 0.5px solid #828282;
+}
+
+.content-box-sub img {
+    width: 105%;
+    height: auto;
+    background: white;
+    border-radius: 5px;
+    border-bottom-right-radius: 50px;
+    border: 1px solid #828282;
+}
+
+.small-text {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--main-color);
+}
+
+.large-text {
+    position: absolute;
+    top: 40px;
+    left: 30px;
+    font-size: 22px;
+    font-weight: 700;
+    color: black;
+    max-width: 90%;
+}
+
+.large-text-sub {
+    position: absolute;
+    /*top: 120px;*/
+    top: 60%;
+    left: 10%;
+    font-size: 22px;
+    font-weight: 700;
+    color: black;
+    max-width: 90%;
+}
+
+.graph-text {
+    position: absolute;
+    top: 75%;
+    left: 10%;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--main-color);
+    max-width: 90%;
+}
+
+/* Navbar Container */
+.navbar {
+gap: 10px;
+    width: 100%;
+    height: 95px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: white;
+    box-shadow: 0px 2px 8px var(--box-shadow);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+/* Left Section: Logo & Nav Links */
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Space between logo and links */
+}
+
+.logo-container img#logo {
+    width: 52px;
+    height: auto;
+    display: block;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links div {
+    font-size: 24px;
+    font-weight: 700;
+    color: black;
+    cursor: pointer;
+}
+
+/* Right Section: Date & Icon */
+.right-section {
+    margin-left: auto; /* Pushes right section to the end */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Dropdown Control */
+.nav-item {
+    position: relative;
+    cursor: pointer;
+    padding: 0px;
+    transition: color 0.3s, outline 0.3s;
+}
+
+
+.dropdown {
+display: none;
+position: absolute;
+top: calc(100% + 8px);   /* sit just below the nav item */
+left: 0;                 /* align with the left edge of the nav item */
+background-color: white;
+border: 1px solid #ccc;
+box-shadow: 0 2px 5px var(--box-shadow);
+border-radius: 5px;
+
+width: max-content;      
+min-width: 150px;        
+white-space: nowrap;     
+box-sizing: border-box;  
+z-index: 2000;
+padding: 10px;
+}
+.dropdown div {
+    padding: 8px;
+    white-space: nowrap;
+    transition: background 0.3s;
+}
+.dropdown div:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.nav-item:hover, .nav-item.active {
+    color: #7aacf5;
+    outline: 1px solid #7aacf5;
+    outline-offset: 7px;
+}
+
+.date-box {
+    background: var(--main-color);
+    padding: 10px 30px;
+    border-radius: 50px;
+    box-shadow: -4px 4px 4px var(--box-shadow) inset;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.icon {
+    width: 47px;
+    height: 47px;
+    border-radius: 50%;
+
+}
+.nav-buttons {
+position: absolute;
+bottom: 10%; /* Adjust as needed */
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 15px;
+justify-content: center;
+width: 100%;
+}
+
+/* Button Styling */
+.nav-button {
+background: var(--main-color);
+border: none;
+color: white;
+font-size: 20px;
+font-family: 'Quicksand', sans-serif;
+font-weight: 600;
+border-radius: 20px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: all 0.4s ease-in-out;
+backdrop-filter: blur(8px);
+padding: 6px 8px;
+padding-top: 10px;
+width: 55px; /* Initially a circle */
+overflow: hidden;
+white-space: nowrap;
+box-shadow: 0 4px 8px var(--box-shadow);
+}
+
+/* Expand button on hover */
+.nav-button:hover {
+width: 160px;
+padding: 6px 8px;
+padding-top: 10px
+}
+
+.nav-button .text {
+opacity: 0;
+transform: translateX(-10px);
+transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.nav-button:hover .text {
+opacity: 1;
+transform: translateX(0);
+}
+
+.nav-button .arrow {
+display: inline-block;
+transition: transform 0.3s ease;
+}
+
+.nav-button:hover .arrow {
+transform: translateX(5px);
+}
+/* Button Control */
+.arrow-button {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.arrow-button:hover {
+    transform: translateX(5px); /* Moves the arrow slightly on hover */
+}
+
+/* Footer */
+.footer {
+    width: 100%;
+    background: var(--main-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 30px 50px;
+    flex-wrap: wrap;
+}
+
+/* Left Section */
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer-logo {
+    width: 150px; /* Adjust logo size */
+    margin-bottom: 15px;
+}
+
+/* Social Media Icons */
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: white;
+    font-size: 20px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #dcdcdc;
+}
+
+/* Right Section */
+.footer-right {
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: white;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.footer-topic {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.footer a {
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.footer a:hover {
+    background: var(--box-shadow);
+    color: #dcdcdc;
+}
+
+/* Icon Overlay */
+.background-image {
+    width: 100%;
+    border-radius: 17px;
+}
+
+.icon-overlay {
+    position: absolute;
+    top: 40px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.8); /* Optional background for better visibility */
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-overlay img {
+    width: 40px; /* Adjust size as needed */
+    height: 40px;
+    opacity: 0.9;
+}
+
+.nav-item img {
+    border-radius: 15px;
+    transition: filter 0.3s, background-color 0.3s;
+}
+
+.nav-item:hover img, .nav-item.active img {
+    filter: none;
+    background-color: #cbe0ff;
+}
+
+.icon .dropdown{
+    top: 130%;
+    left: -415%;
+}
+
+.in-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.in-nav span {
+font-size:24px;
+}
+
+.in-nav img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    border-bottom-right-radius: 20px;
+}
+
+/* for calendar */
+.icon-butt svg {
+transition: transform 0.2s ease, fill 0.2s ease;
+cursor: pointer;
+}
+
+.icon-butt:hover svg {
+transform: scale(1.1) rotate(5deg); /* Slight enlarge & tilt effect */
+fill: #7aacf5; /* Changes to a blue shade */
+}
+
+.font-change {
+font-size: 30px;
+font-family: Quicksand;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 0px) {
+.content-box-test {
+flex: 1 1 300px;
+}
+}
+
+@media (max-width: 900px) {
+    .footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .footer-right {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+}
