@@ -66,24 +66,13 @@ $loggedIn = false;
 <html>
     <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-        <meta HTTP-EQUIV="REFRESH" content="2; url=micahportal.php">
+        <meta HTTP-EQUIV="REFRESH" content="2; url=index.php">
 
         <?php require('universal.inc') ?>
     </head>
     <body>
-        <nav>
-            <span id="nav-top">
-                <span class="logo">
-                    <img src="images/FredSCPAlogo.png">
-                        <span id="vms-logo"> Fredericksburg SPCA Volunteer </span>
-                        </span>
-                    <img id="menu-toggle" src="images/menu.png">
-                </span>
-            </span>
-        </nav>
         <main>
-
-                <p class="happy-toast centered">This <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?> has been deleted.</p>
+                <div class="alert alert-success">This <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?> has been deleted.</div>
                 <?php
                 remove_person($user->get_id());
                 ?>
