@@ -96,7 +96,7 @@ require_once('header.php');
             </div>
 
             <form method="POST" action="">
-              <button type="submit" name="restore" class="blue-button">Unarchive Maintenance Request</button>
+              <button type="submit" name="restore" class="blue-button">Restore Maintenance Request</button>
               <a href="viewAllMaintenanceRequests.php?archived=1" class="delete-button">Cancel</a>
             </form>
           <?php else: ?>
