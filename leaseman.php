@@ -17,7 +17,7 @@
     }
     // admin-only access
     if ($accessLevel < 2) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
 ?>

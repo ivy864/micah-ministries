@@ -1,7 +1,7 @@
 <?php
 
 include_once('dbinfo.php');
-include_once('../domain/Comment.php');
+include_once(dirname(__FILE__) . '/../domain/Comment.php');
 
 function get_comments($requestID) {
     $con = connect();

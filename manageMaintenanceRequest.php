@@ -15,26 +15,76 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-
+    
     require_once('domain/Comment.php');
     require_once('database/dbComments.php');
 
     // if writecomment is set to true in request header, write a comment to database
-    if ($_SERVER['HTTP_WRITECOMMENT'] == 'True') {
-        $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
-        add_comment($cmnt);
-        // sends comment data back to requester so it can be rendered client-side
-        echo $cmnt->toJSON();
-        // don't render the rest of the page
+    if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+        // Start output buffering to capture any unwanted output
+        ob_start();
+        
+        // Suppress any PHP errors/warnings that might output HTML
+        error_reporting(0);
+        ini_set('display_errors', 0);
+        
+        // Clear any previous output
+        ob_clean();
+        
+        // Set proper headers for JSON response
+        header('Content-Type: application/json');
+        
+        // Debug: Log what we received
+        error_log("Comment submission received. UserID: " . $userID . ", RequestID: " . $_GET['id'] . ", Comment: " . $_POST['comment']);
+        
+        try {
+            $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
+            $result = add_comment($cmnt);
+            
+            if ($result) {
+                // Debug: Log the result
+                error_log("Comment add result: success");
+                
+                // Get the JSON response
+                $jsonResponse = $cmnt->toJSON();
+                error_log("JSON response: " . $jsonResponse);
+                
+                // Clear any output buffer and send clean JSON
+                ob_clean();
+                echo $jsonResponse;
+            } else {
+                // Debug: Log the result
+                error_log("Comment add result: failed");
+                
+                // Return error response
+                ob_clean();
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to save comment']);
+            }
+        } catch (Exception $e) {
+            error_log("Comment submission error: " . $e->getMessage());
+            ob_clean();
+            http_response_code(500);
+            echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
+        }
+        
+        // End output buffering and don't render the rest of the page
+        ob_end_flush();
         exit();
     }
-    if ($_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+    if (isset($_SERVER['HTTP_DELETECOMMENT']) && $_SERVER['HTTP_DELETECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], '', $_POST['time']);
+        delete_comment($cmnt);
+
+        exit();
+    }
+    if (isset($_SERVER['HTTP_GETCOMMENTS']) && $_SERVER['HTTP_GETCOMMENTS'] == 'True') {
         exit();
     }
     
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: micahportal.php');
+    // maintenance staff and above can access
+    if ($accessLevel < 1) {
+        header('Location: index.php');
         die();
     }
 
@@ -68,8 +118,8 @@
     
     // helper function to render form fields
     function renderField($type, $name, $value, $edit_mode, $required = false, $options = []) {
-        $base_style = "width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;";
-        $readonly_style = "padding: 6px; display: inline-block; width: 100%; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;";
+        $base_style = "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
+        $readonly_style = "padding: 8px; display: inline-block; width: 100%; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;";
         
         if ($edit_mode) {
             switch ($type) {
@@ -79,7 +129,7 @@
                     return '<input type="' . $type . '" name="' . $name . '" value="' . htmlspecialchars($value) . '" ' . 
                            ($required ? 'required ' : '') . 'style="' . $base_style . '">';
                 case 'textarea':
-                    $height = $options['height'] ?? '50px';
+                    $height = $options['height'] ?? '40px';
                     return '<textarea name="' . $name . '" ' . ($required ? 'required ' : '') . 
                            'style="' . $base_style . ' height: ' . $height . '; resize: vertical;">' . 
                            htmlspecialchars($value) . '</textarea>';
@@ -493,10 +543,7 @@ require_once('header.php');
 
 </head>
 
-        <?php require_once('universal.inc') ?>
-        <title>Micah Ministries | Manage Maintenance Request</title>
-        <link href="css/normal_tw.css" rel="stylesheet">
-        <script src="js/comment.js"></script>
+<body>
 
   <!-- Hero Section - Removed to save space -->
   <!-- <header class="hero-header"></header> -->
@@ -524,137 +571,118 @@ require_once('header.php');
             <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
-            #comments {
-                margin: 0.5rem;
-            }  
-            #comment-container > div {
-                border: 1px solid #eee;
-                border-radius: .25rem;
-                margin-bottom: 1rem;
-                padding: .25rem;
-            }
-            .comment-head {
-                display: flex;
-                justify-content: space-between;
-            }
-            .comment-title {
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-    
-        <?php require_once('header.php') ?>
-        <main>
-            <div class="main-content-box  p-8 w-full max-w-3xl">
-                <div class="manage-maintenance-header">
-                    <h2>Manage Maintenance Request</h2>
-                    <div>
-                        <?php if (!$edit_mode): ?>
-                            <a href="?id=<?php echo urlencode($request_id); ?>&edit=1" class="btn-primary" style="display: inline-block; padding: 8px 16px; background: #274471; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Edit</a>
-                        <?php else: ?>
-                            <a href="#" onclick="document.getElementById('maintenance-form').submit(); return false;" class="btn-primary" style="display: inline-block; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Save</a>
-                            <a href="?id=<?php echo urlencode($request_id); ?>" class="btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin-right: 15px; font-size: 14px; line-height: 1.4;">Cancel</a>
-                        <?php endif; ?>
-                        <a href="viewAllMaintenanceRequests.php" class="btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; line-height: 1.4;">Back to List</a>
+        <div class="form-container">
+            <form id="maintenance-form" method="POST" action="">
+                <div class="form-group">
+                    <label>Request ID</label>
+                    <input type="text" value="<?php echo htmlspecialchars($request->getID()); ?>" readonly style="background-color: #f8f9fa;">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requester_name">Requester Name *</label>
+                        <?php echo renderField('text', 'requester_name', $request->getRequesterName(), $edit_mode, true); ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="requester_email">Email</label>
+                        <?php echo renderField('email', 'requester_email', $request->getRequesterEmail(), $edit_mode); ?>
                     </div>
                 </div>
                 
-                <?php if ($message): ?>
-                    <div class="alert alert-success" style="padding: 15px; margin-bottom: 20px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <?php echo $message; ?>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requester_phone">Phone</label>
+                        <?php echo renderField('tel', 'requester_phone', $request->getRequesterPhone(), $edit_mode); ?>
                     </div>
-                <?php endif; ?>
-                
-                <?php if ($error): ?>
-                    <div class="alert alert-error" style="padding: 15px; margin-bottom: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <?php echo $error; ?>
-                    </div>
-                <?php endif; ?>
-
-                <form id="maintenance-form" method="POST" action="">
-                    <table>
-                    <tr>
-                        <td><strong>Request ID:</strong></td>
-                        <td><?php echo htmlspecialchars($request->getID()); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Requester Name *:</strong></td>
-                        <td><?php echo renderField('text', 'requester_name', $request->getRequesterName(), $edit_mode, true); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Email:</strong></td>
-                        <td><?php echo renderField('email', 'requester_email', $request->getRequesterEmail(), $edit_mode); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Phone:</strong></td>
-                        <td><?php echo renderField('tel', 'requester_phone', $request->getRequesterPhone(), $edit_mode); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Location:</strong></td>
-                        <td><?php echo renderField('text', 'location', $request->getLocation(), $edit_mode); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Building:</strong></td>
-                        <td><?php echo renderField('text', 'building', $request->getBuilding(), $edit_mode); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Unit:</strong></td>
-                        <td><?php echo renderField('text', 'unit', $request->getUnit(), $edit_mode); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Description *:</strong></td>
-                        <td><?php echo renderField('textarea', 'description', $request->getDescription(), $edit_mode, true, ['height' => '50px']); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Priority:</strong></td>
-                        <td><?php echo renderField('select', 'priority', $request->getPriority(), $edit_mode, false, [
+                    <div class="form-group">
+                        <label for="priority">Priority</label>
+                        <?php echo renderField('select', 'priority', $request->getPriority(), $edit_mode, false, [
                             'options' => ['Low' => 'Low', 'Medium' => 'Medium', 'High' => 'High', 'Emergency' => 'Emergency'],
                             'display_class' => 'priority-' . strtolower($request->getPriority())
-                        ]); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Status:</strong></td>
-                        <td><?php echo renderField('select', 'status', $request->getStatus(), $edit_mode, false, [
+                        ]); ?>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <?php echo renderField('text', 'location', $request->getLocation(), $edit_mode); ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="building">Building</label>
+                        <?php echo renderField('text', 'building', $request->getBuilding(), $edit_mode); ?>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="unit">Unit</label>
+                        <?php echo renderField('text', 'unit', $request->getUnit(), $edit_mode); ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="assigned_to">Assigned To</label>
+                        <?php echo renderField('text', 'assigned_to', $request->getAssignedTo(), $edit_mode, false, ['placeholder' => 'Unassigned']); ?>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <?php echo renderField('textarea', 'description', $request->getDescription(), $edit_mode, true, ['height' => '40px']); ?>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <?php echo renderField('select', 'status', $request->getStatus(), $edit_mode, false, [
                             'options' => ['Pending' => 'Pending', 'In Progress' => 'In Progress', 'Completed' => 'Completed', 'Cancelled' => 'Cancelled'],
                             'display_class' => 'status-' . strtolower(str_replace(' ', '-', $request->getStatus()))
-                        ]); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Assigned To:</strong></td>
-                        <td><?php echo renderField('text', 'assigned_to', $request->getAssignedTo(), $edit_mode, false, ['placeholder' => 'Unassigned']); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Created:</strong></td>
-                        <td><?php echo date('M j, Y g:i A', strtotime($request->getCreatedAt())); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Notes:</strong></td>
-                        <td><?php echo renderField('textarea', 'notes', $request->getNotes(), $edit_mode, false, ['height' => '40px', 'placeholder' => 'No notes']); ?></td>
-                    </tr>
-                </table>
-                
-                </form>
-                
-                <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
-                    <?php
-                    $comments = get_comments($_GET['id']);
-                    ?>
-                    <h2>Comments</h2>
-                    <script >
-                    /*
-                     * comments are rendered client-side with js.
-                     * The array of comments is encoded in json so it can be used by the js/comment.js file
-                     */
-                    let comments = <?php echo json_encode($comments) ?>;
-                    </script>
-                    <div id="comment-container">
-                        
+                        ]); ?>
                     </div>
-                    <textarea id="commentBox"></textarea>
-                    <button onclick='writeComment()'>Comment</button>
+                    <div class="form-group">
+                        <label>Created</label>
+                        <input type="text" value="<?php echo date('M j, Y g:i A', strtotime($request->getCreatedAt())); ?>" readonly style="background-color: #f8f9fa;">
+                    </div>
                 </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <?php echo renderField('textarea', 'notes', $request->getNotes(), $edit_mode, false, ['height' => '40px', 'placeholder' => 'No notes']); ?>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <?php if (!$edit_mode): ?>
+                        <a href="?id=<?php echo urlencode($request_id); ?>&edit=1" class="btn-primary">Edit</a>
+                    <?php else: ?>
+                        <a href="#" onclick="document.getElementById('maintenance-form').submit(); return false;" class="btn-primary">Save</a>
+                        <a href="?id=<?php echo urlencode($request_id); ?>" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                    <?php endif; ?>
+                    <a href="viewAllMaintenanceRequests.php" class="btn-secondary" style="margin-left: 10px;">Back to List</a>
+                </div>
+            </form>
+        </div>
+        
+        <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
+            <?php
+            $comments = get_comments($_GET['id']);
+            ?>
+            <h2>Comments</h2>
+            <script >
+            /*
+             * comments are rendered client-side with js.
+             * The array of comments is encoded in json so it can be used by the js/comment.js file
+             */
+            let comments = <?php echo json_encode($comments) ?>;
+            </script>
+            <div id="comment-container">
+                
             </div>
-        </main>
-    </body>
+            <textarea id="commentBox"></textarea>
+            <button onclick='writeComment()'>Comment</button>
+        </div>
+    </div>
+
+    </div>
+  </main>
+</body>
 </html>
+
