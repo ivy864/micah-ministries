@@ -1,110 +1,21 @@
 <?php
-    // Template for new VMS pages. Base your new page on this one
+session_cache_expire(30);
+session_start();
+$loggedIn = false;
+$accessLevel = 0;
+$userID = null;
+if (isset($_SESSION['_id'])) {
+    $loggedIn = true;
+    $accessLevel = $_SESSION['access_level'];
+    $userID = $_SESSION['_id'];
+}
+if ($accessLevel < 2) {
+    header('Location: index.php');
+    die();
+}
+include_once "database/dbPersons.php";
+include_once "database/dbShifts.php";
 
-    // Make session information accessible, allowing us to associate
-    // data with the logged-in user.
-    session_cache_expire(30);
-    session_start();
-
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
-    }
-    // admin-only access
-    if ($accessLevel < 2) {
-        header('Location: index.php');
-        die();
-    }
-
-    // include database functions
-    require_once('database/dbinfo.php');
-    
-    // pagination and sorting settings
-    $items_per_page = 15;
-    $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    if ($current_page < 1) { $current_page = 1; }
-    $offset = ($current_page - 1) * $items_per_page;
-    
-    // sorting parameters
-    $sort_by = $_GET['sort'] ?? 'created_at';
-    $sort_order = $_GET['order'] ?? 'DESC';
-
-    // NEW: month filter (1..12). Keep empty => all months
-    $exp_month = $_GET['exp_month'] ?? '';
-    $month_int = null;
-    if ($exp_month !== '' && ctype_digit($exp_month)) {
-        $m = (int)$exp_month;
-        if ($m >= 1 && $m <= 12) { $month_int = $m; }
-    }
-
-    // Build WHERE for month filter
-    $where = '';
-    if ($month_int !== null) {
-        $where = " WHERE MONTH(expiration_date) = " . $month_int;
-    }
-    
-    // get total leases first to validate page number (with filter)
-    $con = connect();
-    $total_leases = 0;
-    if ($con) {
-        $count_query = "SELECT COUNT(*) as total FROM dbleases" . $where;
-        $count_result = mysqli_query($con, $count_query);
-        if ($count_result) {
-            $total_leases = (int)mysqli_fetch_assoc($count_result)['total'];
-        }
-    }
-    $total_pages = $items_per_page > 0 ? (int)ceil($total_leases / $items_per_page) : 1;
-    
-    // ensure current_page doesn't exceed total pages
-    if ($current_page > $total_pages && $total_pages > 0) {
-        $current_page = $total_pages;
-        $offset = ($current_page - 1) * $items_per_page;
-    }
-    
-    // get paginated and sorted leases (with filter)
-    $leases = [];
-    if ($con) {
-        $query = "SELECT * FROM dbleases" . $where . " ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
-        $result = mysqli_query($con, $query);
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) { $leases[] = $row; }
-        }
-        mysqli_close($con);
-    }
-    
-    // helper: keep month param in links
-    function monthQS() {
-        return (isset($_GET['exp_month']) && $_GET['exp_month'] !== '')
-            ? "&exp_month=" . urlencode($_GET['exp_month'])
-            : "";
-    }
-
-    // helper function to generate sort URLs (preserve month + page)
-    function getSortUrl($column) {
-        global $sort_by, $sort_order, $current_page;
-        $new_order = ($sort_by == $column && $sort_order == 'ASC') ? 'DESC' : 'ASC';
-        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order . monthQS();
-    }
-    
-    // helper function to get sort arrow
-    function getSortArrow($column) {
-        global $sort_by, $sort_order;
-        if ($sort_by == $column) {
-            return $sort_order == 'ASC' ? ' ↑' : ' ↓';
-        }
-        return '';
-    }
-
-    // month names for dropdown
-    $month_names = [
-        1=>'January',2=>'February',3=>'March',4=>'April',5=>'May',6=>'June',
-        7=>'July',8=>'August',9=>'September',10=>'October',11=>'November',12=>'December'
-    ];
 ?>
 
 <!DOCTYPE html>
@@ -127,24 +38,13 @@ require_once('header.php');
 
 </head>
 <body>
-
-  <!-- Hero Section with Ribbon -->
-  <div class="hero-header">
-    <div class="center-header">
-      <h1>All Leases</h1>
+    <div class="hero-header">
+        <div class="center-header">
+            <h1>List of Leases</h1>
+        </div>
     </div>
-  </div>
 
-  <!-- Main Content -->
-  <main>
-    <div class="sections">
-
-      <!-- Navigation Section - Removed -->
-      <div class="button-section">
-     </div>
-
-      <!-- Text Section -->
-      <div class="text-section">
+    <main>
         <div class="main-content-box p-6">
           <p class="secondary-text" style="margin-bottom: 10px; text-align: left;">
             View and manage all leases. Use the table below to see lease details, tenant information, and property details.
@@ -158,26 +58,12 @@ require_once('header.php');
             <!-- when applying a filter, start at page 1 -->
             <input type="hidden" name="page" value="1">
 
-            <label for="exp_month">Expires in (month):</label>
-            <select id="exp_month" name="exp_month">
-              <option value="">All months</option>
-              <?php foreach ($month_names as $num=>$name): ?>
-                <option value="<?php echo $num; ?>" <?php echo ($month_int === $num ? 'selected' : ''); ?>>
-                  <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-
-            <button class="apply-btn" type="submit">Apply</button>
-            <a class="reset-btn" href="?page=1&sort=<?php echo urlencode($sort_by); ?>&order=<?php echo urlencode($sort_order); ?>">Reset</a>
-          </form>
-        
-        <?php if (empty($leases)): ?>
-            <div style="margin-top: 10px; padding: 14px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
-                <p><strong>No leases found.</strong></p>
-                <p>Try a different month, or click “Reset”.</p>
+            <div class="d-flex justify-content-end mb-4">
+                <!-- Replace index.php with the add page for leases -->
+                <a href="index.php" class="blue-button">Add a Lease</a>
             </div>
-        <?php else: ?>
+
+            <!-- editLease.php -->
             <div class="overflow-x-auto">
                 <table class="sortable-table">
                 <thead>
@@ -196,71 +82,59 @@ require_once('header.php');
                 <tbody>
                     <?php foreach ($leases as $lease): ?>
                         <tr>
-                            <td><a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" style="color: #274471; text-decoration: none; font-weight: bold;"><?php echo htmlspecialchars($lease['id']); ?></a></td>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Unit Number</th>
+                            <th>Program Type</th>
+                            <th>Expiration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ryan Reynolds</td>
+                            <td>123 Free Guy St.</td>
+                            <td>23</td>
+                            <td>Program #1</td>
+                            <td>10/12/25</td>
                             <td>
-                                <?php echo htmlspecialchars($lease['tenant_first_name'] . ' ' . $lease['tenant_last_name']); ?>
-                            </td>
-                            <td>
-                                <?php echo htmlspecialchars($lease['property_street']); ?><br>
-                                <small><?php echo htmlspecialchars($lease['property_city'] . ', ' . $lease['property_state'] . ' ' . $lease['property_zip']); ?></small>
-                            </td>
-                            <td><?php echo htmlspecialchars($lease['unit_number']); ?></td>
-                            <td><?php echo htmlspecialchars($lease['program_type'] ?: 'N/A'); ?></td>
-                            <td><?php echo date('M j, Y', strtotime($lease['expiration_date'])); ?></td>
-                            <td>
-                                <span class="status-<?php echo strtolower($lease['status']); ?>">
-                                    <?php echo htmlspecialchars($lease['status']); ?>
-                                </span>
-                            </td>
-                            <td><?php echo $lease['monthly_rent'] ? '$' . number_format($lease['monthly_rent'], 2) : 'N/A'; ?></td>
-                            <td>
-                                <a href="editLease.php?id=<?php echo urlencode($lease['id']); ?>" class="return-button">Edit</a>
-                                <a href="deletelease.php?id=<?php echo urlencode($lease['id']); ?>" class="delete-button">Delete</a>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                        <tr>
+                            <td>Moth Man</td>
+                            <td>456 Forest Road</td>
+                            <td>76</td>
+                            <td>Program #2</td>
+                            <td>2/13/26</td>
+                            <td>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tony Stark</td>
+                            <td>789 Avengers Tower</td>
+                            <td>54</td>
+                            <td>Program #1</td>
+                            <td>6/4/27</td>
+                            <td>
+                                <!-- This will be more concise in something like a for loop when backend is implemented -->
+                                <a href="editLease.php" class="return-button">Edit</a>
+                                <a href="index.php" class="delete-button">Delete</a>
+                            </td>
+                        </tr>
+                        <!-- Look at checkedInVolunteers.php for ideas on how to implement the backend -->
+                    </tbody>
                 </table>
             </div>
-            
-            <!-- Pagination Controls -->
-            <?php if ($total_pages > 1): ?>
-                <div class="pagination-container" style="margin-top: 20px; text-align: center;">
-                    <div class="pagination-info" style="margin-bottom: 10px; color: #666;">
-                        Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $items_per_page, $total_leases); ?> of <?php echo $total_leases; ?> leases
-                    </div>
-                    
-                    <div class="pagination-buttons">
-                        <?php if ($current_page > 1): ?>
-                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
-                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
-                        <?php endif; ?>
-                        
-                        <?php
-                        $start_page = max(1, $current_page - 2);
-                        $end_page = min($total_pages, $current_page + 2);
-                        
-                        for ($i = $start_page; $i <= $end_page; $i++):
-                        ?>
-                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
-                               style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: <?php echo $i == $current_page ? '#1e3554' : '#274471'; ?>; color: white; text-decoration: none; border-radius: 4px;">
-                                <?php echo $i; ?>
-                            </a>
-                        <?php endfor; ?>
-                        
-                        <?php if ($current_page < $total_pages): ?>
-                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
-                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo monthQS(); ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
-        
-        </div>
-      </div>
 
-    </div>
-  </main>
+            <div class="mt-10 flex justify-end">
+                <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
+            </div>
+
+        </div>
 </body>
-</html>

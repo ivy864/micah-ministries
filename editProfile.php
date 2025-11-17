@@ -32,14 +32,6 @@
             $id = $_SESSION['_id'];
         }
 
-        // Get current person data to compare for changes
-        require_once('database/dbPersons.php');
-        $currentPerson = retrieve_person($id);
-        if (!$currentPerson) {
-            header('Location: viewProfile.php');
-            die();
-        }
-
         // echo "<p>The form was submitted:</p>";
         // foreach ($args as $key => $value) {
         //     echo "<p>$key: $value</p>";
@@ -59,32 +51,22 @@
             $errors = true;
         }
 
-        // Only admins (Level 3) can change user roles, first name, last name, and date of birth
-        $isAdmin = $_SESSION['access_level'] >= 3;
+        $first_name = $args['first_name'];
         
-        if ($isAdmin) {
-            // Admins can change all fields
-            $first_name = $args['first_name'];
-            $last_name = $args['last_name'];
-            $user_role = $args['user_role'];
-            
-            // Validate role
-            if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
-                echo "<p>Invalid user role.</p>";
-                $errors = true;
-            }
-            
-            $birthday = validateDate($args['birthday']);
-            if (!$birthday) {
-                $errors = true;
-                // echo 'bad dob';
-            }
-        } else {
-            // Non-admins cannot change user role, first name, last name, or date of birth - keep existing values
-            $first_name = $currentPerson->get_first_name();
-            $last_name = $currentPerson->get_last_name();
-            $user_role = $currentPerson->get_type();
-            $birthday = $currentPerson->get_birthday();
+        $last_name = $args['last_name'];
+
+        $user_role = $args['user_role'];
+        
+        // Validate role
+        if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
+            echo "<p>Invalid user role.</p>";
+            $errors = true;
+        }
+        
+        $birthday = validateDate($args['birthday']);
+        if (!$birthday) {
+            $errors = true;
+            // echo 'bad dob';
         }
         
         $street_address = $args['street_address'];
@@ -433,16 +415,7 @@ require_once('header.php');
 
             <!-- Text Section -->
             <div class="text-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h1 style="margin: 0;">Edit Profile</h1>
-                    <?php 
-                    $backUrl = 'viewProfile.php';
-                    if (isset($_GET['id']) && $_GET['id'] != $_SESSION['_id']) {
-                        $backUrl = 'viewProfile.php?id=' . htmlspecialchars($_GET['id']);
-                    }
-                    ?>
-                    <a href="<?php echo $backUrl; ?>" class="btn-secondary" style="text-decoration: none; display: inline-block;">Back to Profile</a>
-                </div>
+                <h1>Edit Profile</h1>
                 <div class="div-blue"></div>
                 <p>
                     Update user account information. Fill out the form below with the required information.

@@ -86,24 +86,18 @@ $lease_id = $_GET['id'] ?? null;
 $pdo = null;
 $db_notice = null;
 $lease = [
-    'tenant_first_name' => '',
-    'tenant_last_name' => '',
-    'property_street' => '',
+    'tenant_name' => '',
+    'property_address' => '',
     'unit_number' => '',
-    'property_city' => '',
-    'property_state' => '',
-    'property_zip' => '',
     'start_date' => '',
     'expiration_date' => '',
     'monthly_rent' => '',
-    'security_deposit' => '',
-    'program_type' => '',
-    'status' => 'Active'
+    'security_deposit' => ''
 ];
 
 try {
     $conf = null;
-    $confPath = __DIR__ . '/database/dbViewLease.php';
+    $confPath = __DIR__ . '/database/dbViewLease.php.'; // change to actual db
 
     if (file_exists($confPath)) {
         include $confPath; // sets $conf
@@ -130,9 +124,9 @@ try {
 if ($pdo && $lease_id) {
     try {
         $stmt = $pdo->prepare("
-            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, 
-                   expiration_date, monthly_rent, security_deposit, program_type, status 
-            FROM dbleases 
+            SELECT tenant_name, property_address, unit_number, start_date, 
+                   expiration_date, monthly_rent, security_deposit 
+            FROM leases 
             WHERE id = :id 
             LIMIT 1
         ");
@@ -149,12 +143,8 @@ if ($pdo && $lease_id) {
 
 if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
     $fields = [
-        'tenant_first_name',
-        'tenant_last_name',
-        'property_street',
-        'property_city',
-        'property_state',
-        'property_zip',
+        'tenant_name',
+        'property_address',
         'unit_number',
         'start_date',
         'expiration_date',
@@ -182,7 +172,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         }
 
         try {
-            $sql = "UPDATE dbleases SET " . implode(", ", $sets) . " WHERE id = :id";
+            $sql = "UPDATE leases SET " . implode(", ", $sets) . " WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $lease = array_merge($lease, $data);
@@ -300,6 +290,11 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
 </head>
 
 <body>
+    <div class="hero-header">
+        <div class="center-header">
+            <h1>Edit a Lease</h1>
+        </div>
+    </div>
 
   <!-- Hero Section - Removed to save space -->
   <!-- <header class="hero-header"></header> -->
@@ -341,87 +336,49 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                             value="<?php echo htmlspecialchars($lease['tenant_last_name']); ?>">
                     </div>
                 </div>
+            <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="property_street">Property Street:</label>
-                    <input type="text" id="property_street" name="property_street"
-                        value="<?php echo htmlspecialchars($lease['property_street']); ?>">
+            <form action="" method="POST" class="space-y-4">
+                <div>
+                    <label for="tenant_name" class="block font-medium text-gray-700">Tenant Name:</label>
+                    <input type="text" id="tenant_name" name="tenant_name"
+                        value="<?php echo htmlspecialchars($lease['tenant_name']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="property_city">Property City:</label>
-                        <input type="text" id="property_city" name="property_city"
-                            value="<?php echo htmlspecialchars($lease['property_city']); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="property_state">Property State:</label>
-                        <input type="text" id="property_state" name="property_state"
-                            value="<?php echo htmlspecialchars($lease['property_state']); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="property_zip">Property ZIP:</label>
-                        <input type="text" id="property_zip" name="property_zip"
-                            value="<?php echo htmlspecialchars($lease['property_zip']); ?>">
-                    </div>
+                <div>
+                    <label for="property_address" class="block font-medium text-gray-700">Property Address:</label>
+                    <input type="text" id="property_address" name="property_address"
+                        value="<?php echo htmlspecialchars($lease['property_address']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="unit_number">Unit Number:</label>
-                        <input type="text" id="unit_number" name="unit_number"
-                            value="<?php echo htmlspecialchars($lease['unit_number']); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="program_type">Program Type:</label>
-                        <select id="program_type" name="program_type">
-                            <option value="">Select Program Type</option>
-                            <option value="Program #1" <?php echo ($lease['program_type'] == 'Program #1') ? 'selected' : ''; ?>>Program #1</option>
-                            <option value="Program #2" <?php echo ($lease['program_type'] == 'Program #2') ? 'selected' : ''; ?>>Program #2</option>
-                            <option value="Emergency Housing" <?php echo ($lease['program_type'] == 'Emergency Housing') ? 'selected' : ''; ?>>Emergency Housing</option>
-                            <option value="Transitional Housing" <?php echo ($lease['program_type'] == 'Transitional Housing') ? 'selected' : ''; ?>>Transitional Housing</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="status">Lease Status:</label>
-                        <select id="status" name="status">
-                            <option value="Active" <?php echo ($lease['status'] == 'Active') ? 'selected' : ''; ?>>Active</option>
-                            <option value="Expired" <?php echo ($lease['status'] == 'Expired') ? 'selected' : ''; ?>>Expired</option>
-                            <option value="Terminated" <?php echo ($lease['status'] == 'Terminated') ? 'selected' : ''; ?>>Terminated</option>
-                        </select>
-                    </div>
+                <div>
+                    <label for="unit_number" class="block font-medium text-gray-700">Unit Number:</label>
+                    <input type="text" id="unit_number" name="unit_number"
+                        value="<?php echo htmlspecialchars($lease['unit_number']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="start_date">Lease Start Date:</label>
-                        <input type="date" id="start_date" name="start_date"
-                            value="<?php echo htmlspecialchars($lease['start_date']); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="expiration_date">Lease End Date:</label>
-                        <input type="date" id="expiration_date" name="expiration_date"
-                            value="<?php echo htmlspecialchars($lease['expiration_date']); ?>">
-                    </div>
+                <div>
+                    <label for="start_date" class="block font-medium text-gray-700">Lease Start Date:</label>
+                    <input type="date" id="start_date" name="start_date"
+                        value="<?php echo htmlspecialchars($lease['start_date']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="monthly_rent">Rent Amount:</label>
-                        <input type="number" step="0.01" id="monthly_rent" name="monthly_rent"
-                            value="<?php echo htmlspecialchars($lease['monthly_rent']); ?>">
-                    </div>
+                <div>
+                    <label for="expiration_date" class="block font-medium text-gray-700">Lease End Date:</label>
+                    <input type="date" id="expiration_date" name="expiration_date"
+                        value="<?php echo htmlspecialchars($lease['expiration_date']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                </div>
 
-                    <div class="form-group">
-                        <label for="security_deposit">Security Deposit:</label>
-                        <input type="number" step="0.01" id="security_deposit" name="security_deposit"
-                            value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
-                    </div>
+                <div>
+                    <label for="monthly_rent" class="block font-medium text-gray-700">Rent Amount:</label>
+                    <input type="number" step="0.01" id="monthly_rent" name="monthly_rent"
+                        value="<?php echo htmlspecialchars($lease['monthly_rent']); ?>"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
                 <div style="margin-top: 30px;">
@@ -432,6 +389,10 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                     <a href="index.php" class="gray-button">Return to Dashboard</a>
                 </div>
             </form>
+
+            <div class="mt-10 flex justify-end">
+                <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
+            </div>
         </div>
 
         <div id="comments" requestID="<?php echo htmlspecialchars($lease_id) ?>">

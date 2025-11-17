@@ -10,7 +10,7 @@ session_write_close();
 <html>
     <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-    <meta HTTP-EQUIV="REFRESH" content="2; url=index.php">
+    <meta HTTP-EQUIV="REFRESH" content="2; url=micahportal.php">
     <title>Logged Out | Micah Ecumenical Ministries</title>
     <link rel="icon" type="image/png" href="images/micah-favicon.png">
     <?php require('universal.inc') ?>

@@ -31,12 +31,12 @@
     
     // Is user authorized to view this page?
     if ($accessLevel < 2) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
     // Was an ID supplied?
     if ($_SERVER["REQUEST_METHOD"] == "GET" && !isset($_GET['id'])) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     } else if ($_SERVER["REQUEST_METHOD"] == "POST"){
         require_once('database/dbPersons.php');

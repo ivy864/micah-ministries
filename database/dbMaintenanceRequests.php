@@ -42,7 +42,7 @@ function create_dbMaintenanceRequests() {
         requester_phone varchar(20),
         location varchar(100),
         building varchar(50),
-        unit varchar(50),
+        room varchar(50),
         description text NOT NULL,
         priority enum('Low','Medium','High','Emergency') DEFAULT 'Medium',
         status enum('Pending','In Progress','Completed','Cancelled') DEFAULT 'Pending',
@@ -107,11 +107,10 @@ function add_maintenance_request($maintenanceRequest) {
 
 
 /**
- * Retrieves maintenance requests as MaintenanceRequest objects.
- * If $archived is true, returns archived (archived=1); otherwise active (archived=0).
+ * retrieves all maintenance requests from the database as MaintenanceRequest objects
  */
-function get_all_maintenance_requests($limit = null, $offset = 0, $sort_by = 'created_at', $sort_order = 'DESC', $archived = false) {
-    $con = connect();
+function get_all_maintenance_requests($limit = null, $offset = 0, $sort_by = 'created_at', $sort_order = 'DESC') {
+    $con=connect();
     
     // validate sort column to prevent SQL injection
     $allowed_sort_columns = ['id', 'requester_name', 'location', 'building', 'priority', 'status', 'assigned_to', 'created_at'];
@@ -127,20 +126,14 @@ function get_all_maintenance_requests($limit = null, $offset = 0, $sort_by = 'cr
     
     // ensure offset is never negative
     $offset = max(0, (int)$offset);
-
-    // NEW: archived toggle
-    $archived_value = $archived ? 1 : 0;
-
     
-    $query = "SELECT * FROM dbmaintenancerequests 
-              WHERE archived = " . (int)$archived_value . " 
-              ORDER BY " . $sort_by . " " . $sort_order;
+    $query = "SELECT * FROM dbmaintenancerequests WHERE archived = 0 ORDER BY " . $sort_by . " " . $sort_order;
     
     if ($limit !== null) {
         $query .= " LIMIT " . (int)$limit . " OFFSET " . $offset;
     }
     
-    $result = mysqli_query($con, $query);
+    $result = mysqli_query($con,$query);
     if (!$result) {
         echo mysqli_error($con);
         mysqli_close($con);
@@ -314,19 +307,10 @@ function get_pending_maintenance_count() {
 /**
  * gets total count of all maintenance requests
  */
-/**
- * Gets total count of maintenance requests
- * (active by default; archived when $archived = true)
- */
-function get_maintenance_requests_count($archived = false) {
-    $con = connect();
-    $archived_value = $archived ? 1 : 0;
-
-    $query = "SELECT COUNT(*) as count 
-              FROM dbmaintenancerequests 
-              WHERE archived = " . (int)$archived_value;
-
-    $result = mysqli_query($con, $query);
+function get_maintenance_requests_count() {
+    $con=connect();
+    $query = "SELECT COUNT(*) as count FROM dbmaintenancerequests WHERE archived = 0";
+    $result = mysqli_query($con,$query);
     if (!$result) {
         mysqli_close($con);
         return 0;
@@ -334,8 +318,7 @@ function get_maintenance_requests_count($archived = false) {
     
     $row = mysqli_fetch_array($result);
     mysqli_close($con);
-    return (int)$row['count'];
+    return $row['count'];
 }
-
 
 ?>

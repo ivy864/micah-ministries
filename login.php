@@ -12,7 +12,7 @@
 
     // redirect to index if already logged in
     if (isset($_SESSION['_id'])) {
-        header('Location: index.php');
+        header('Location: micahportal.php');
         die();
     }
     $badLogin = false;
@@ -51,7 +51,7 @@
                  if ($user->get_id() == 'vmsroot') {
                     $_SESSION['access_level'] = 3;
 		    $_SESSION['locked'] = false;
-                    header('Location: index.php');
+                    header('Location: micahportal.php');
                }
             
                 //if ($changePassword) {
@@ -61,7 +61,7 @@
                 //    die();
                 //} 
                 else {
-                    header('Location: index.php');
+                    header('Location: micahportal.php');
                     die();
                 }
                 die();

@@ -15,9 +15,9 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    // maintenance staff and above can access
-    if ($accessLevel < 1) {
-        header('Location: micahportal.php');
+    // admin-only access
+    if ($accessLevel < 2) {
+        header('Location: index.php');
         die();
     }
 
@@ -38,33 +38,26 @@
     // sorting parameters
     $sort_by = $_GET['sort'] ?? 'created_at';
     $sort_order = $_GET['order'] ?? 'DESC';
-
-    //archive toggle
-    $view_archived = filter_input(INPUT_GET, 'archived', FILTER_VALIDATE_INT) === 1;
-
-
     
-   // get total requests (respect archived flag)
-    $total_requests = get_maintenance_requests_count($view_archived);
+    // get total requests first to validate page number
+    $total_requests = get_maintenance_requests_count();
     $total_pages = ceil($total_requests / $items_per_page);
-
+    
     // ensure current_page doesn't exceed total pages
     if ($current_page > $total_pages && $total_pages > 0) {
         $current_page = $total_pages;
+        $offset = ($current_page - 1) * $items_per_page;
     }
-    $offset = ($current_page - 1) * $items_per_page;
-
-    // get paginated and sorted maintenance requests (respect archived flag)
-    $maintenance_requests = get_all_maintenance_requests($items_per_page, $offset, $sort_by, $sort_order, $view_archived);
-
+    
+    // get paginated and sorted maintenance requests
+    $maintenance_requests = get_all_maintenance_requests($items_per_page, $offset, $sort_by, $sort_order);
+    
     // helper function to generate sort URLs
     function getSortUrl($column) {
-    global $sort_by, $sort_order, $current_page, $view_archived;
-    $new_order = ($sort_by == $column && strtoupper($sort_order) == 'ASC') ? 'DESC' : 'ASC';
-    $archived_qs = $view_archived ? '&archived=1' : '';
-    return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order . $archived_qs;
+        global $sort_by, $sort_order, $current_page;
+        $new_order = ($sort_by == $column && $sort_order == 'ASC') ? 'DESC' : 'ASC';
+        return "?page=" . $current_page . "&sort=" . $column . "&order=" . $new_order;
     }
-
     
     // helper function to get sort arrow
     function getSortArrow($column) {
@@ -97,8 +90,7 @@ require_once('header.php');
   <!-- Hero Section with Ribbon -->
   <div class="hero-header">
     <div class="center-header">
-      <h1><?php echo $view_archived ? 'Archived Maintenance Requests' : 'All Maintenance Requests'; ?></h1>
-
+      <h1>All Maintenance Requests</h1>
     </div>
   </div>
 
@@ -156,7 +148,6 @@ require_once('header.php');
                         <th><a href="<?php echo getSortUrl('status'); ?>" style="color: #274471; text-decoration: none;">Status<?php echo getSortArrow('status'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('assigned_to'); ?>" style="color: #274471; text-decoration: none;">Assigned To<?php echo getSortArrow('assigned_to'); ?></a></th>
                         <th><a href="<?php echo getSortUrl('created_at'); ?>" style="color: #274471; text-decoration: none;">Created<?php echo getSortArrow('created_at'); ?></a></th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -187,11 +178,7 @@ require_once('header.php');
                                 <span class="status-<?php echo strtolower(str_replace(' ', '-', $request->getStatus())); ?>">
                                     <?php echo htmlspecialchars($request->getStatus()); ?>
                                 </span>
-                                <?php if ($view_archived): ?>
-                                    <small style="color:#6c757d;margin-left:6px;">(archived)</small>
-                                <?php endif; ?>
                             </td>
-
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
 <td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
@@ -274,12 +261,10 @@ require_once('header.php');
                         Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $items_per_page, $total_requests); ?> of <?php echo $total_requests; ?> requests
                     </div>
                     
-                        <?php $arch = $view_archived ? '&archived=1' : ''; ?>
-
                     <div class="pagination-buttons">
                         <?php if ($current_page > 1): ?>
-                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo $arch; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
-                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo $arch; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
+                            <a href="?page=1&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">First</a>
+                            <a href="?page=<?php echo $current_page - 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
                         <?php endif; ?>
                         
                         <?php
@@ -288,15 +273,15 @@ require_once('header.php');
                         
                         for ($i = $start_page; $i <= $end_page; $i++):
                         ?>
-                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo $arch; ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
+                            <a href="?page=<?php echo $i; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>" 
                                style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: <?php echo $i == $current_page ? '#1e3554' : '#274471'; ?>; color: white; text-decoration: none; border-radius: 4px;">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
                         
                         <?php if ($current_page < $total_pages): ?>
-                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo $arch; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
-                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?><?php echo $arch; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
+                            <a href="?page=<?php echo $current_page + 1; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Next</a>
+                            <a href="?page=<?php echo $total_pages; ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" class="pagination-btn" style="display: inline-block; padding: 8px 12px; margin: 0 2px; background: #274471; color: white; text-decoration: none; border-radius: 4px;">Last</a>
                         <?php endif; ?>
                     </div>
                 </div>

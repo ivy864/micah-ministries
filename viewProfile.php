@@ -132,26 +132,14 @@
                 <?php die() ?>
             <?php endif ?>
             <?php if (isset($_GET['editSuccess'])): ?>
-                <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg text-center">
-                        Profile Updated Successfully!
+                <div class="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg">
+                    Profile updated successfully!
                 </div>
-                <script>
-                    setTimeout(() => {
-                        const msg = document.querySelector('.bg-green-100');
-                        if (msg) msg.remove();
-                    }, 5000);
-                </script>
             <?php endif ?>
-            <?php if (isset($_GET['noChanges'])): ?>
-                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-6 py-4 rounded-lg shadow-lg text-center">
-                        No changes were made to the profile.
+            <?php if (isset($_GET['rscSuccess'])): ?>
+                <div class="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg">
+                    User role/status updated successfully!
                 </div>
-                <script>
-                    setTimeout(() => {
-                        const msg = document.querySelector('.bg-blue-100');
-                        if (msg) msg.remove();
-                    }, 5000);
-                </script>
             <?php endif ?>
 
 <body class="bg-gray-50 font-quicksand">
