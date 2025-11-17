@@ -149,7 +149,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Users - Micah Ministries</title>
-    <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/personSearch.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
@@ -160,8 +161,8 @@ require_once('header.php');
     <main>
         <div class="sections">
             <div class="text-section">
-                <h1>Search Users</h1>
-                <p>Search for users in the system by name, ID, phone, zip code, type, or status.</p>
+                <h1 class="main-text">Search Users</h1>
+                <p class="secondary-text">Search for users in the system by name, ID, phone, zip code, type, or status.</p>
             </div>
             
             <?php if ($message): ?>
@@ -230,8 +231,8 @@ require_once('header.php');
                     </div>
                     
                     <div style="text-align: center; margin-top: 30px;">
-                        <button type="submit" class="btn-primary">Search Users</button>
-                        <a href="personSearch.php" class="btn-secondary" style="margin-left: 10px;">Clear Search</a>
+                        <button type="submit" class="blue-button">Search Users</button>
+                        <a href="personSearch.php" class="gray-button" style="margin-left: 10px;">Clear Search</a>
                     </div>
                 </form>
             </div>
@@ -249,7 +250,7 @@ require_once('header.php');
                     </div>
                 <?php else: ?>
                     <div class="overflow-x-auto">
-                        <table class="users-table">
+                        <table class="sortable-table">
                             <thead>
                                 <tr>
                                     <th>
@@ -338,199 +339,6 @@ require_once('header.php');
             </div>
         </div>
     </main>
-    
-    <style>
-        /* adjust main content positioning */
-        main {
-            margin-top: 80px !important;
-            padding: 10px !important;
-        }
-        
-        .sections {
-            flex-direction: column !important;
-            gap: 20px !important;
-        }
-        
-        .text-section {
-            width: 100% !important;
-        }
-        
-        .form-container {
-            width: 100% !important;
-        }
-        
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .users-table th,
-        .users-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        
-        .users-table th {
-            background-color: #274471;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .users-table th a {
-            color: white !important;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-        }
-        
-        .users-table th a:hover {
-            color: #ffd700 !important;
-            text-decoration: underline;
-        }
-        
-        .sort-link {
-            color: white !important;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px;
-            transition: all 0.2s ease;
-        }
-        
-        .sort-link:hover {
-            color: #ffd700 !important;
-            text-decoration: none;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .sort-indicator {
-            font-size: 14px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-        
-        .users-table td a {
-            color: #274471;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        
-        .users-table td a:hover {
-            color: #1e3554;
-            text-decoration: underline;
-        }
-        
-        .users-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        
-        .status-active {
-            color: #28a745;
-            font-weight: bold;
-        }
-        
-        .status-inactive {
-            color: #6c757d;
-        }
-        
-        .type-admin {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .type-case-manager {
-            color: #17a2b8;
-            font-weight: bold;
-        }
-        
-        .type-maintenance {
-            color: #ffc107;
-            font-weight: bold;
-        }
-        
-        .type-volunteer {
-            color: #28a745;
-        }
-        
-        .profile-link {
-            color: #274471;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 4px;
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            transition: all 0.2s ease;
-            display: inline-block;
-            font-size: 14px;
-        }
-        
-        .profile-link:hover {
-            background-color: #274471;
-            color: white;
-            text-decoration: none;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(39, 68, 113, 0.2);
-        }
-        
-        .search-results {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .results-table {
-            margin-top: 1rem;
-            overflow-x: auto;
-        }
-        
-        .results-table table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .results-table th,
-        .results-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .results-table th {
-            background: #007bff;
-            color: white;
-            font-weight: 600;
-        }
-        
-        .results-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .btn-small {
-            display: inline-block;
-            padding: 6px 12px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            transition: background-color 0.2s;
-        }
-        
-        .btn-small:hover {
-            background: #0056b3;
-            color: white;
-        }
-    </style>
     
     <script>
         // preserve scroll position when sorting

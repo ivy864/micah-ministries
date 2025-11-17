@@ -16,6 +16,7 @@
         $id = $_POST['id'];
         header("Location: /gwyneth/modifyUserRole.php?id=$id");
     } else if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["profile-edit-form"])) {
+
         require_once('domain/Person.php');
         require_once('database/dbPersons.php');
         // make every submitted field SQL-safe except for password
@@ -40,9 +41,12 @@
             'first_name', 'last_name', 'birthday', 'street_address', 'city', 'state',
             'zip_code', 'email', 'phone1', 'phone1type', 'emergency_contact_first_name',
             'emergency_contact_last_name', 'emergency_contact_phone',
-            'emergency_contact_phone_type', 'emergency_contact_relation', 'user_role'
+            'emergency_contact_phone_type', 'emergency_contact_relation', 'user_role',
         );
+        
         $errors = false;
+        $errorDetails = array();
+
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
         }
@@ -85,11 +89,27 @@
         }
 
         $email = validateEmail($args['email']);
-        if (!$email) {
-            $errors = true;
-            // echo 'bad email';
+        $allowedDomain = "dolovewalk.net";
+
+        function emailAllowedDomain($email, $allowedDomain) {
+            $domain = substr(strrchr($email, "@"), 1);
+            return strtolower($domain) === strtolower($allowedDomain);
         }
 
+        // Validate email format first
+        if (!validateEmail($args['email'])) {
+            $errors = true;
+            $errorDetails['email'] = "Invalid email format!";
+        }
+        // Validate email domain (only if format is valid)
+        else if (!emailAllowedDomain($args['email'], $allowedDomain)) {
+            $errors = true;
+            $errorDetails['email'] = "Invalid email domain! Please use a '$allowedDomain' email address.";
+        }
+
+        // Store the email after validation passes
+        $email = $args['email'];
+        
         $phone1 = validateAndFilterPhoneNumber($args['phone1']);
         if (!$phone1) {
             $errors = true;
@@ -137,41 +157,45 @@
         }
         @*/
 
-       $type = 'v';
+       $skills = '';
+       $interests = '';
+        // Use user_role as type (admin, case_manager, maintenance)
+        // This is set earlier in the code based on whether user is admin
+        $type = $user_role;
 
 
        
         
 
         
-        $skills = $args['skills'];
-        $interests = $args['interests'];
-        
-       
         // For the new fields, default to 0 if not set
         
        
-        if ($errors) {
+        if ($errors == true) {
             $updateSuccess = false;
+
         }
-        
-        $result = update_person_required(
+        else {
+            $result = update_person_required(
             $id, $first_name, $last_name, $birthday, $street_address, $city, $state,
             $zip_code, $email, $phone1, $phone1type, $emergency_contact_first_name,
             $emergency_contact_last_name, $emergency_contact_phone,
-            $emergency_contact_phone_type, $emergency_contact_relation, $type,
-             $skills, $interests, $user_role
-        );
-        if ($result) {
-            if ($editingSelf) {
-                header('Location: viewProfile.php?editSuccess');
-            } else {
-                header('Location: viewProfile.php?editSuccess&id='. $id);
-            }
-            die();
-        }
+            $emergency_contact_phone_type, $emergency_contact_relation,
+            $user_role, $skills, $interests, 
+            );
 
+            if ($result) {
+                if ($editingSelf) {
+                    header('Location: viewProfile.php?editSuccess');
+                } 
+                else {
+                    header('Location: viewProfile.php?editSuccess&id='. $id);
+                }
+                die();
+            }
+        }
     }
+        
 ?>
 <!DOCTYPE html>
 <html lang="en">

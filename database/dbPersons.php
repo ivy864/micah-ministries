@@ -854,12 +854,13 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $person->get_photo_release_notes() . '");'
 */
     // updates the required fields of a person's account
+    // updates the required fields of a person's account
     function update_person_required(
         $id, $first_name, $last_name, $birthday, $street_address, $city, $state,
         $zip_code, $email, $phone1, $phone1type, $emergency_contact_first_name,
         $emergency_contact_last_name, $emergency_contact_phone,
         $emergency_contact_phone_type, $emergency_contact_relation, $type,
-        $skills, $interests
+        $skills = '', $interests = '',   // Add default empty string values
     ) {
         $query = "update dbpersons set 
             first_name='$first_name', last_name='$last_name', birthday='$birthday',
@@ -869,11 +870,9 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             emergency_contact_last_name='$emergency_contact_last_name', 
             emergency_contact_phone='$emergency_contact_phone', 
             emergency_contact_phone_type='$emergency_contact_phone_type', 
-            emergency_contact_relation='$emergency_contact_relation', type='$type',
-            
-           
-            skills='$skills', interests='$interests'
-        
+            emergency_contact_relation='$emergency_contact_relation', type='$type'
+            $skillsUpdate
+            $interestsUpdate
             where id='$id'";
         $connection = connect();
         $result = mysqli_query($connection, $query);

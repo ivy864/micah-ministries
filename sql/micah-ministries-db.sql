@@ -669,6 +669,19 @@ CREATE TABLE `db_maintenance_comments` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `db_lease_comments`
+--
+
+CREATE TABLE `db_lease_comments` (
+  `author_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `request_id` varchar(256) NOT NULL,
+  `content` varchar(2048) DEFAULT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `discussion_replies`
 --
 

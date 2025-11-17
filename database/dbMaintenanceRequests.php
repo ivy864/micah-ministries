@@ -92,8 +92,8 @@ function add_maintenance_request($maintenanceRequest) {
             mysqli_real_escape_string($con, $maintenanceRequest->getNotes()) . "','" .
             $maintenanceRequest->getArchived() . "','" .
             $maintenanceRequest->getCreatedAt() . "','" .
-            $maintenanceRequest->getUpdatedAt() . "','" .
-            ($maintenanceRequest->getCompletedAt() ? $maintenanceRequest->getCompletedAt() : 'NULL') . "')";
+            $maintenanceRequest->getUpdatedAt() . "'," .
+            ($maintenanceRequest->getCompletedAt() ? "'" . $maintenanceRequest->getCompletedAt() . "'": 'NULL') . ")";
     
     $result = mysqli_query($con,$query);
     if (!$result) {

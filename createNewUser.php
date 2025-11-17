@@ -143,189 +143,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create New User</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	.dropdown {
-	    padding-right: 50px;
-	}
-	
-	.form-container {
-	    max-width: none !important;
-	    width: 100% !important;
-	    margin: 5px auto !important;
-	    padding: 10px !important;
-	    background: white !important;
-	    border-radius: 8px !important;
-	    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-	    border: 2px solid #274471 !important;
-	}
-	
-	.form-group {
-	    margin-bottom: 6px !important;
-	}
-	
-	.form-group label {
-	    display: block;
-	    margin-bottom: 5px;
-	    font-weight: bold;
-	    color: #274471;
-	}
-	
-	.form-group input,
-	.form-group select,
-	.form-group textarea {
-	    width: 100%;
-	    padding: 8px;
-	    border: 1px solid #ddd;
-	    border-radius: 4px;
-	    font-size: 14px;
-	}
-	
-	.form-group textarea {
-	    height: 40px;
-	    resize: vertical;
-	}
-	
-	.form-row {
-	    display: flex;
-	    gap: 20px;
-	}
-	
-	.form-row .form-group {
-	    flex: 1;
-	}
-	
-	/* compact navigation buttons - override tailwind */
-	.button-section {
-	    margin-bottom: 10px !important;
-	}
-	
-	.compact-nav-btn {
-	    padding: 8px 16px !important;
-	    font-size: 14px !important;
-	    margin-right: 10px !important;
-	    margin-bottom: 5px !important;
-	    height: auto !important;
-	    width: auto !important;
-	}
-	
-	.compact-nav-btn .button-left-gray {
-	    padding: 4px 8px !important;
-	}
-	
-	.compact-nav-btn .button-icon {
-	    height: 16px !important;
-	    width: 16px !important;
-	    left: 12px !important;
-	}
-	
-	.btn-primary {
-	    background-color: #274471;
-	    color: white;
-	    padding: 10px 20px;
-	    border: none;
-	    border-radius: 4px;
-	    cursor: pointer;
-	    font-size: 16px;
-	}
-	
-	.btn-primary:hover {
-	    background-color: #1e3554;
-	}
-	
-	.btn-secondary {
-	    background-color: #6c757d;
-	    color: white;
-	    padding: 10px 20px;
-	    border: none;
-	    border-radius: 4px;
-	    cursor: pointer;
-	    font-size: 16px;
-	    text-decoration: none;
-	    display: inline-block;
-	}
-	
-	.btn-secondary:hover {
-	    background-color: #5a6268;
-	}
-	
-	.alert {
-	    padding: 15px;
-	    margin-bottom: 20px;
-	    border-radius: 4px;
-	}
-	
-	.alert-success {
-	    background-color: #d4edda;
-	    color: #155724;
-	    border: 1px solid #c3e6cb;
-	}
-	
-	.alert-error {
-	    background-color: #f8d7da;
-	    color: #721c24;
-	    border: 1px solid #f5c6cb;
-	}
-	
-	/* compact text section */
-	.text-section h1 {
-	    margin-bottom: 5px !important;
-	}
-	
-	.text-section p {
-	    margin-bottom: 10px !important;
-	}
-	
-	/* force layout changes - full width form */
-	.sections {
-	    flex-direction: row !important;
-	    gap: 10px !important;
-	}
-	
-	/* adjust main content since hero is removed */
-	main {
-	    margin-top: 0 !important;
-	    padding: 10px !important;
-	}
-	
-	.button-section {
-	    width: 0% !important;
-	    display: none !important;
-	}
-	
-	.text-section {
-	    width: 100% !important;
-	}
-	
-	.form-container {
-	    max-width: none !important;
-	    width: 100% !important;
-	}
-	
-	.password-help {
-	    font-size: 12px;
-	    color: #666;
-	    margin-top: 5px;
-	}
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 
@@ -344,9 +168,9 @@ require_once('header.php');
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>Create New User</h1>
+        <h1 class="main-text">Create New User</h1>
         <div class="div-blue"></div>
-        <p>
+        <p class="secondary-text">
           Create a new user account for staff members. Fill out the form below with all required information.
         </p>
         
@@ -416,7 +240,7 @@ require_once('header.php');
                 </div>
 
                 <div style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="btn-primary">Create User</button>
+                    <button type="submit" class="blue-button">Create User</button>
                 </div>
             </form>
         </div>

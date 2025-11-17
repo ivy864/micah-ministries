@@ -12,10 +12,76 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
 
+require_once('domain/Comment.php');
+require_once('database/dbComments.php');
+
 if ($accessLevel < 2) {
     header('Location: index.php');
     die();
 }
+$lease_id = $_GET['id'] ?? null;
+
+// if writecomment is set to true in request header, write a comment to database
+    if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+        // Start output buffering to capture any unwanted output
+        ob_start();
+        
+        // Suppress any PHP errors/warnings that might output HTML
+        error_reporting(0);
+        ini_set('display_errors', 0);
+        
+        // Clear any previous output
+        ob_clean();
+        
+        // Set proper headers for JSON response
+        header('Content-Type: application/json');
+        
+        // Debug: Log what we received
+        error_log("Comment submission received. UserID: " . $userID . ", RequestID: " . $_GET['id'] . ", Comment: " . $_POST['comment']);
+        
+        try {
+            $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
+            $result = add_lease_comment($cmnt);
+            
+            if ($result) {
+                // Debug: Log the result
+                error_log("Comment add result: success");
+                
+                // Get the JSON response
+                $jsonResponse = $cmnt->toJSON();
+                error_log("JSON response: " . $jsonResponse);
+                
+                // Clear any output buffer and send clean JSON
+                ob_clean();
+                echo $jsonResponse;
+            } else {
+                // Debug: Log the result
+                error_log("Comment add result: failed");
+                
+                // Return error response
+                ob_clean();
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to save comment']);
+            }
+        } catch (Exception $e) {
+            error_log("Comment submission error: " . $e->getMessage());
+            ob_clean();
+            http_response_code(500);
+            echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
+        }
+        
+        // End output buffering and don't render the rest of the page
+        ob_end_flush();
+        exit();
+    }
+    if (isset($_SERVER['HTTP_DELETECOMMENT']) && $_SERVER['HTTP_DELETECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], '', $_POST['time']);
+        delete_comment($cmnt);
+        exit();
+    }
+    if (isset($_SERVER['HTTP_GETCOMMENTS']) && $_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+        exit();
+    }
 
 $pdo = null;
 $db_notice = null;
@@ -53,7 +119,7 @@ try {
     $db_notice = "Database connection failed: " . htmlspecialchars($e->getMessage());
 }
 
-$lease_id = $_GET['id'] ?? null;
+
 
 if ($pdo && $lease_id) {
     try {
@@ -83,7 +149,10 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         'start_date',
         'expiration_date',
         'monthly_rent',
-        'security_deposit'
+        'security_deposit',
+        'program_type',
+        'status',
+        'notes'
     ];
     $data = [];
 
@@ -115,27 +184,108 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Micah Ministries | Edit Lease</title>
-    <link href="css/normal_tw.css" rel="stylesheet">
+    <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <script src="js/comment.js?v=<?php echo time(); ?>"></script>
     <?php
     $tailwind_mode = true;
     require_once('header.php');
     ?>
+
     <style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
+        /* Comments section styling */
+	#comments {
+	    margin-top: 30px;
+	    padding: 20px;
+	    background: #f8f9fa;
+	    border-radius: 8px;
+	    border: 1px solid #e9ecef;
+	}
+	
+	#comments h2 {
+	    margin-bottom: 20px;
+	    color: #274471;
+	    font-size: 18px;
+	    border-bottom: 2px solid #274471;
+	    padding-bottom: 10px;
+	}
+	
+	#comment-container {
+	    margin-bottom: 20px;
+	}
+	
+	#comment-container > div {
+	    background: white;
+	    border: 1px solid #dee2e6;
+	    border-radius: 6px;
+	    margin-bottom: 15px;
+	    padding: 15px;
+	    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	}
+	
+	.comment-head {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    margin-bottom: 8px;
+	}
+	
+	.comment-title {
+	    font-weight: bold;
+	    color: #274471;
+	    font-size: 14px;
+	}
+	
+	.comment-timestamp {
+	    font-size: 12px;
+	    color: #6c757d;
+	}
+	
+	.comment-content {
+	    color: #495057;
+	    line-height: 1.4;
+	    margin-top: 8px;
+	}
+	
+	#commentBox {
+	    width: 100%;
+	    padding: 12px;
+	    border: 1px solid #ced4da;
+	    border-radius: 4px;
+	    font-size: 14px;
+	    resize: vertical;
+	    min-height: 80px;
+	    margin-bottom: 15px;
+	}
+	
+	#commentBox:focus {
+	    outline: none;
+	    border-color: #274471;
+	    box-shadow: 0 0 0 2px rgba(39, 68, 113, 0.25);
+	}
+	
+	/* fix comment button styling */
+	#comments button {
+	    background-color: #274471;
+	    color: white !important;
+	    border: none;
+	    padding: 10px 20px;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    font-size: 14px;
+	    font-weight: 500;
+	}
+	
+	#comments button:hover {
+	    background-color: #1e3554;
+	}
     </style>
 </head>
 
@@ -146,11 +296,45 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         </div>
     </div>
 
-    <main>
-        <div class="main-content-box p-6">
-            <?php if (isset($db_notice) && $db_notice): ?>
-                <div class="p-3 mb-4 rounded-md <?php echo ($pdo ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'); ?>">
-                    <?php echo $db_notice; ?>
+  <!-- Hero Section - Removed to save space -->
+  <!-- <header class="hero-header"></header> -->
+
+  <!-- Main Content -->
+  <main>
+    <div class="sections">
+
+      <!-- Navigation Section - Removed -->
+      <div class="button-section">
+       </div>
+
+      <!-- Text Section -->
+      <div class="text-section">
+        <h1 class="main-text">Edit Lease</h1>
+        <div class="div-blue"></div>
+        <p class="secondary-text">
+          Update existing lease information. Modify the fields below as needed and submit your changes to save the updated lease details.
+        </p>
+        
+        <?php if (isset($db_notice) && $db_notice): ?>
+            <div class="alert <?php echo ($pdo ? 'alert-success' : 'alert-error'); ?>">
+                <?php echo $db_notice; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="form-container">
+            <form action="" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tenant_first_name">Tenant First Name:</label>
+                        <input type="text" id="tenant_first_name" name="tenant_first_name"
+                            value="<?php echo htmlspecialchars($lease['tenant_first_name']); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tenant_last_name">Tenant Last Name:</label>
+                        <input type="text" id="tenant_last_name" name="tenant_last_name"
+                            value="<?php echo htmlspecialchars($lease['tenant_last_name']); ?>">
+                    </div>
                 </div>
             <?php endif; ?>
 
@@ -197,15 +381,12 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                 </div>
 
-                <div>
-                    <label for="security_deposit" class="block font-medium text-gray-700">Security Deposit:</label>
-                    <input type="number" step="0.01" id="security_deposit" name="security_deposit"
-                        value="<?php echo htmlspecialchars($lease['security_deposit']); ?>"
-                        class="mt-1 block w-full border border-gray-300 rounded-md p-2">
-                </div>
-
-                <div>
+                <div style="margin-top: 30px;">
                     <button type="submit" class="blue-button">Submit Changes</button>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="index.php" class="gray-button">Return to Dashboard</a>
                 </div>
             </form>
 
@@ -213,6 +394,27 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                 <a href="micahportal.php" class="blue-button">Return to Dashboard</a>
             </div>
         </div>
-    </main>
+
+        <div id="comments" requestID="<?php echo htmlspecialchars($lease_id) ?>">
+            <?php
+            $comments = get_lease_comments($lease_id);
+            ?>
+            <h2>Comments</h2>
+            <script>
+                /*
+                * comments are rendered client-side with js.
+                * The array of comments is encoded in json so it can be used by the js/comment.js file
+                */
+                let comments = <?php echo json_encode($comments) ?>;
+            </script>
+            <div id="comment-container">
+                
+            </div>
+            <textarea id="commentBox"></textarea>
+            <button onclick='writeComment()'>Comment</button>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
