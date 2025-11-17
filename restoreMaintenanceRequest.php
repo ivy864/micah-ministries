@@ -82,7 +82,7 @@ require_once('header.php');
       <div class="button-section"></div>
       <div class="text-section">
         <h1 class="main-text">Restore Maintenance Request</h1>
-        <p class="secondary-text">Confirm unarchiving of this maintenance request.</p>
+        <p class="secondary-text">Confirm restoration of this maintenance request.</p>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
         <?php if ($error): ?><div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
