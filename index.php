@@ -60,8 +60,8 @@ if (!$loggedIn) {
                     </div>
                 </div>
 
-                <!-- Profile Management - Level 1 only (maintenance staff) -->
-                <?php if ($accessLevel == 1): ?>
+                <!-- Profile Management - Level 1 and 2 (maintenance staff and case managers) -->
+                <?php if ($accessLevel == 1 || $accessLevel == 2): ?>
                 <div class="portal-card">
                     <h2 class="portal-title">Manage Profile</h2>
                     <p class="portal-desc">Update your account information and preferences.</p>
@@ -71,8 +71,8 @@ if (!$loggedIn) {
                 </div>
                 <?php endif; ?>
 
-                <!-- User Management - Level 2+ only -->
-                <?php if ($accessLevel >= 2): ?>
+                <!-- User Management - Level 3 only (Admin) -->
+                <?php if ($accessLevel >= 3): ?>
                 <div class="portal-card">
                     <h2 class="portal-title">Manage Users</h2>
                     <p class="portal-desc">Update account details for users.</p>

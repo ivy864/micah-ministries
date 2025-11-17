@@ -32,19 +32,35 @@ if (!function_exists('restore_maintenance_request')) {
     function restore_maintenance_request($id) {
         $req = get_maintenance_request_by_id($id);
         if (!$req) return false;
+
         $con = connect();
-        $qry = "UPDATE dbmaintenancerequests SET archived = 0 WHERE id = '" . mysqli_real_escape_string($con, $id) . "'";
+        $id_esc = mysqli_real_escape_string($con, $id);
+
+        // UPDATED QUERY — restores archive flag AND resets status
+        $qry = "
+            UPDATE dbmaintenancerequests
+            SET archived = 0,
+                status = 'Pending'
+            WHERE id = '$id_esc'
+        ";
+
         $ok = mysqli_query($con, $qry);
         mysqli_close($con);
+
         return (bool)$ok;
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && $request_id) {
     if (restore_maintenance_request($request_id)) {
-        header("Location: viewAllMaintenanceRequests.php?archived=1");
+
+        // UPDATED REDIRECT — sends user back to ACTIVE requests
+        header("Location: viewAllMaintenanceRequests.php");
         exit();
-    } else $error = 'Failed to restore the maintenance request. Please try again.';
+
+    } else {
+        $error = 'Failed to restore the maintenance request. Please try again.';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -66,7 +82,7 @@ require_once('header.php');
       <div class="button-section"></div>
       <div class="text-section">
         <h1 class="main-text">Restore Maintenance Request</h1>
-        <p class="secondary-text">Confirm unarchiving of this maintenance request.</p>
+        <p class="secondary-text">Confirm restoration of this maintenance request.</p>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
         <?php if ($error): ?><div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
@@ -80,12 +96,15 @@ require_once('header.php');
             </div>
 
             <form method="POST" action="">
-              <button type="submit" name="unarchive" class="blue-button">Unarchive Maintenance Request</button>
+              <button type="submit" name="restore" class="blue-button">Restore Maintenance Request</button>
               <a href="viewAllMaintenanceRequests.php?archived=1" class="delete-button">Cancel</a>
             </form>
           <?php else: ?>
             <div class="confirm-card">
-              We couldn’t find that maintenance request. <a href="viewAllMaintenanceRequests.php?archived=1" class="blue-button" style="margin-left:8px;">Back to Archived List</a>
+              We couldn’t find that maintenance request. 
+              <a href="viewAllMaintenanceRequests.php?archived=1" class="blue-button" style="margin-left:8px;">
+                Back to Archived List
+              </a>
             </div>
           <?php endif; ?>
         </div>
