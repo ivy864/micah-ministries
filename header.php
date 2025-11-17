@@ -126,7 +126,6 @@ if (date("H:i:s") > "18:19:59") {
         
         //pages case managers can view (Level 2) - Lease + Maintenance
         $permission_array['restoremaintenancerequest.php'] = 2;
-        $permission_array['userman.php'] = 2;
         $permission_array['addlease.php'] = 2;
         $permission_array['editlease.php'] = 2;
         $permission_array['deletelease.php'] = 2;
@@ -147,6 +146,7 @@ if (date("H:i:s") > "18:19:59") {
         //pages only managers can view
         $permission_array['viewallevents.php'] = 0;
         //user management - admin only (Level 3)
+        $permission_array['userman.php'] = 3;
         $permission_array['personsearch.php'] = 3;
         $permission_array['personedit.php'] = 0; // changed to 0 so that applicants can apply
         $permission_array['viewschedule.php'] = 3;
@@ -433,6 +433,25 @@ if (date("H:i:s") > "18:19:59") {
     <span>Logout</span>
   </div>
 </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Date & Icon -->
+        <div class="right-section">
+            <div class="date-box"></div>
+            <div class="nav-links">
+                <div class="nav-item" style="outline:none;">
+                    <div class="icon">
+                        <img src="images/usaicon.png" alt="User Icon">
+                        <div class="dropdown">
+                            <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>
+                            <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
+                            <a href="inbox.php" style="text-decoration: none;"><div>Notifications</div></a>
+                            <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
+                            <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
+                        </div>
                     </div>
                 </div>
             </div>
