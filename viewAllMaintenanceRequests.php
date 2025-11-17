@@ -205,12 +205,14 @@ require_once('header.php');
             </a>
         <?php endif; ?>
 
-        <!-- Mark Complete -->
+        <!-- Mark Complete (only if NOT already completed) -->
+    <?php if (strtolower($request->getStatus()) !== 'completed'): ?>
         <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-           style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
-                  text-decoration:none;font-weight:bold;flex-shrink:0;">
-           Mark Complete
+        style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
+                text-decoration:none;font-weight:bold;flex-shrink:0;">
+        Mark Complete
         </a>
+    <?php endif; ?>
 
         <!-- Edit -->
         <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"

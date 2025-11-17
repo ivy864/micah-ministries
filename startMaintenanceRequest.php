@@ -40,71 +40,51 @@ $mr = $id ? get_maintenance_request_by_id($id) : null;
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Start Maintenance Request</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .confirm-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 18px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      margin: 30px auto;
-      max-width: 720px;
-    }
-    .btn-primary {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      font-weight: 700;
-    }
-    .btn-danger {
-      background-color: #6c757d;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      margin-left: 8px;
-    }
-  </style>
+    <link rel="icon" type="image/png" href="images/micah-favicon.png">
+    <meta charset="UTF-8">
+    <title>Start Maintenance Request</title>
+    <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
+
+<?php
+$tailwind_mode = true;
+require_once('header.php');
+?>
 </head>
+
 <body>
-  <?php include 'header.php'; ?>
-  <main role="main">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
+  <main>
+    <div class="sections">
+      <div class="button-section"></div>
+
+      <div class="text-section">
+        <h1 class="main-text">Start Maintenance Request</h1>
+        <p class="secondary-text">Confirm that you want to mark this request as In Progress.</p>
+
+        <div class="form-container">
           <?php if ($mr): ?>
             <div class="confirm-card">
-              <h2 style="margin-top:0;">Start Pending Request</h2>
-              <p>
-                <!-- [ADDED 2025-11-09] Confirm starting a maintenance request. -->
-                Are you sure you want to mark maintenance request <strong>#<?php echo htmlspecialchars($mr->getID()); ?></strong> as <strong>In Progress</strong>?
-              </p>
-              <form method="post" action="startMaintenanceRequest.php">
-                <input type="hidden" name="id" value="<?php echo htmlspecialchars($mr->getID()); ?>">
-                <button type="submit" class="btn-primary">Start Maintenance Request</button>
-                <a href="viewAllMaintenanceRequests.php" class="btn-danger">Cancel</a>
-              </form>
+              <strong>Are you sure you want to start this maintenance request?</strong><br>
+              ID: <code><?php echo htmlspecialchars($mr->getID()); ?></code><br>
+              Status will be updated to: <strong>In Progress</strong>
             </div>
+
+            <form method="POST" action="">
+              <input type="hidden" name="id" value="<?php echo htmlspecialchars($mr->getID()); ?>">
+              <button type="submit" class="blue-button">Start Maintenance Request</button>
+              <a href="viewAllMaintenanceRequests.php" class="delete-button" style="margin-left:6px;">Cancel</a>
+            </form>
+
           <?php else: ?>
             <div class="confirm-card">
               We couldn’t find that maintenance request.
-              <a href="viewAllMaintenanceRequests.php" class="btn-primary" style="margin-left:8px;">Back to Requests</a>
+              <a href="viewAllMaintenanceRequests.php" class="blue-button" style="margin-left:8px;">Back to Requests</a>
             </div>
           <?php endif; ?>
         </div>
+
       </div>
     </div>
   </main>
 </body>
 </html>
+`
