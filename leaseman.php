@@ -28,59 +28,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lease Management Page</title>
-  <link href="css/base.css" rel="stylesheet">
-  <link href="css/dashboard.css" rel="stylesheet">
+  <link href="css/management_tw.css" rel="stylesheet">
 
+<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
+<style>
+        .date-box {
+            background: #274471;
+            padding: 7px 30px;
+            border-radius: 50px;
+            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+	.dropdown {
+	    padding-right: 50px;
+	}
+
+</style>
+<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 
 <body>
-  <!-- Header -->
-  <div class="hero-header">
-    <div class="center-header">
-        <h1>Lease Management Hub</h1>
-    </div>
-  </div>
 
-  <div class="overall-container">
 
-    <!-- Button Cards -->
-    <div class="actions-container">
+  <!-- Larger Hero Section -->
+  <header class="hero-header"></header>
 
-      <div class="hub-card">
-        <h2 class="hub-title">View Leases</h2>
-        <p class="hub-desc">View all leases with the ability to sort and filter.</p>
-        <div class="hub-action">
-            <a href="leaseView.php" class="portal-link">Go to View Leases Page</a>
-        </div>
+
+  <!-- Main Content -->
+  <main>
+    <div class="sections">
+
+      <!-- Buttons Section -->
+      <div class="button-section">
+
+
+        <!-- Link add button to add page -->
+        <button onclick="window.location.href='addMaintenanceRequest.php';">
+	  <div class="button-left-gray"></div>
+	  <div>Add Lease</div>
+	  <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
+        </button>
+
+        <button onclick="window.location.href='leaseView.php';">
+	  <div class="button-left-gray"></div>
+	  <div>View List of Leases</div>
+	  <img class="button-icon left-4" src="images/new-event.svg" alt="List Icon">
+        </button>
+
+        <button onclick="window.location.href='cal.php';">
+	  <div class="button-left-gray"></div>
+	  <div>Calendar</div>
+	  <img class="button-icon left-4" src="images/new-event.svg" alt="List Icon">
+        </button>
+
+	<div class="text-center mt-6">
+        	<a href="micahportal.php" class="return-button">Return to Dashboard</a>
+	</div>
+
+
+     </div>
+
+      <!-- Text Section -->
+      <div class="text-section">
+        <h1>Lease Management</h1>
+        <div class="div-blue"></div>
+        <p>
+          Welcome to the lease management hub. Use the controls on the left to manage leases, view lease calendar, etc. Everything you need to maintain and manage your facilities is just a click away.
+        </p>
       </div>
 
-      <div class="hub-card">
-        <h2 class="hub-title">Add Leases</h2>
-        <p class="hub-desc">Add leases to the lease view page.</p>
-        <div class="hub-action">
-            <a href="addLease.php" class="portal-link">Go to Add Leases Page</a>
-        </div>
-      </div>
-
     </div>
-
-    <!-- Text Section -->
-    <div class="text-section">
-      <h1 class="main-text">Lease Management</h1>
-      <p class="secondary-text">
-        Welcome to the lease management hub. Use the controls on the left to view leases and add leases. Everything you need to maintain and manage your facilities is just a click away.
-      </p>
-      <div style="text-align: center; padding-top: 20px;">
-        <a href="index.php" class="gray-button">Return to Dashboard</a>
-      </div>
-    </div>
-  </div>
-
+  </main>
 </body>
-
 </html>

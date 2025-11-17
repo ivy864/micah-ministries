@@ -45,16 +45,10 @@ $loggedIn = false;
     } else {
         $id = $userID;
     }
-
-    // Prevent users from deleting their own profile
-    if ($id == $userID) {
-        header('Location: viewProfile.php');
-        die();
-    }
-
     require_once('database/dbPersons.php');
     if (isset($_GET['removePic'])) {
       if ($_GET['removePic'] === 'true') {
+        remove_profile_picture($id);
       }
     }
 
@@ -71,8 +65,19 @@ $loggedIn = false;
         <?php require('universal.inc') ?>
     </head>
     <body>
+        <nav>
+            <span id="nav-top">
+                <span class="logo">
+                    <img src="images/FredSCPAlogo.png">
+                        <span id="vms-logo"> Fredericksburg SPCA Volunteer </span>
+                        </span>
+                    <img id="menu-toggle" src="images/menu.png">
+                </span>
+            </span>
+        </nav>
         <main>
-                <div class="alert alert-success">This <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?> has been deleted.</div>
+
+                <p class="happy-toast centered">This <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?> has been deleted.</p>
                 <?php
                 remove_person($user->get_id());
                 ?>

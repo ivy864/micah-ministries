@@ -102,13 +102,13 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Micah Ministries | Log In</title>
+        <title>Fredericksburg SPCA Volunteer System | Log In</title>
     </head>
     <body>
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
-  <div class="hidden md:flex md:w-1/2 items-center justify-center rounded-r-[50px] bg-white">
+  <<div class="hidden md:flex md:w-1/2 items-center justify-center rounded-r-[50px] bg-white">
   <img src="images/micah-ministries-logo.jpg"
        alt="Micah Ecumenical Ministries"
        class="max-w-[90%] max-h-[90%] object-contain">
