@@ -206,7 +206,7 @@ require_once('header.php');
         <?php endif; ?>
 
         <!-- Mark Complete (only if NOT already completed) -->
-    <?php if (strtolower($request->getStatus()) !== 'completed'): ?>
+    <?php if (strtolower($request->getStatus()) === 'in progress'): ?>
         <a href="completeMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
         style="background-color:#28a745;color:white;padding:6px 12px;border-radius:4px;
                 text-decoration:none;font-weight:bold;flex-shrink:0;">
@@ -230,12 +230,6 @@ require_once('header.php');
            Delete
         </a>
 
-        <!-- Archive -->
-        <a href="archiveMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
-                  text-decoration:none;font-weight:bold;flex-shrink:0;">
-           Archive
-        </a>
     <?php else: ?>
         <!-- Edit -->
         <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
