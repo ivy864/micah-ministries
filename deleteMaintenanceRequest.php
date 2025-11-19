@@ -45,16 +45,22 @@ if ($request_id) {
  */
 function hard_delete_maintenance_request($id) {
     $con = connect();
-    $id_safe = mysqli_real_escape_string($con, $id);
-    $query = "DELETE FROM dbmaintenancerequests WHERE id = '{$id_safe}'";
-    $result = mysqli_query($con, $query);
-    if (!$result) {
+    $query = "DELETE FROM dbmaintenancerequests WHERE id = ?";
+    $stmt = mysqli_prepare($con, $query);
+
+    if (!$stmt) {
         $err = mysqli_error($con);
         mysqli_close($con);
         return [false, $err];
     }
+
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    $result = mysqli_stmt_execute($stmt);
+    $error = $result ? null : mysqli_error($con);
+
+    mysqli_stmt_close($stmt);
     mysqli_close($con);
-    return [true, null];
+    return [$result, $error];
 }
 
 // Handle POST confirm
