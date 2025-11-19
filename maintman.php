@@ -43,7 +43,7 @@ require_once('header.php');
   <!-- Header -->
   <div class="hero-header">
     <div class="center-header">
-        <h1>Lease Management Hub</h1>
+        <h1>Maintenance Management Hub</h1>
     </div>
   </div>
 
@@ -56,7 +56,7 @@ require_once('header.php');
         <h2 class="hub-title">View Requests</h2>
         <p class="hub-desc">View all maintenance requests with the ability to sort, filter, mark requests as complete.</p>
         <div class="hub-action">
-            <a href="viewAllMaintenanceRequests.php" class="portal-link">Go to Requests View Page</a>
+            <a href="viewAllMaintenanceRequests.php" class="portal-link">Requests View Page</a>
         </div>
       </div>
 
@@ -64,23 +64,7 @@ require_once('header.php');
         <h2 class="hub-title">Create Request</h2>
         <p class="hub-desc">Add maintenance requests to the requests view page.</p>
         <div class="hub-action">
-            <a href="addMaintenanceRequest.php" class="portal-link">Go to Add Leases Page</a>
-        </div>
-      </div>
-
-      <div class="hub-card">
-        <h2 class="hub-title">Assign Tasks</h2>
-        <p class="hub-desc">Temporary Description Text</p>
-        <div class="hub-action">
-            <a href="assignMaintenanceTasks.php" class="portal-link">Go to Assign Tasks Page</a>
-        </div>
-      </div>
-
-      <div class="hub-card">
-        <h2 class="hub-title">Pending Requests</h2>
-        <p class="hub-desc">Temporary Description Text</p>
-        <div class="hub-action">
-            <a href="viewPendingMaintenanceRequests.php" class="portal-link">Go to Pending Requests Page</a>
+            <a href="addMaintenanceRequest.php" class="portal-link">Add Maintenance Request Page</a>
         </div>
       </div>
 
@@ -90,7 +74,7 @@ require_once('header.php');
     <div class="text-section">
       <h1 class="main-text">Maintenance Management</h1>
       <p class="secondary-text">
-        Welcome to the maintenance management hub. Use the controls on the left to manage maintenance requests, track work orders, assign tasks, and monitor facility upkeep. Everything you need to maintain and manage your facilities is just a click away.
+        Welcome to the maintenance management hub. Use the controls on the left to manage maintenance requests, track work orders, and monitor facility upkeep. Everything you need to maintain and manage your facilities is just a click away.
       </p>
       <div style="text-align: center; padding-top: 20px;">
         <a href="index.php" class="gray-button">Return to Dashboard</a>
