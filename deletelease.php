@@ -18,6 +18,8 @@ if ($accessLevel < 2) {
     die();
 }
 
+require_once('database/dbLeases.php');
+
 $pdo = null;
 $db_notice = null;
 $lease = [
