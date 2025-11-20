@@ -17,18 +17,9 @@ session_write_close();
 </head>
 
     <body>
-        <nav>
-            <span id="nav-top">
-                <span class="logo">
-                    <img src="images/micah-ministries-logo.jpg">
-                        <span id="vms-logo"> Micah Ecumenical Ministries </span>
-                        </span>
-                    <img id="menu-toggle" src="images/menu.png">
-                </span>
-            </span>
-        </nav>
-        <main>
-            <p class="happy-toast centered">You have been logged out.</p>
-        </main>
+        <div style="padding: 30px; text-align: center;">
+            <img src="images\micah-ministries-logo.jpg" alt="Micah Ministries Logo">
+        </div>
+        <p class="main-text">You've successfully been logged out</p>
     </body>
 </html>

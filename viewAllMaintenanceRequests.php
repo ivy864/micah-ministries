@@ -194,12 +194,13 @@ require_once('header.php');
 
                             <td><?php echo htmlspecialchars($request->getAssignedTo() ?: 'Unassigned'); ?></td>
                             <td><?php echo date('M j, Y', strtotime($request->getCreatedAt())); ?></td>
-<td style="display:flex;gap:10px;align-items:center;height:100%;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;">
+<td style="text-align:center;">
+    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
     <?php if (!$view_archived): ?>
         <!-- Start (only for Pending requests) -->
         <?php if (strtolower($request->getStatus()) === 'pending' && ($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)): ?>
             <a href="startMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-               style="background-color:#007bff;color:white;padding:6px 12px;border-radius:4px;
+               style="background-color:var(--main-color);color:white;padding:6px 12px;border-radius:4px;
                       text-decoration:none;font-weight:bold;flex-shrink:0;">
                Start
             </a>
@@ -229,8 +230,10 @@ require_once('header.php');
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Delete
         </a>
+    </div>
 
     <?php else: ?>
+        <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
         <!-- Edit -->
         <a href="manageMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>&edit=1"
            style="background-color:#6c757d;color:white;padding:6px 12px;border-radius:4px;
@@ -249,11 +252,12 @@ require_once('header.php');
 
         <!-- Restore -->
         <a href="restoreMaintenanceRequest.php?id=<?php echo urlencode($request->getID()); ?>"
-           style="background-color:#274471;color:white;padding:6px 12px;border-radius:4px;
+           style="background-color:var(--main-color);color:white;padding:6px 12px;border-radius:4px;
                   text-decoration:none;font-weight:bold;flex-shrink:0;">
            Restore
         </a>
     <?php endif; ?>
+    </div>
 </td>
                         </tr>
                     <?php endforeach; ?>

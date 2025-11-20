@@ -207,7 +207,7 @@
                 </div>
                 <div class="space-y-3">
                     <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" 
-                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
+                            class="blue-button w-full px-4 py-2">
                         Edit Profile
                     </button>
 
@@ -220,11 +220,11 @@
                         <?php endif ?>
                     <?php else: ?>
                         <button onclick="window.location.href='managePassword.php';" 
-                                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
+                                class="blue-button w-full px-4 py-2">
                             Change Password
                         </button>
                         <button onclick="window.location.href='deletePerson.php?id=<?php echo htmlspecialchars($id) ?>';" 
-                            class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200 font-medium">
+                            class="delete-button w-full px-4 py-2">
                                 Delete User
                         </button>
                     <?php endif ?>
@@ -242,19 +242,19 @@
                 <!-- Personal Section -->
                 <div id="personal" class="profile-section space-y-6">
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Username</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Username</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo htmlspecialchars($user->get_id()) ?></p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Name</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Name</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo htmlspecialchars($user->get_first_name() . ' ' . $user->get_last_name()) ?></p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Date of Birth</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Date of Birth</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo date('m/d/Y', strtotime($user->get_birthday())) ?></p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Address</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Address</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo htmlspecialchars($user->get_street_address() . ', ' . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code()) ?></p>
                     </div>
                 </div>
@@ -262,7 +262,7 @@
                 <!-- Contact Section -->
                 <div id="contact" class="profile-section space-y-6 hidden">
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Email</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Email</span>
                         <p class="text-gray-900 font-semibold text-lg">
                             <a href="mailto:<?php echo $user->get_email() ?>" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                 <?php echo htmlspecialchars($user->get_email()) ?>
@@ -270,7 +270,7 @@
                         </p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Phone Number</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Phone Number</span>
                         <p class="text-gray-900 font-semibold text-lg">
                             <a href="tel:<?php echo $user->get_phone1() ?>" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                 <?php echo formatPhoneNumber($user->get_phone1()) ?>
@@ -279,15 +279,15 @@
                         </p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Emergency Contact Name</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Emergency Contact Name</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo htmlspecialchars($user->get_emergency_contact_first_name() . ' ' . $user->get_emergency_contact_last_name()) ?></p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Emergency Contact Relation</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Emergency Contact Relation</span>
                         <p class="text-gray-900 font-semibold text-lg"><?php echo htmlspecialchars($user->get_emergency_contact_relation()) ?></p>
                     </div>
                     <div>
-                        <span class="block text-sm font-medium text-blue-600 mb-1">Emergency Contact Phone Number</span>
+                        <span class="block text-sm font-medium mb-1" style="color: var(--main-color);">Emergency Contact Phone Number</span>
                         <p class="text-gray-900 font-semibold text-lg">
                             <a href="tel:<?php echo $user->get_emergency_contact_phone() ?>" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                 <?php echo formatPhoneNumber($user->get_emergency_contact_phone()) ?>
