@@ -276,11 +276,11 @@
 
                 <div style="text-align: center; margin-top: 30px;">
                     <input type="hidden" name="id" value="<?php echo $id; ?>">
-                    <button type="submit" name="profile-edit-form" class="btn-primary">Update Profile</button>
+                    <button type="submit" name="profile-edit-form" class="blue-button">Update Profile</button>
                     <?php if ($editingSelf): ?>
-                        <a href="viewProfile.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                        <a href="viewProfile.php" class="gray-button">Cancel</a>
                     <?php else: ?>
-                        <a href="viewProfile.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                        <a href="viewProfile.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" class="gray-button" style="margin-left: 10px;">Cancel</a>
                     <?php endif ?>
                 </div>
             </form>
