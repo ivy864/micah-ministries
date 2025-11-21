@@ -207,6 +207,7 @@ CREATE TABLE `dbleases` (
   `monthly_rent` decimal(10,2) DEFAULT NULL,
   `security_deposit` decimal(10,2) DEFAULT NULL,
   `program_type` varchar(100) DEFAULT NULL,
+  'lease_form' MEDIUMBLOB NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` enum('Active','Expired','Terminated') DEFAULT 'Active',
