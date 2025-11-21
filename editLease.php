@@ -442,13 +442,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit"
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
                     </div>
+                    </div>
 
                     <div class="form-group">
                         <label for="lease_form">Lease Form:</label>
                         <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
                         
                         <?php if (isset($lease['lease_form_size']) && $lease['lease_form_size'] > 0): ?>
-                            <div style="margin-top: 15px;">
+                            <div style="margin-top: 15px; display: flex; justify-content: center;">
                                 <iframe 
                                     src="viewLeasePDF.php?id=<?php echo urlencode($lease_id); ?>" 
                                     width="100%" 
@@ -463,7 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <?php endif; ?>
                     </div>
 
-                <div style="margin-top: 30px;">
+                <div style="margin-top: 30px; text-align: center;">
                     <button type="submit" class="blue-button">Submit Changes</button>
                 </div>
                 
