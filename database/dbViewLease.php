@@ -15,13 +15,9 @@ if ($_SERVER['SERVER_NAME'] == 'jenniferp160.sg-host.com') {
     ];
 }
 
-function delete_lease($lease_id) {    
-    include_once('database/dbinfo.php'); 
-    $connection=connect();  
-    $query = "DELETE FROM dbleases WHERE id LIKE '$lease_id'";
-    $result = mysqli_query($connection, $query);
-    $result = boolval($result);
-    mysqli_close($connection);
-    return $result;
+// delete_lease function moved to database/dbLeases.php
+// include it here for backward compatibility
+if (!function_exists('delete_lease')) {
+    include_once('database/dbLeases.php');
 }
 ?>

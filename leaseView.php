@@ -30,9 +30,17 @@
     if ($current_page < 1) { $current_page = 1; }
     $offset = ($current_page - 1) * $items_per_page;
     
-    // sorting parameters
+    // sorting parameters - validate to prevent sql injection
+    $allowed_sort_columns = ['id', 'tenant_first_name', 'tenant_last_name', 'property_street', 'property_city', 'property_state', 'unit_number', 'start_date', 'expiration_date', 'monthly_rent', 'security_deposit', 'program_type', 'status', 'created_at', 'updated_at'];
     $sort_by = $_GET['sort'] ?? 'created_at';
-    $sort_order = $_GET['order'] ?? 'DESC';
+    if (!in_array($sort_by, $allowed_sort_columns)) {
+        $sort_by = 'created_at';
+    }
+    
+    $sort_order = strtoupper($_GET['order'] ?? 'DESC');
+    if (!in_array($sort_order, ['ASC', 'DESC'])) {
+        $sort_order = 'DESC';
+    }
 
     // NEW: month filter (1..12). Keep empty => all months
     $exp_month = $_GET['exp_month'] ?? '';
@@ -69,7 +77,7 @@
     // get paginated and sorted leases (with filter)
     $leases = [];
     if ($con) {
-        $query = "SELECT * FROM dbleases" . $where . " ORDER BY $sort_by $sort_order LIMIT $items_per_page OFFSET $offset";
+        $query = "SELECT * FROM dbleases" . $where . " ORDER BY " . $sort_by . " " . $sort_order . " LIMIT " . (int)$items_per_page . " OFFSET " . (int)$offset;
         $result = mysqli_query($con, $query);
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) { $leases[] = $row; }

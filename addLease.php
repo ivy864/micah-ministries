@@ -21,8 +21,9 @@
         die();
     }
 
-    // include database functions
-    require_once('database/dbinfo.php');
+    // include database functions and domain object
+    require_once('database/dbLeases.php');
+    require_once('domain/Lease.php');
     
     $message = '';
     $error = '';
@@ -46,36 +47,26 @@
         if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || empty($unit_number) || empty($property_city) || empty($property_state) || empty($property_zip) || empty($start_date) || empty($expiration_date)) {
             $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
         } else {
-            // connect to database
-            $con = connect();
+            // generate unique lease id
+            $lease_id = 'L' . date('YmdHis') . rand(100, 999);
             
-            if ($con) {
-                // generate unique lease id
-                $lease_id = 'L' . date('YmdHis') . rand(100, 999);
-                
-                // insert lease into database
-                $query = "INSERT INTO dbleases (id, tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, expiration_date, monthly_rent, security_deposit, program_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-                
-                $stmt = mysqli_prepare($con, $query);
-                if ($stmt) {
-                    mysqli_stmt_bind_param($stmt, "sssssssssssss", 
-                        $lease_id, $tenant_first_name, $tenant_last_name, $property_street, $unit_number, $property_city, $property_state, $property_zip, 
-                        $start_date, $expiration_date, $monthly_rent, $security_deposit, $program_type);
-                    
-                    if (mysqli_stmt_execute($stmt)) {
-                        $message = 'Lease created successfully! Lease ID: ' . $lease_id;
-                        // clear form data
-                        $_POST = array();
-                    } else {
-                        $error = 'Failed to create lease. Please try again.';
-                    }
-                    mysqli_stmt_close($stmt);
-                } else {
-                    $error = 'Database error. Please try again.';
-                }
-                mysqli_close($con);
+            // create lease object
+            $lease = new Lease(
+                $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
+                $unit_number, $property_city, $property_state, $property_zip,
+                $start_date, $expiration_date, $monthly_rent, $security_deposit, 
+                $program_type, 'Active'
+            );
+            
+            // add to database using object
+            $result = add_lease($lease);
+            
+            if ($result) {
+                $message = 'Lease created successfully! Lease ID: ' . $lease_id;
+                // clear form data
+                $_POST = array();
             } else {
-                $error = 'Database connection failed. Please try again.';
+                $error = 'Failed to create lease. Please try again.';
             }
         }
     }
