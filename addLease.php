@@ -30,6 +30,7 @@
     
     // handle form submission
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Get form data
         $tenant_first_name = $_POST['tenant_first_name'] ?? '';
         $tenant_last_name = $_POST['tenant_last_name'] ?? '';
         $property_street = $_POST['property_street'] ?? '';
@@ -43,8 +44,25 @@
         $security_deposit = $_POST['security_deposit'] ?? '';
         $program_type = $_POST['program_type'] ?? '';
         
+        // Handle file upload - THIS IS THE KEY FIX
+        $lease_form = null;
+        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] == UPLOAD_ERR_OK) {
+            // Read the file contents as binary data
+            $lease_form = file_get_contents($_FILES['lease_form']['tmp_name']);
+            error_log("PDF uploaded successfully. Size: " . strlen($lease_form) . " bytes");
+        } else {
+            // Log why the file wasn't uploaded
+            if (isset($_FILES['lease_form'])) {
+                error_log("File upload error code: " . $_FILES['lease_form']['error']);
+            } else {
+                error_log("No file was uploaded");
+            }
+        }
+        
         // basic validation
-        if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || empty($unit_number) || empty($property_city) || empty($property_state) || empty($property_zip) || empty($start_date) || empty($expiration_date)) {
+        if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || 
+            empty($unit_number) || empty($property_city) || empty($property_state) || 
+            empty($property_zip) || empty($start_date) || empty($expiration_date)) {
             $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
         } else {
             // generate unique lease id
@@ -54,7 +72,7 @@
             $lease = new Lease(
                 $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
                 $unit_number, $property_city, $property_state, $property_zip,
-                $start_date, $expiration_date, $monthly_rent, $security_deposit, 
+                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form,
                 $program_type, 'Active'
             );
             
@@ -115,7 +133,7 @@ require_once('header.php');
         
         <div class="form-container">
             
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tenant_first_name">Tenant First Name <span class="required">*</span></label>
@@ -204,7 +222,8 @@ require_once('header.php');
                                value="<?php echo htmlspecialchars($_POST['security_deposit'] ?? ''); ?>">
                     </div>
                     <div class="form-group">
-                        <!-- Empty div for spacing -->
+                        <label for="lease_form">Lease Form</label>
+                        <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
                     </div>
                     <div class="form-group">
                         <!-- Empty div for spacing -->

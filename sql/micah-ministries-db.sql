@@ -207,7 +207,6 @@ CREATE TABLE `dbleases` (
   `monthly_rent` decimal(10,2) DEFAULT NULL,
   `security_deposit` decimal(10,2) DEFAULT NULL,
   `program_type` varchar(100) DEFAULT NULL,
-  'lease_form' MEDIUMBLOB NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` enum('Active','Expired','Terminated') DEFAULT 'Active',
@@ -862,6 +861,13 @@ ALTER TABLE `discussion_replies`
   ADD KEY `fk_author` (`author_id`),
   ADD KEY `fk_user` (`user_reply_id`),
   ADD KEY `fk_parent` (`parent_reply_id`);
+
+--
+-- Indexes for table `dbleases`
+--
+ALTER TABLE `dbleases` 
+  ADD COLUMN `lease_form` MEDIUMBLOB NOT NULL 
+  AFTER `security_deposit`;
 
 --
 -- Indexes for table `monthly_hours_snapshot`
