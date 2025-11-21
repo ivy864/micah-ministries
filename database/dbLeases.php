@@ -21,16 +21,27 @@ include_once(dirname(__FILE__).'/../domain/Lease.php');
 /**
  * adds a new lease to the database using Lease object
  */
+/**
+ * adds a new lease to the database using Lease object
+ */
 function add_lease($lease) {
     if (!$lease instanceof Lease) {
         die("Error: add_lease type mismatch");
     }
 
     $con = connect();
-    $query = "INSERT INTO dbleases (id, tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, expiration_date, monthly_rent, security_deposit, program_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    // Remove created_at and updated_at - they auto-populate
+    $query = "INSERT INTO dbleases (
+        id, tenant_first_name, tenant_last_name, property_street, 
+        unit_number, property_city, property_state, property_zip, 
+        start_date, expiration_date, monthly_rent, security_deposit, 
+        lease_form, program_type, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = mysqli_prepare($con, $query);
     if (!$stmt) {
+        error_log("Prepare failed: " . mysqli_error($con));
         mysqli_close($con);
         return false;
     }
@@ -47,14 +58,15 @@ function add_lease($lease) {
     $expiration_date = $lease->getExpirationDate();
     $monthly_rent = $lease->getMonthlyRent();
     $security_deposit = $lease->getSecurityDeposit();
+    $lease_form = $lease->getLeaseForm();
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
-    $created_at = $lease->getCreatedAt();
-    $updated_at = $lease->getUpdatedAt();
 
+    // s=string, d=double/decimal, b=blob
+    // 12th parameter (index 12) is the blob
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssssssss",
+        "ssssssssssddbss",  // note: space added for clarity - remove in actual code
         $id,
         $tenant_first_name,
         $tenant_last_name,
@@ -65,15 +77,27 @@ function add_lease($lease) {
         $property_zip,
         $start_date,
         $expiration_date,
-        $monthly_rent,
-        $security_deposit,
+        $monthly_rent,      // d = decimal
+        $security_deposit,  // d = decimal
+        $lease_form,        // b = blob
         $program_type,
-        $status,
-        $created_at,
-        $updated_at
+        $status
     );
 
+    // Send blob data separately if it exists
+    if ($lease_form !== null && strlen($lease_form) > 0) {
+        mysqli_stmt_send_long_data($stmt, 12, $lease_form); // 12 is the index of lease_form (0-based)
+        error_log("Sending PDF blob: " . strlen($lease_form) . " bytes");
+    }
+
     $result = mysqli_stmt_execute($stmt);
+    
+    if (!$result) {
+        error_log("Execute failed: " . mysqli_stmt_error($stmt));
+    } else {
+        error_log("Lease inserted successfully. ID: " . $id);
+    }
+    
     mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $result;
@@ -115,6 +139,7 @@ function get_lease_by_id($id) {
         $row['expiration_date'],
         $row['monthly_rent'],
         $row['security_deposit'],
+        $row['lease_form'],
         $row['program_type'],
         $row['status']
     );
@@ -131,16 +156,25 @@ function get_lease_by_id($id) {
 /**
  * updates a lease using Lease object
  */
+/**
+ * updates a lease using Lease object
+ */
 function update_lease($lease) {
     if (!$lease instanceof Lease) {
         die("Error: update_lease type mismatch");
     }
 
     $con = connect();
-    $query = "UPDATE dbleases SET tenant_first_name = ?, tenant_last_name = ?, property_street = ?, unit_number = ?, property_city = ?, property_state = ?, property_zip = ?, start_date = ?, expiration_date = ?, monthly_rent = ?, security_deposit = ?, program_type = ?, status = ?, updated_at = ? WHERE id = ?";
+    $query = "UPDATE dbleases SET 
+        tenant_first_name = ?, tenant_last_name = ?, property_street = ?, 
+        unit_number = ?, property_city = ?, property_state = ?, property_zip = ?, 
+        start_date = ?, expiration_date = ?, monthly_rent = ?, security_deposit = ?, 
+        lease_form = ?, program_type = ?, status = ?
+        WHERE id = ?";
 
     $stmt = mysqli_prepare($con, $query);
     if (!$stmt) {
+        error_log("Prepare failed: " . mysqli_error($con));
         mysqli_close($con);
         return false;
     }
@@ -157,31 +191,42 @@ function update_lease($lease) {
     $expiration_date = $lease->getExpirationDate();
     $monthly_rent = $lease->getMonthlyRent();
     $security_deposit = $lease->getSecurityDeposit();
+    $lease_form = $lease->getLeaseForm();
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
-    $updated_at = $lease->getUpdatedAt();
 
     mysqli_stmt_bind_param(
-        $stmt,
-        "sssssssssssssss",
-        $tenant_first_name,
-        $tenant_last_name,
-        $property_street,
-        $unit_number,
-        $property_city,
-        $property_state,
-        $property_zip,
-        $start_date,
-        $expiration_date,
-        $monthly_rent,
-        $security_deposit,
-        $program_type,
-        $status,
-        $updated_at,
-        $id
-    );
+    $stmt,
+    "sssssssssddbsss",  // ✅ CORRECT - 15 characters
+    $tenant_first_name,
+    $tenant_last_name,
+    $property_street,
+    $unit_number,
+    $property_city,
+    $property_state,
+    $property_zip,
+    $start_date,
+    $expiration_date,
+    $monthly_rent,
+    $security_deposit,
+    $lease_form,
+    $program_type,
+    $status,
+    $id
+);
+
+    // Send blob data separately if it exists
+    if ($lease_form !== null && strlen($lease_form) > 0) {
+        mysqli_stmt_send_long_data($stmt, 11, $lease_form); // 11 is the index of lease_form in UPDATE
+        error_log("Updating PDF blob: " . strlen($lease_form) . " bytes");
+    }
 
     $result = mysqli_stmt_execute($stmt);
+    
+    if (!$result) {
+        error_log("Update failed: " . mysqli_stmt_error($stmt));
+    }
+    
     mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $result;

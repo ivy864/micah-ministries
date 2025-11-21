@@ -97,6 +97,7 @@ $lease = [
     'expiration_date' => '',
     'monthly_rent' => '',
     'security_deposit' => '',
+    'lease_form' => '',
     'program_type' => '',
     'status' => 'Active'
 ];
@@ -130,8 +131,10 @@ try {
 if ($pdo && $lease_id) {
     try {
         $stmt = $pdo->prepare("
-            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, 
-                   expiration_date, monthly_rent, security_deposit, program_type, status 
+            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, 
+                property_city, property_state, property_zip, start_date, 
+                expiration_date, monthly_rent, security_deposit, 
+                LENGTH(lease_form) as lease_form_size, program_type, status 
             FROM dbleases 
             WHERE id = :id 
             LIMIT 1
@@ -147,48 +150,65 @@ if ($pdo && $lease_id) {
     }
 }
 
-if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
-    $fields = [
-        'tenant_first_name',
-        'tenant_last_name',
-        'property_street',
-        'property_city',
-        'property_state',
-        'property_zip',
-        'unit_number',
-        'start_date',
-        'expiration_date',
-        'monthly_rent',
-        'security_deposit',
-        'program_type',
-        'status',
-        'notes'
-    ];
-    $data = [];
-
-    foreach ($fields as $f) {
-        if (isset($_POST[$f])) {
-            $data[$f] = $_POST[$f];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
+    require_once('database/dbLeases.php');
+    require_once('domain/Lease.php');
+    
+    // Get the existing lease
+    $existing_lease = get_lease_by_id($lease_id);
+    
+    if ($existing_lease) {
+        // Update with new values from form
+        if (isset($_POST['tenant_first_name'])) $existing_lease->setTenantFirstName($_POST['tenant_first_name']);
+        if (isset($_POST['tenant_last_name'])) $existing_lease->setTenantLastName($_POST['tenant_last_name']);
+        if (isset($_POST['property_street'])) $existing_lease->setPropertyStreet($_POST['property_street']);
+        if (isset($_POST['unit_number'])) $existing_lease->setUnitNumber($_POST['unit_number']);
+        if (isset($_POST['property_city'])) $existing_lease->setPropertyCity($_POST['property_city']);
+        if (isset($_POST['property_state'])) $existing_lease->setPropertyState($_POST['property_state']);
+        if (isset($_POST['property_zip'])) $existing_lease->setPropertyZip($_POST['property_zip']);
+        if (isset($_POST['start_date'])) $existing_lease->setStartDate($_POST['start_date']);
+        if (isset($_POST['expiration_date'])) $existing_lease->setExpirationDate($_POST['expiration_date']);
+        if (isset($_POST['monthly_rent'])) $existing_lease->setMonthlyRent($_POST['monthly_rent']);
+        if (isset($_POST['security_deposit'])) $existing_lease->setSecurityDeposit($_POST['security_deposit']);
+        if (isset($_POST['program_type'])) $existing_lease->setProgramType($_POST['program_type']);
+        if (isset($_POST['status'])) $existing_lease->setStatus($_POST['status']);
+        
+        // Handle file upload
+        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] == UPLOAD_ERR_OK) {
+            $lease_form = file_get_contents($_FILES['lease_form']['tmp_name']);
+            $existing_lease->setLeaseForm($lease_form);
+            error_log("New PDF uploaded for lease " . $lease_id . ". Size: " . strlen($lease_form) . " bytes");
         }
-    }
-
-    if (!empty($data)) {
-        $sets = [];
-        $params = [':id' => $lease_id];
-
-        foreach ($data as $k => $v) {
-            $sets[] = "$k = :$k";
-            $params[":$k"] = $v;
-        }
-
-        try {
-            $sql = "UPDATE dbleases SET " . implode(", ", $sets) . " WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $lease = array_merge($lease, $data);
+        
+        // Update in database
+        $result = update_lease($existing_lease);
+        
+        if ($result) {
             $db_notice = "✅ Lease updated successfully.";
-        } catch (Throwable $e) {
-            $db_notice = "❌ Update failed: " . htmlspecialchars($e->getMessage());
+            // Reload the lease to show updated data
+            $lease = get_lease_by_id($lease_id);
+            if ($lease) {
+                // Convert Lease object to array for display
+                $lease_array = [
+                    'tenant_first_name' => $lease->getTenantFirstName(),
+                    'tenant_last_name' => $lease->getTenantLastName(),
+                    'property_street' => $lease->getPropertyStreet(),
+                    'unit_number' => $lease->getUnitNumber(),
+                    'property_city' => $lease->getPropertyCity(),
+                    'property_state' => $lease->getPropertyState(),
+                    'property_zip' => $lease->getPropertyZip(),
+                    'start_date' => $lease->getStartDate(),
+                    'expiration_date' => $lease->getExpirationDate(),
+                    'monthly_rent' => $lease->getMonthlyRent(),
+                    'security_deposit' => $lease->getSecurityDeposit(),
+                    'program_type' => $lease->getProgramType(),
+                    'status' => $lease->getStatus(),
+                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0
+                ];
+                $lease = $lease_array;
+            }
+        } else {
+            $db_notice = "❌ Update failed.";
         }
     }
 }
@@ -327,7 +347,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         <?php endif; ?>
 
         <div class="form-container">
-            <form action="" method="POST">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tenant_first_name">Tenant First Name:</label>
@@ -422,9 +442,29 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit"
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
                     </div>
-                </div>
+                    </div>
 
-                <div style="margin-top: 30px;">
+                    <div class="form-group">
+                        <label for="lease_form">Lease Form:</label>
+                        <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
+                        
+                        <?php if (isset($lease['lease_form_size']) && $lease['lease_form_size'] > 0): ?>
+                            <div style="margin-top: 15px; display: flex; justify-content: center;">
+                                <iframe 
+                                    src="viewLeasePDF.php?id=<?php echo urlencode($lease_id); ?>" 
+                                    width="100%" 
+                                    height="600px" 
+                                    style="border: 1px solid #dee2e6; border-radius: 4px;">
+                                </iframe>
+                            </div>
+                        <?php else: ?>
+                            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                                No lease document currently uploaded
+                            </p>
+                        <?php endif; ?>
+                    </div>
+
+                <div style="margin-top: 30px; text-align: center;">
                     <button type="submit" class="blue-button">Submit Changes</button>
                 </div>
                 

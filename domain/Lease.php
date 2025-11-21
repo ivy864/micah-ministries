@@ -13,6 +13,7 @@ class Lease {
     private $expiration_date;
     private $monthly_rent;
     private $security_deposit;
+    private $lease_form;
     private $program_type;
     private $status;
     private $created_at;
@@ -32,13 +33,14 @@ class Lease {
      * @param string $expiration_date - lease expiration date (YYYY-MM-DD)
      * @param decimal $monthly_rent - monthly rent amount
      * @param decimal $security_deposit - security deposit amount
+     * @param MEDIIUMBLOB $lease_form - pdf lease form
      * @param string $program_type - program type (e.g., "Emergency Housing", "Transitional Housing")
      * @param string $status - lease status (Active, Expired, Terminated)
      */
     public function __construct($id, $tenant_first_name, $tenant_last_name, $property_street, 
                                $unit_number, $property_city, $property_state, $property_zip,
                                $start_date, $expiration_date, $monthly_rent = null, 
-                               $security_deposit = null, $program_type = null, $status = 'Active') {
+                               $security_deposit = null, $lease_form, $program_type = null, $status = 'Active') {
         $this->id = $id;
         $this->tenant_first_name = $tenant_first_name;
         $this->tenant_last_name = $tenant_last_name;
@@ -51,6 +53,7 @@ class Lease {
         $this->expiration_date = $expiration_date;
         $this->monthly_rent = $monthly_rent;
         $this->security_deposit = $security_deposit;
+        $this->lease_form = $lease_form;
         $this->program_type = $program_type;
         $this->status = $status;
         
@@ -106,6 +109,10 @@ class Lease {
 
     public function getSecurityDeposit() {
         return $this->security_deposit;
+    }
+
+    public function getLeaseForm() {
+        return $this->lease_form;
     }
 
     public function getProgramType() {
@@ -178,6 +185,12 @@ class Lease {
     public function setSecurityDeposit($deposit) {
         $this->security_deposit = $deposit;
         $this->updated_at = date('Y-m-d H:i:s');
+    }
+
+    public function setLeaseForm($lease_form) {
+        $this->lease_form = $lease_form;
+        $this->updated_at = date('Y-m-d H:i:s');
+
     }
 
     public function setProgramType($type) {

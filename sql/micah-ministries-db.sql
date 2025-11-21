@@ -863,6 +863,13 @@ ALTER TABLE `discussion_replies`
   ADD KEY `fk_parent` (`parent_reply_id`);
 
 --
+-- Indexes for table `dbleases`
+--
+ALTER TABLE `dbleases` 
+  ADD COLUMN `lease_form` MEDIUMBLOB NOT NULL 
+  AFTER `security_deposit`;
+
+--
 -- Indexes for table `monthly_hours_snapshot`
 --
 ALTER TABLE `monthly_hours_snapshot`
