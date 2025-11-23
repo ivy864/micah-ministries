@@ -25,6 +25,11 @@
     require_once('database/dbLeases.php');
     require_once('domain/Lease.php');
     
+    $CMcon = connect();
+    $CMquery = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
+    $CMresult = mysqli_query($CMcon, $CMquery);
+    $CMcon->close();
+
     $message = '';
     $error = '';
     
@@ -42,6 +47,7 @@
         $expiration_date = $_POST['expiration_date'] ?? '';
         $monthly_rent = $_POST['monthly_rent'] ?? '';
         $security_deposit = $_POST['security_deposit'] ?? '';
+        $case_manager = $_POST['case_manager'] ?? '';
         $program_type = $_POST['program_type'] ?? '';
         
         // Handle file upload - THIS IS THE KEY FIX
@@ -58,12 +64,12 @@
                 error_log("No file was uploaded");
             }
         }
-        
+
         // basic validation
         if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || 
             empty($unit_number) || empty($property_city) || empty($property_state) || 
-            empty($property_zip) || empty($start_date) || empty($expiration_date)) {
-            $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
+            empty($property_zip) || empty($start_date) || empty($expiration_date) || empty($case_manager)) {
+            $error = 'All tenant name fields, property address fields, unit number, start date, expiration date, and case manager are required.';
         } else {
             // generate unique lease id
             $lease_id = 'L' . date('YmdHis') . rand(100, 999);
@@ -72,7 +78,7 @@
             $lease = new Lease(
                 $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
                 $unit_number, $property_city, $property_state, $property_zip,
-                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form,
+                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form, $case_manager,
                 $program_type, 'Active'
             );
             
@@ -226,6 +232,25 @@ require_once('header.php');
                         <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
                     </div>
                     <div class="form-group">
+                        <label for="case_manager">Case Manager Name <span class="required">*</span></label>
+                        <select name="case_manager" id="case_manager" required>
+                            <option value="">Select Case Manager</option>
+                            <?php
+                            if ($CMresult && $CMresult->num_rows > 0) {
+                                while ($row = $CMresult->fetch_assoc()) {
+                                    $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                    $selected = (($_POST['case_manager'] ?? '') == $fullName) ? 'selected' : '';
+                                    echo "<option value='" . $fullName . "' " . $selected . ">"
+                                        . $fullName
+                                        . "</option>";
+                                }
+                            } else {
+                                echo "<option disabled>No case managers found</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <!-- Empty div for spacing -->
                     </div>
                 </div>
@@ -242,5 +267,6 @@ require_once('header.php');
 
     </div>
   </main>
+
 </body>
 </html>

@@ -36,8 +36,8 @@ function add_lease($lease) {
         id, tenant_first_name, tenant_last_name, property_street, 
         unit_number, property_city, property_state, property_zip, 
         start_date, expiration_date, monthly_rent, security_deposit, 
-        lease_form, program_type, status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        lease_form, case_manager, program_type, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = mysqli_prepare($con, $query);
     if (!$stmt) {
@@ -59,6 +59,7 @@ function add_lease($lease) {
     $monthly_rent = $lease->getMonthlyRent();
     $security_deposit = $lease->getSecurityDeposit();
     $lease_form = $lease->getLeaseForm();
+    $case_manager = $lease->getCaseManager();
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
 
@@ -66,7 +67,7 @@ function add_lease($lease) {
     // 12th parameter (index 12) is the blob
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssddbss",  // note: space added for clarity - remove in actual code
+        "ssssssssssddbsss",  // note: space added for clarity - remove in actual code
         $id,
         $tenant_first_name,
         $tenant_last_name,
@@ -80,6 +81,7 @@ function add_lease($lease) {
         $monthly_rent,      // d = decimal
         $security_deposit,  // d = decimal
         $lease_form,        // b = blob
+        $case_manager,
         $program_type,
         $status
     );
@@ -140,6 +142,7 @@ function get_lease_by_id($id) {
         $row['monthly_rent'],
         $row['security_deposit'],
         $row['lease_form'],
+        $row['case_manager'],
         $row['program_type'],
         $row['status']
     );
@@ -169,7 +172,7 @@ function update_lease($lease) {
         tenant_first_name = ?, tenant_last_name = ?, property_street = ?, 
         unit_number = ?, property_city = ?, property_state = ?, property_zip = ?, 
         start_date = ?, expiration_date = ?, monthly_rent = ?, security_deposit = ?, 
-        lease_form = ?, program_type = ?, status = ?
+        lease_form = ?, case_manager = ?, program_type = ?, status = ?
         WHERE id = ?";
 
     $stmt = mysqli_prepare($con, $query);
@@ -192,12 +195,13 @@ function update_lease($lease) {
     $monthly_rent = $lease->getMonthlyRent();
     $security_deposit = $lease->getSecurityDeposit();
     $lease_form = $lease->getLeaseForm();
+    $case_manager = $lease->getCaseManager();
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
 
     mysqli_stmt_bind_param(
     $stmt,
-    "sssssssssddbsss",  // ✅ CORRECT - 15 characters
+    "sssssssssddbssss",  // ✅ CORRECT - 15 characters
     $tenant_first_name,
     $tenant_last_name,
     $property_street,
@@ -210,6 +214,7 @@ function update_lease($lease) {
     $monthly_rent,
     $security_deposit,
     $lease_form,
+    $case_manager,
     $program_type,
     $status,
     $id

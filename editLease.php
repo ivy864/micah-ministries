@@ -21,6 +21,11 @@ if ($accessLevel < 2) {
 }
 $lease_id = $_GET['id'] ?? null;
 
+$CMcon = connect();
+$CMquery = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
+$CMresult = mysqli_query($CMcon, $CMquery);
+$CMcon->close();
+
 // if writecomment is set to true in request header, write a comment to database
     if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
         // Start output buffering to capture any unwanted output
@@ -98,6 +103,7 @@ $lease = [
     'monthly_rent' => '',
     'security_deposit' => '',
     'lease_form' => '',
+    'case_manager' => '',
     'program_type' => '',
     'status' => 'Active'
 ];
@@ -134,7 +140,7 @@ if ($pdo && $lease_id) {
             SELECT tenant_first_name, tenant_last_name, property_street, unit_number, 
                 property_city, property_state, property_zip, start_date, 
                 expiration_date, monthly_rent, security_deposit, 
-                LENGTH(lease_form) as lease_form_size, program_type, status 
+                LENGTH(lease_form) as lease_form_size, case_manager, program_type, status 
             FROM dbleases 
             WHERE id = :id 
             LIMIT 1
@@ -170,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         if (isset($_POST['expiration_date'])) $existing_lease->setExpirationDate($_POST['expiration_date']);
         if (isset($_POST['monthly_rent'])) $existing_lease->setMonthlyRent($_POST['monthly_rent']);
         if (isset($_POST['security_deposit'])) $existing_lease->setSecurityDeposit($_POST['security_deposit']);
+        if (isset($_POST['case_manager'])) $existing_lease->setCaseManager($_POST['case_manager']);
         if (isset($_POST['program_type'])) $existing_lease->setProgramType($_POST['program_type']);
         if (isset($_POST['status'])) $existing_lease->setStatus($_POST['status']);
         
@@ -203,7 +210,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                     'security_deposit' => $lease->getSecurityDeposit(),
                     'program_type' => $lease->getProgramType(),
                     'status' => $lease->getStatus(),
-                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0
+                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0,
+                    'case_manager' => $lease->getCaseManager()
                 ];
                 $lease = $lease_array;
             }
@@ -441,6 +449,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <label for="security_deposit">Security Deposit:</label>
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit"
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="case_manager">Case Manager Name <span class="required">*</span></label>
+                        <select name="case_manager" id="case_manager" required>
+                            <?php
+                            if ($CMresult && $CMresult->num_rows > 0) {
+                                // Get the current case manager value
+                                $currentCaseManager = htmlspecialchars($lease['case_manager']);
+                                
+                                while ($row = $CMresult->fetch_assoc()) {
+                                    $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                    // Compare the full name to the current case manager
+                                    $selected = ($currentCaseManager == $fullName) ? 'selected' : '';
+                                    echo "<option value='" . $fullName . "' " . $selected . ">"
+                                        . $fullName
+                                        . "</option>";
+                                }
+                            } else {
+                                echo "<option disabled>No case managers found</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
                     </div>
 
