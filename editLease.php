@@ -98,6 +98,7 @@ $lease = [
     'monthly_rent' => '',
     'security_deposit' => '',
     'lease_form' => '',
+    'case_manager' => '',
     'program_type' => '',
     'status' => 'Active'
 ];
@@ -134,7 +135,7 @@ if ($pdo && $lease_id) {
             SELECT tenant_first_name, tenant_last_name, property_street, unit_number, 
                 property_city, property_state, property_zip, start_date, 
                 expiration_date, monthly_rent, security_deposit, 
-                LENGTH(lease_form) as lease_form_size, program_type, status 
+                LENGTH(lease_form) as lease_form_size, case_manager, program_type, status 
             FROM dbleases 
             WHERE id = :id 
             LIMIT 1
@@ -170,6 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         if (isset($_POST['expiration_date'])) $existing_lease->setExpirationDate($_POST['expiration_date']);
         if (isset($_POST['monthly_rent'])) $existing_lease->setMonthlyRent($_POST['monthly_rent']);
         if (isset($_POST['security_deposit'])) $existing_lease->setSecurityDeposit($_POST['security_deposit']);
+        if (isset($_POST['case_manager'])) $existing_lease->setCaseManager($_POST['case_manager']);
         if (isset($_POST['program_type'])) $existing_lease->setProgramType($_POST['program_type']);
         if (isset($_POST['status'])) $existing_lease->setStatus($_POST['status']);
         
@@ -203,7 +205,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                     'security_deposit' => $lease->getSecurityDeposit(),
                     'program_type' => $lease->getProgramType(),
                     'status' => $lease->getStatus(),
-                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0
+                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0,
+                    'case_manager' => $lease->getCaseManager()
                 ];
                 $lease = $lease_array;
             }
@@ -441,6 +444,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <label for="security_deposit">Security Deposit:</label>
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit"
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="case_manager">Case Manager Name:</label>
+                        <input type="text" id="case_manager" name="case_manager"
+                            value="<?php echo htmlspecialchars($lease['case_manager']); ?>">
                     </div>
                     </div>
 

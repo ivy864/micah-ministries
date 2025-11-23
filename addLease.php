@@ -42,6 +42,7 @@
         $expiration_date = $_POST['expiration_date'] ?? '';
         $monthly_rent = $_POST['monthly_rent'] ?? '';
         $security_deposit = $_POST['security_deposit'] ?? '';
+        $case_manager = $_POST['case_manager'] ?? '';
         $program_type = $_POST['program_type'] ?? '';
         
         // Handle file upload - THIS IS THE KEY FIX
@@ -62,8 +63,8 @@
         // basic validation
         if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || 
             empty($unit_number) || empty($property_city) || empty($property_state) || 
-            empty($property_zip) || empty($start_date) || empty($expiration_date)) {
-            $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
+            empty($property_zip) || empty($start_date) || empty($expiration_date) || empty($case_manager)) {
+            $error = 'All tenant name fields, property address fields, unit number, start date, expiration date, and case manager are required.';
         } else {
             // generate unique lease id
             $lease_id = 'L' . date('YmdHis') . rand(100, 999);
@@ -72,7 +73,7 @@
             $lease = new Lease(
                 $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
                 $unit_number, $property_city, $property_state, $property_zip,
-                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form,
+                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form, $case_manager,
                 $program_type, 'Active'
             );
             
@@ -224,6 +225,11 @@ require_once('header.php');
                     <div class="form-group">
                         <label for="lease_form">Lease Form</label>
                         <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="Case Manager">Case Manager Name <span class="required">*</span></label>
+                        <input type="text" id="case_manager" name="case_manager" 
+                               value="<?php echo htmlspecialchars($_POST['case_manager'] ?? ''); ?>" required>
                     </div>
                     <div class="form-group">
                         <!-- Empty div for spacing -->

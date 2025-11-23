@@ -866,7 +866,8 @@ ALTER TABLE `discussion_replies`
 -- Indexes for table `dbleases`
 --
 ALTER TABLE `dbleases` 
-  ADD COLUMN `lease_form` MEDIUMBLOB NOT NULL 
+  ADD COLUMN `lease_form` MEDIUMBLOB NOT NULL,
+  ADD COLUMN  `case_manager` text NOT NULL
   AFTER `security_deposit`;
 
 --
