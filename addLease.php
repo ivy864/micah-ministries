@@ -189,10 +189,8 @@ require_once('header.php');
                         <label for="program_type">Program Type</label>
                         <select id="program_type" name="program_type">
                             <option value="">Select Program Type</option>
-                            <option value="Program #1" <?php echo (($_POST['program_type'] ?? '') == 'Program #1') ? 'selected' : ''; ?>>Program #1</option>
-                            <option value="Program #2" <?php echo (($_POST['program_type'] ?? '') == 'Program #2') ? 'selected' : ''; ?>>Program #2</option>
-                            <option value="Emergency Housing" <?php echo (($_POST['program_type'] ?? '') == 'Emergency Housing') ? 'selected' : ''; ?>>Emergency Housing</option>
-                            <option value="Transitional Housing" <?php echo (($_POST['program_type'] ?? '') == 'Transitional Housing') ? 'selected' : ''; ?>>Transitional Housing</option>
+                            <option value="Permanent Supportive Housing (PSH)" <?php echo (($_POST['program_type'] ?? '') == 'Permanent Supportive Housing (PSH)') ? 'selected' : ''; ?>>Permanent Supportive Housing (PSH)</option>
+                            <option value="Rapid Rehousing (RRH)" <?php echo (($_POST['program_type'] ?? '') == 'Rapid Rehousing (RRH)') ? 'selected' : ''; ?>>Rapid Rehousing (RRH)</option>
                         </select>
                     </div>
                     <div class="form-group">
