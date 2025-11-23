@@ -17,8 +17,6 @@ async function getComments(id) {
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
-
-        console.log(response);
     }
     catch (error) {
         console.error(error.message);
@@ -46,17 +44,13 @@ async function writeComment() {
             "body": data,
         });
 
-        console.log("Response status:", response.status);
-        console.log("Response ok:", response.ok);
         
         // Get the response text first to check if it's valid JSON
         const responseText = await response.text();
-        console.log("Raw response:", responseText);
         
         let responseData;
         try {
             responseData = JSON.parse(responseText);
-            console.log("Parsed response data:", responseData);
         } catch (parseError) {
             console.error("JSON parse error:", parseError);
             console.error("Response was not valid JSON:", responseText);
@@ -79,15 +73,38 @@ async function writeComment() {
         
         // clear text in comment box
         document.getElementById("commentBox").value = "";
-        
-        // Show success message (optional)
-        console.log("Comment added successfully!");
-        
     }
     catch (error) {
         console.error("Error adding comment:", error.message);
         alert("Failed to add comment: " + error.message);
     }
+}
+
+async function deleteComment(commentTime, deleteButton) {
+    const url = window.location;
+    let data = new FormData;
+
+    data.append("time", commentTime);
+
+    try {
+        const response = await fetch(url, {
+            "method": "POST",
+            "headers": {"DELETECOMMENT": "True"},
+            "body": data,
+        });
+
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+    }
+    catch (error) {
+        console.error("Error deleting comment:", error.message);
+        alert("Failed to delete comment: " + error.message);
+    }
+
+    commentDiv = deleteButton.parentNode.parentNode;
+    document.getElementById("comment-container").removeChild(commentDiv)
+
 }
 
 async function renderComment(comment) {
@@ -108,8 +125,11 @@ async function renderComment(comment) {
     let newDiv = document.createElement("div");
     newDiv.innerHTML = `
     <div class="comment-head">
-        <div class="comment-title">${comment["author_id"]}</div>
-        <div class="comment-timestamp">${formattedDate}</div>
+        <div class="comment-info">
+            <div class="comment-title">${comment["author_id"]}</div>
+            <div class="comment-timestamp">${formattedDate}</div>
+        </div>
+        <button onclick="deleteComment(${comment["time"]}, this)">Delete</button>
     </div>
     <div class="comment-content">
         ${comment["content"]}
@@ -118,8 +138,8 @@ async function renderComment(comment) {
     commentContainer.appendChild(newDiv);
 }
 
+
 function renderComments(comments) {
-    console.log("Comments length:", comments.length);
     for (i = 0; i < comments.length; i++) {
         renderComment(comments[i]);
     }

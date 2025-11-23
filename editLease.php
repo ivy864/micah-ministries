@@ -12,10 +12,76 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
 
+require_once('domain/Comment.php');
+require_once('database/dbComments.php');
+
 if ($accessLevel < 2) {
     header('Location: index.php');
     die();
 }
+$lease_id = $_GET['id'] ?? null;
+
+// if writecomment is set to true in request header, write a comment to database
+    if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
+        // Start output buffering to capture any unwanted output
+        ob_start();
+        
+        // Suppress any PHP errors/warnings that might output HTML
+        error_reporting(0);
+        ini_set('display_errors', 0);
+        
+        // Clear any previous output
+        ob_clean();
+        
+        // Set proper headers for JSON response
+        header('Content-Type: application/json');
+        
+        // Debug: Log what we received
+        error_log("Comment submission received. UserID: " . $userID . ", RequestID: " . $_GET['id'] . ", Comment: " . $_POST['comment']);
+        
+        try {
+            $cmnt = new Comment($userID, $_GET['id'], $_POST['comment'], time());
+            $result = add_lease_comment($cmnt);
+            
+            if ($result) {
+                // Debug: Log the result
+                error_log("Comment add result: success");
+                
+                // Get the JSON response
+                $jsonResponse = $cmnt->toJSON();
+                error_log("JSON response: " . $jsonResponse);
+                
+                // Clear any output buffer and send clean JSON
+                ob_clean();
+                echo $jsonResponse;
+            } else {
+                // Debug: Log the result
+                error_log("Comment add result: failed");
+                
+                // Return error response
+                ob_clean();
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to save comment']);
+            }
+        } catch (Exception $e) {
+            error_log("Comment submission error: " . $e->getMessage());
+            ob_clean();
+            http_response_code(500);
+            echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
+        }
+        
+        // End output buffering and don't render the rest of the page
+        ob_end_flush();
+        exit();
+    }
+    if (isset($_SERVER['HTTP_DELETECOMMENT']) && $_SERVER['HTTP_DELETECOMMENT'] == 'True') {
+        $cmnt = new Comment($userID, $_GET['id'], '', $_POST['time']);
+        delete_comment($cmnt);
+        exit();
+    }
+    if (isset($_SERVER['HTTP_GETCOMMENTS']) && $_SERVER['HTTP_GETCOMMENTS'] == 'True') {
+        exit();
+    }
 
 $pdo = null;
 $db_notice = null;
@@ -31,6 +97,7 @@ $lease = [
     'expiration_date' => '',
     'monthly_rent' => '',
     'security_deposit' => '',
+    'lease_form' => '',
     'program_type' => '',
     'status' => 'Active'
 ];
@@ -59,13 +126,15 @@ try {
     $db_notice = "Database connection failed: " . htmlspecialchars($e->getMessage());
 }
 
-$lease_id = $_GET['id'] ?? null;
+
 
 if ($pdo && $lease_id) {
     try {
         $stmt = $pdo->prepare("
-            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, 
-                   expiration_date, monthly_rent, security_deposit, program_type, status 
+            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, 
+                property_city, property_state, property_zip, start_date, 
+                expiration_date, monthly_rent, security_deposit, 
+                LENGTH(lease_form) as lease_form_size, program_type, status 
             FROM dbleases 
             WHERE id = :id 
             LIMIT 1
@@ -81,204 +150,172 @@ if ($pdo && $lease_id) {
     }
 }
 
-if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
-    $fields = [
-        'tenant_first_name',
-        'tenant_last_name',
-        'property_street',
-        'property_city',
-        'property_state',
-        'property_zip',
-        'unit_number',
-        'start_date',
-        'expiration_date',
-        'monthly_rent',
-        'security_deposit',
-        'program_type',
-        'status'
-    ];
-    $data = [];
-
-    foreach ($fields as $f) {
-        if (isset($_POST[$f])) {
-            $data[$f] = $_POST[$f];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
+    require_once('database/dbLeases.php');
+    require_once('domain/Lease.php');
+    
+    // Get the existing lease
+    $existing_lease = get_lease_by_id($lease_id);
+    
+    if ($existing_lease) {
+        // Update with new values from form
+        if (isset($_POST['tenant_first_name'])) $existing_lease->setTenantFirstName($_POST['tenant_first_name']);
+        if (isset($_POST['tenant_last_name'])) $existing_lease->setTenantLastName($_POST['tenant_last_name']);
+        if (isset($_POST['property_street'])) $existing_lease->setPropertyStreet($_POST['property_street']);
+        if (isset($_POST['unit_number'])) $existing_lease->setUnitNumber($_POST['unit_number']);
+        if (isset($_POST['property_city'])) $existing_lease->setPropertyCity($_POST['property_city']);
+        if (isset($_POST['property_state'])) $existing_lease->setPropertyState($_POST['property_state']);
+        if (isset($_POST['property_zip'])) $existing_lease->setPropertyZip($_POST['property_zip']);
+        if (isset($_POST['start_date'])) $existing_lease->setStartDate($_POST['start_date']);
+        if (isset($_POST['expiration_date'])) $existing_lease->setExpirationDate($_POST['expiration_date']);
+        if (isset($_POST['monthly_rent'])) $existing_lease->setMonthlyRent($_POST['monthly_rent']);
+        if (isset($_POST['security_deposit'])) $existing_lease->setSecurityDeposit($_POST['security_deposit']);
+        if (isset($_POST['program_type'])) $existing_lease->setProgramType($_POST['program_type']);
+        if (isset($_POST['status'])) $existing_lease->setStatus($_POST['status']);
+        
+        // Handle file upload
+        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] == UPLOAD_ERR_OK) {
+            $lease_form = file_get_contents($_FILES['lease_form']['tmp_name']);
+            $existing_lease->setLeaseForm($lease_form);
+            error_log("New PDF uploaded for lease " . $lease_id . ". Size: " . strlen($lease_form) . " bytes");
         }
-    }
-
-    if (!empty($data)) {
-        $sets = [];
-        $params = [':id' => $lease_id];
-
-        foreach ($data as $k => $v) {
-            $sets[] = "$k = :$k";
-            $params[":$k"] = $v;
-        }
-
-        try {
-            $sql = "UPDATE dbleases SET " . implode(", ", $sets) . " WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $lease = array_merge($lease, $data);
+        
+        // Update in database
+        $result = update_lease($existing_lease);
+        
+        if ($result) {
             $db_notice = "✅ Lease updated successfully.";
-        } catch (Throwable $e) {
-            $db_notice = "❌ Update failed: " . htmlspecialchars($e->getMessage());
+            // Reload the lease to show updated data
+            $lease = get_lease_by_id($lease_id);
+            if ($lease) {
+                // Convert Lease object to array for display
+                $lease_array = [
+                    'tenant_first_name' => $lease->getTenantFirstName(),
+                    'tenant_last_name' => $lease->getTenantLastName(),
+                    'property_street' => $lease->getPropertyStreet(),
+                    'unit_number' => $lease->getUnitNumber(),
+                    'property_city' => $lease->getPropertyCity(),
+                    'property_state' => $lease->getPropertyState(),
+                    'property_zip' => $lease->getPropertyZip(),
+                    'start_date' => $lease->getStartDate(),
+                    'expiration_date' => $lease->getExpirationDate(),
+                    'monthly_rent' => $lease->getMonthlyRent(),
+                    'security_deposit' => $lease->getSecurityDeposit(),
+                    'program_type' => $lease->getProgramType(),
+                    'status' => $lease->getStatus(),
+                    'lease_form_size' => $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0
+                ];
+                $lease = $lease_array;
+            }
+        } else {
+            $db_notice = "❌ Update failed.";
         }
     }
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Micah Ministries | Edit Lease</title>
-    <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/base.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <script src="js/comment.js?v=<?php echo time(); ?>"></script>
     <?php
     $tailwind_mode = true;
     require_once('header.php');
     ?>
+
     <style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-        
-        .form-container {
-            background-color: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            background-color: white;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #274471;
-            box-shadow: 0 0 0 2px rgba(39, 68, 113, 0.1);
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        .btn-primary {
-            background-color: #274471;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1e3554;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .text-section h1 {
-            margin-bottom: 5px !important;
-            color: #274471 !important;
-            font-size: 28px !important;
-            font-weight: 700 !important;
-        }
-        
-        .text-section p {
-            margin-bottom: 10px !important;
-            color: #666 !important;
-            font-size: 16px !important;
-        }
-        
-        .sections {
-            flex-direction: row !important;
-            gap: 10px !important;
-        }
-        
-        main {
-            margin-top: 0 !important;
-            padding: 10px !important;
-        }
-        
-        .button-section {
-            width: 0% !important;
-            display: none !important;
-        }
-        
-        .text-section {
-            width: 100% !important;
-        }
-        
-        .form-container {
-            max-width: none !important;
-            width: 100% !important;
-        }
+        /* Comments section styling */
+	#comments {
+	    margin-top: 30px;
+	    padding: 20px;
+	    background: #f8f9fa;
+	    border-radius: 8px;
+	    border: 1px solid #e9ecef;
+	}
+	
+	#comments h2 {
+	    margin-bottom: 20px;
+	    color: #274471;
+	    font-size: 18px;
+	    border-bottom: 2px solid #274471;
+	    padding-bottom: 10px;
+	}
+	
+	#comment-container {
+	    margin-bottom: 20px;
+	}
+	
+	#comment-container > div {
+	    background: white;
+	    border: 1px solid #dee2e6;
+	    border-radius: 6px;
+	    margin-bottom: 15px;
+	    padding: 15px;
+	    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	}
+	
+	.comment-head {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    margin-bottom: 8px;
+	}
+	
+	.comment-title {
+	    font-weight: bold;
+	    color: #274471;
+	    font-size: 14px;
+	}
+	
+	.comment-timestamp {
+	    font-size: 12px;
+	    color: #6c757d;
+	}
+	
+	.comment-content {
+	    color: #495057;
+	    line-height: 1.4;
+	    margin-top: 8px;
+	}
+	
+	#commentBox {
+	    width: 100%;
+	    padding: 12px;
+	    border: 1px solid #ced4da;
+	    border-radius: 4px;
+	    font-size: 14px;
+	    resize: vertical;
+	    min-height: 80px;
+	    margin-bottom: 15px;
+	}
+	
+	#commentBox:focus {
+	    outline: none;
+	    border-color: #274471;
+	    box-shadow: 0 0 0 2px rgba(39, 68, 113, 0.25);
+	}
+	
+	/* fix comment button styling */
+	#comments button {
+	    background-color: #274471;
+	    color: white !important;
+	    border: none;
+	    padding: 10px 20px;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    font-size: 14px;
+	    font-weight: 500;
+	}
+	
+	#comments button:hover {
+	    background-color: #1e3554;
+	}
     </style>
 </head>
 
@@ -297,9 +334,9 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>Edit Lease</h1>
+        <h1 class="main-text">Edit Lease</h1>
         <div class="div-blue"></div>
-        <p>
+        <p class="secondary-text">
           Update existing lease information. Modify the fields below as needed and submit your changes to save the updated lease details.
         </p>
         
@@ -310,7 +347,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         <?php endif; ?>
 
         <div class="form-container">
-            <form action="" method="POST">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tenant_first_name">Tenant First Name:</label>
@@ -405,16 +442,55 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <input type="number" step="0.01" id="security_deposit" name="security_deposit"
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
                     </div>
-                </div>
+                    </div>
 
-                <div style="margin-top: 30px;">
-                    <button type="submit" class="btn-primary">Submit Changes</button>
+                    <div class="form-group">
+                        <label for="lease_form">Lease Form:</label>
+                        <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
+                        
+                        <?php if (isset($lease['lease_form_size']) && $lease['lease_form_size'] > 0): ?>
+                            <div style="margin-top: 15px; display: flex; justify-content: center;">
+                                <iframe 
+                                    src="viewLeasePDF.php?id=<?php echo urlencode($lease_id); ?>" 
+                                    width="100%" 
+                                    height="600px" 
+                                    style="border: 1px solid #dee2e6; border-radius: 4px;">
+                                </iframe>
+                            </div>
+                        <?php else: ?>
+                            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                                No lease document currently uploaded
+                            </p>
+                        <?php endif; ?>
+                    </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button type="submit" class="blue-button">Submit Changes</button>
                 </div>
                 
                 <div style="margin-top: 20px; text-align: center;">
-                    <a href="micahportal.php" class="btn-secondary">Return to Dashboard</a>
+                    <a href="index.php" class="gray-button">Return to Dashboard</a>
                 </div>
             </form>
+        </div>
+
+        <div id="comments" requestID="<?php echo htmlspecialchars($lease_id) ?>">
+            <?php
+            $comments = get_lease_comments($lease_id);
+            ?>
+            <h2>Comments</h2>
+            <script>
+                /*
+                * comments are rendered client-side with js.
+                * The array of comments is encoded in json so it can be used by the js/comment.js file
+                */
+                let comments = <?php echo json_encode($comments) ?>;
+            </script>
+            <div id="comment-container">
+                
+            </div>
+            <textarea id="commentBox"></textarea>
+            <button onclick='writeComment()'>Comment</button>
         </div>
       </div>
     </div>

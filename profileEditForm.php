@@ -66,18 +66,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+    <?php if (isset($errorDetails) && count($errorDetails) > 0): ?>
+        <div class="alert alert-error">
+            Please correct the following errors:
+            <ul style="margin: 10px 0 0 20px;">
+                <?php foreach ($errorDetails as $field => $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
     <main>
-        <?php if (isset($updateSuccess) && !$updateSuccess): ?>
-            <div class="alert alert-error">An error occurred.</div>
-        <?php endif ?>
-        
-        <?php if ($isAdmin): ?>
-            <?php if (strtolower($id) == 'vmsroot') : ?>
-                <div class="alert alert-error">The root user profile cannot be modified</div>
-            <?php die() ?>
-            <?php endif ?>
-        <?php endif ?>
-
         <div class="form-container">
             <form id="edit-user-form" method="post">
                 
@@ -97,14 +96,33 @@
                         
                     <div class="form-group">
                         <label for="user_role">User Role</label>
-                        <select id="user_role" name="user_role" required>
-                            <?php 
-                            $currentRole = $person->get_type();
+                        <?php 
+                        $currentRole = $person->get_type();
+                        $isAdmin = $_SESSION['access_level'] >= 3;
+                        if ($isAdmin) {
+                            // Admins can edit user role
                             ?>
-                            <option value="admin" <?php echo ($currentRole == 'admin') ? 'selected' : ''; ?>>Admin - Full Access</option>
-                            <option value="case_manager" <?php echo ($currentRole == 'case_manager') ? 'selected' : ''; ?>>Case Manager - Lease + Maintenance</option>
-                            <option value="maintenance" <?php echo ($currentRole == 'maintenance') ? 'selected' : ''; ?>>Maintenance Staff - Maintenance Only</option>
-                        </select>
+                            <select id="user_role" name="user_role" required>
+                                <option value="admin" <?php echo ($currentRole == 'admin') ? 'selected' : ''; ?>>Admin - Full Access</option>
+                                <option value="case_manager" <?php echo ($currentRole == 'case_manager') ? 'selected' : ''; ?>>Case Manager - Lease + Maintenance</option>
+                                <option value="maintenance" <?php echo ($currentRole == 'maintenance') ? 'selected' : ''; ?>>Maintenance Staff - Maintenance Only</option>
+                            </select>
+                        <?php } else {
+                            // Non-admins see read-only user role
+                            $roleDisplay = '';
+                            if ($currentRole == 'admin') {
+                                $roleDisplay = 'Admin - Full Access';
+                            } elseif ($currentRole == 'case_manager') {
+                                $roleDisplay = 'Case Manager - Lease + Maintenance';
+                            } elseif ($currentRole == 'maintenance') {
+                                $roleDisplay = 'Maintenance Staff - Maintenance Only';
+                            } else {
+                                $roleDisplay = ucfirst($currentRole);
+                            }
+                            ?>
+                            <input type="text" id="user_role" name="user_role" value="<?php echo htmlspecialchars($roleDisplay); ?>" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                            <input type="hidden" name="user_role" value="<?php echo htmlspecialchars($currentRole); ?>">
+                        <?php } ?>
                     </div>
                 </div>
 
@@ -112,20 +130,36 @@
                 <div class="section-box">
                     <h3>Personal Information</h3>
                     
+                    <?php 
+                    $isAdmin = $_SESSION['access_level'] >= 3;
+                    ?>
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first_name">First Name *</label>
-                            <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($person->get_first_name()); ?>" required>
+                            <?php if ($isAdmin): ?>
+                                <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($person->get_first_name()); ?>" required>
+                            <?php else: ?>
+                                <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($person->get_first_name()); ?>" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                            <?php endif; ?>
                         </div>
                         <div class="form-group">
                             <label for="last_name">Last Name *</label>
-                            <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($person->get_last_name()); ?>" required>
+                            <?php if ($isAdmin): ?>
+                                <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($person->get_last_name()); ?>" required>
+                            <?php else: ?>
+                                <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($person->get_last_name()); ?>" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="birthday">Date of Birth *</label>
-                        <input type="date" id="birthday" name="birthday" value="<?php echo htmlspecialchars($person->get_birthday()); ?>" required max="<?php echo date('Y-m-d'); ?>">
+                        <?php if ($isAdmin): ?>
+                            <input type="date" id="birthday" name="birthday" value="<?php echo htmlspecialchars($person->get_birthday()); ?>" required max="<?php echo date('Y-m-d'); ?>">
+                        <?php else: ?>
+                            <input type="date" id="birthday" name="birthday" value="<?php echo htmlspecialchars($person->get_birthday()); ?>" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
@@ -175,6 +209,9 @@
                     <div class="form-group">
                         <label for="email">Email Address *</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($person->get_email()); ?>" required>
+                        <?php if (isset($errorDetails['email'])): ?>
+                            <p style="color: #721c24; margin-top: 5px; font-size: 14px;"><?php echo htmlspecialchars($errorDetails['email']); ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
@@ -236,27 +273,14 @@
                 </div>
 
                 <!-- Skills and Interests Section -->
-                <div class="section-box">
-                    <h3>Additional Information</h3>
-
-                    <div class="form-group">
-                        <label for="skills">Skills</label>
-                        <input type="text" id="skills" name="skills" value="<?php echo htmlspecialchars($person->get_skills()); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="interests">Interests</label>
-                        <input type="text" id="interests" name="interests" value="<?php echo htmlspecialchars($person->get_interests()); ?>">
-                    </div>
-                </div>
 
                 <div style="text-align: center; margin-top: 30px;">
                     <input type="hidden" name="id" value="<?php echo $id; ?>">
-                    <button type="submit" name="profile-edit-form" class="btn-primary">Update Profile</button>
+                    <button type="submit" name="profile-edit-form" class="blue-button">Update Profile</button>
                     <?php if ($editingSelf): ?>
-                        <a href="viewProfile.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                        <a href="viewProfile.php" class="gray-button">Cancel</a>
                     <?php else: ?>
-                        <a href="viewProfile.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                        <a href="viewProfile.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" class="gray-button" style="margin-left: 10px;">Cancel</a>
                     <?php endif ?>
                 </div>
             </form>

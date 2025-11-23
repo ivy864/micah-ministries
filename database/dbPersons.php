@@ -854,13 +854,37 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $person->get_photo_release_notes() . '");'
 */
     // updates the required fields of a person's account
+    // updates the required fields of a person's account
     function update_person_required(
         $id, $first_name, $last_name, $birthday, $street_address, $city, $state,
         $zip_code, $email, $phone1, $phone1type, $emergency_contact_first_name,
         $emergency_contact_last_name, $emergency_contact_phone,
         $emergency_contact_phone_type, $emergency_contact_relation, $type,
-        $skills, $interests
+        $skills = '', $interests = '',   // Add default empty string values
     ) {
+        $connection = connect();
+        
+        // escape all values to prevent SQL injection
+        $id = mysqli_real_escape_string($connection, $id);
+        $first_name = mysqli_real_escape_string($connection, $first_name);
+        $last_name = mysqli_real_escape_string($connection, $last_name);
+        $birthday = mysqli_real_escape_string($connection, $birthday);
+        $street_address = mysqli_real_escape_string($connection, $street_address);
+        $city = mysqli_real_escape_string($connection, $city);
+        $state = mysqli_real_escape_string($connection, $state);
+        $zip_code = mysqli_real_escape_string($connection, $zip_code);
+        $email = mysqli_real_escape_string($connection, $email);
+        $phone1 = mysqli_real_escape_string($connection, $phone1);
+        $phone1type = mysqli_real_escape_string($connection, $phone1type);
+        $emergency_contact_first_name = mysqli_real_escape_string($connection, $emergency_contact_first_name);
+        $emergency_contact_last_name = mysqli_real_escape_string($connection, $emergency_contact_last_name);
+        $emergency_contact_phone = mysqli_real_escape_string($connection, $emergency_contact_phone);
+        $emergency_contact_phone_type = mysqli_real_escape_string($connection, $emergency_contact_phone_type);
+        $emergency_contact_relation = mysqli_real_escape_string($connection, $emergency_contact_relation);
+        $type = mysqli_real_escape_string($connection, $type);
+        $skills = mysqli_real_escape_string($connection, $skills);
+        $interests = mysqli_real_escape_string($connection, $interests);
+        
         $query = "update dbpersons set 
             first_name='$first_name', last_name='$last_name', birthday='$birthday',
             street_address='$street_address', city='$city', state='$state',
@@ -869,13 +893,10 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             emergency_contact_last_name='$emergency_contact_last_name', 
             emergency_contact_phone='$emergency_contact_phone', 
             emergency_contact_phone_type='$emergency_contact_phone_type', 
-            emergency_contact_relation='$emergency_contact_relation', type='$type',
-            
-           
-            skills='$skills', interests='$interests'
-        
+            emergency_contact_relation='$emergency_contact_relation', type='$type'
+            $skillsUpdate
+            $interestsUpdate
             where id='$id'";
-        $connection = connect();
         $result = mysqli_query($connection, $query);
         mysqli_commit($connection);
         mysqli_close($connection);

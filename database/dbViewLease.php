@@ -14,4 +14,10 @@ if ($_SERVER['SERVER_NAME'] == 'jenniferp160.sg-host.com') {
         'pass' => 'fxextih7mssg'
     ];
 }
+
+// delete_lease function moved to database/dbLeases.php
+// include it here for backward compatibility
+if (!function_exists('delete_lease')) {
+    include_once('database/dbLeases.php');
+}
 ?>

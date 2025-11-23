@@ -17,18 +17,20 @@
     }
     // admin-only access
     if ($accessLevel < 2) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
 
-    // include database functions
-    require_once('database/dbinfo.php');
+    // include database functions and domain object
+    require_once('database/dbLeases.php');
+    require_once('domain/Lease.php');
     
     $message = '';
     $error = '';
     
     // handle form submission
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Get form data
         $tenant_first_name = $_POST['tenant_first_name'] ?? '';
         $tenant_last_name = $_POST['tenant_last_name'] ?? '';
         $property_street = $_POST['property_street'] ?? '';
@@ -42,40 +44,47 @@
         $security_deposit = $_POST['security_deposit'] ?? '';
         $program_type = $_POST['program_type'] ?? '';
         
+        // Handle file upload - THIS IS THE KEY FIX
+        $lease_form = null;
+        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] == UPLOAD_ERR_OK) {
+            // Read the file contents as binary data
+            $lease_form = file_get_contents($_FILES['lease_form']['tmp_name']);
+            error_log("PDF uploaded successfully. Size: " . strlen($lease_form) . " bytes");
+        } else {
+            // Log why the file wasn't uploaded
+            if (isset($_FILES['lease_form'])) {
+                error_log("File upload error code: " . $_FILES['lease_form']['error']);
+            } else {
+                error_log("No file was uploaded");
+            }
+        }
+        
         // basic validation
-        if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || empty($unit_number) || empty($property_city) || empty($property_state) || empty($property_zip) || empty($start_date) || empty($expiration_date)) {
+        if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || 
+            empty($unit_number) || empty($property_city) || empty($property_state) || 
+            empty($property_zip) || empty($start_date) || empty($expiration_date)) {
             $error = 'All tenant name fields, property address fields, unit number, start date, and expiration date are required.';
         } else {
-            // connect to database
-            $con = connect();
+            // generate unique lease id
+            $lease_id = 'L' . date('YmdHis') . rand(100, 999);
             
-            if ($con) {
-                // generate unique lease id
-                $lease_id = 'L' . date('YmdHis') . rand(100, 999);
-                
-                // insert lease into database
-                $query = "INSERT INTO dbleases (id, tenant_first_name, tenant_last_name, property_street, unit_number, property_city, property_state, property_zip, start_date, expiration_date, monthly_rent, security_deposit, program_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-                
-                $stmt = mysqli_prepare($con, $query);
-                if ($stmt) {
-                    mysqli_stmt_bind_param($stmt, "sssssssssssss", 
-                        $lease_id, $tenant_first_name, $tenant_last_name, $property_street, $unit_number, $property_city, $property_state, $property_zip, 
-                        $start_date, $expiration_date, $monthly_rent, $security_deposit, $program_type);
-                    
-                    if (mysqli_stmt_execute($stmt)) {
-                        $message = 'Lease created successfully! Lease ID: ' . $lease_id;
-                        // clear form data
-                        $_POST = array();
-                    } else {
-                        $error = 'Failed to create lease. Please try again.';
-                    }
-                    mysqli_stmt_close($stmt);
-                } else {
-                    $error = 'Database error. Please try again.';
-                }
-                mysqli_close($con);
+            // create lease object
+            $lease = new Lease(
+                $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
+                $unit_number, $property_city, $property_state, $property_zip,
+                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form,
+                $program_type, 'Active'
+            );
+            
+            // add to database using object
+            $result = add_lease($lease);
+            
+            if ($result) {
+                $message = 'Lease created successfully! Lease ID: ' . $lease_id;
+                // clear form data
+                $_POST = array();
             } else {
-                $error = 'Database connection failed. Please try again.';
+                $error = 'Failed to create lease. Please try again.';
             }
         }
     }
@@ -87,142 +96,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Lease</title>
-  <link href="css/management_tw.css?v=<?php echo time(); ?>" rel="stylesheet">
+  <link href="css/base.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .form-container {
-            max-width: none !important;
-            width: 100% !important;
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            border-radius: 0;
-            box-shadow: none;
-        }
-        
-        /* force layout changes - full width form */
-        .sections {
-            flex-direction: row !important;
-            gap: 10px !important;
-        }
-        
-        /* adjust main content since hero is removed */
-        main {
-            margin-top: 0 !important;
-            padding: 10px !important;
-        }
-        
-        .button-section {
-            width: 0% !important;
-            display: none !important;
-        }
-        
-        .text-section {
-            width: 100% !important;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 25px;
-        }
-        
-        .form-group {
-            flex: 1;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        
-        .form-group textarea {
-            height: 100px;
-            resize: vertical;
-        }
-        
-        .form-buttons {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .btn-primary {
-            background: #274471;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 15px;
-        }
-        
-        .btn-primary:hover {
-            background: #1e3554;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            padding: 12px 30px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .required {
-            color: #dc3545;
-        }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
-
 </head>
 
 <body>
-
-  <!-- Hero Section - Removed to save space -->
-  <!-- <header class="hero-header"></header> -->
 
   <!-- Main Content -->
   <main>
@@ -234,9 +117,9 @@ require_once('header.php');
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>Create New Lease</h1>
+        <h1 class="main-text">Create New Lease</h1>
         <div class="div-blue"></div>
-        <p>
+        <p class="secondary-text">
           Submit a new lease agreement. Fill out the form below with all required information.
         </p>
         
@@ -250,7 +133,7 @@ require_once('header.php');
         
         <div class="form-container">
             
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tenant_first_name">Tenant First Name <span class="required">*</span></label>
@@ -339,7 +222,8 @@ require_once('header.php');
                                value="<?php echo htmlspecialchars($_POST['security_deposit'] ?? ''); ?>">
                     </div>
                     <div class="form-group">
-                        <!-- Empty div for spacing -->
+                        <label for="lease_form">Lease Form</label>
+                        <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
                     </div>
                     <div class="form-group">
                         <!-- Empty div for spacing -->
@@ -348,8 +232,8 @@ require_once('header.php');
                 
                 
                 <div style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="btn-primary">Create Lease</button>
-                    <a href="leaseman.php" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
+                    <button type="submit" class="blue-button">Create Lease</button>
+                    <a href="leaseman.php" class="gray-button" style="margin-left: 10px;">Cancel</a>
                 </div>
             </form>
         </div>

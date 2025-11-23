@@ -12,7 +12,7 @@
 
     // redirect to index if already logged in
     if (isset($_SESSION['_id'])) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
     $badLogin = false;
@@ -51,7 +51,7 @@
                  if ($user->get_id() == 'vmsroot') {
                     $_SESSION['access_level'] = 3;
 		    $_SESSION['locked'] = false;
-                    header('Location: micahportal.php');
+                    header('Location: index.php');
                }
             
                 //if ($changePassword) {
@@ -61,7 +61,7 @@
                 //    die();
                 //} 
                 else {
-                    header('Location: micahportal.php');
+                    header('Location: index.php');
                     die();
                 }
                 die();
@@ -102,13 +102,13 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Fredericksburg SPCA Volunteer System | Log In</title>
+        <title>Micah Ministries | Log In</title>
     </head>
     <body>
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
-  <<div class="hidden md:flex md:w-1/2 items-center justify-center rounded-r-[50px] bg-white">
+  <div class="hidden md:flex md:w-1/2 items-center justify-center rounded-r-[50px] bg-white">
   <img src="images/micah-ministries-logo.jpg"
        alt="Micah Ecumenical Ministries"
        class="max-w-[90%] max-h-[90%] object-contain">

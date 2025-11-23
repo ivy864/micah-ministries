@@ -10,25 +10,16 @@ session_write_close();
 <html>
     <head>     <link rel="icon" type="image/png" href="images/micah-favicon.png">
 
-    <meta HTTP-EQUIV="REFRESH" content="2; url=micahportal.php">
+    <meta HTTP-EQUIV="REFRESH" content="2; url=index.php">
     <title>Logged Out | Micah Ecumenical Ministries</title>
     <link rel="icon" type="image/png" href="images/micah-favicon.png">
     <?php require('universal.inc') ?>
 </head>
 
     <body>
-        <nav>
-            <span id="nav-top">
-                <span class="logo">
-                    <img src="images/micah-ministries-logo.jpg">
-                        <span id="vms-logo"> Micah Ecumenical Ministries </span>
-                        </span>
-                    <img id="menu-toggle" src="images/menu.png">
-                </span>
-            </span>
-        </nav>
-        <main>
-            <p class="happy-toast centered">You have been logged out.</p>
-        </main>
+        <div style="padding: 30px; text-align: center;">
+            <img src="images\micah-ministries-logo.jpg" alt="Micah Ministries Logo">
+        </div>
+        <p class="main-text">You've successfully been logged out</p>
     </body>
 </html>
