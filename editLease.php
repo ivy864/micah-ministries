@@ -21,6 +21,11 @@ if ($accessLevel < 2) {
 }
 $lease_id = $_GET['id'] ?? null;
 
+$CMcon = connect();
+$CMquery = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
+$CMresult = mysqli_query($CMcon, $CMquery);
+$CMcon->close();
+
 // if writecomment is set to true in request header, write a comment to database
     if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
         // Start output buffering to capture any unwanted output
@@ -446,9 +451,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                             value="<?php echo htmlspecialchars($lease['security_deposit']); ?>">
                     </div>
                     <div class="form-group">
-                        <label for="case_manager">Case Manager Name:</label>
-                        <input type="text" id="case_manager" name="case_manager"
-                            value="<?php echo htmlspecialchars($lease['case_manager']); ?>">
+                        <label for="case_manager">Case Manager Name <span class="required">*</span></label>
+                        <select name="case_manager" id="case_manager" required>
+                            <?php
+                            if ($CMresult && $CMresult->num_rows > 0) {
+                                // Get the current case manager value
+                                $currentCaseManager = htmlspecialchars($lease['case_manager']);
+                                
+                                while ($row = $CMresult->fetch_assoc()) {
+                                    $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                    // Compare the full name to the current case manager
+                                    $selected = ($currentCaseManager == $fullName) ? 'selected' : '';
+                                    echo "<option value='" . $fullName . "' " . $selected . ">"
+                                        . $fullName
+                                        . "</option>";
+                                }
+                            } else {
+                                echo "<option disabled>No case managers found</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
                     </div>
 

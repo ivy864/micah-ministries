@@ -25,6 +25,11 @@
     require_once('database/dbLeases.php');
     require_once('domain/Lease.php');
     
+    $CMcon = connect();
+    $CMquery = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
+    $CMresult = mysqli_query($CMcon, $CMquery);
+    $CMcon->close();
+
     $message = '';
     $error = '';
     
@@ -59,7 +64,7 @@
                 error_log("No file was uploaded");
             }
         }
-        
+
         // basic validation
         if (empty($tenant_first_name) || empty($tenant_last_name) || empty($property_street) || 
             empty($unit_number) || empty($property_city) || empty($property_state) || 
@@ -227,9 +232,23 @@ require_once('header.php');
                         <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
                     </div>
                     <div class="form-group">
-                        <label for="Case Manager">Case Manager Name <span class="required">*</span></label>
-                        <input type="text" id="case_manager" name="case_manager" 
-                               value="<?php echo htmlspecialchars($_POST['case_manager'] ?? ''); ?>" required>
+                        <label for="case_manager">Case Manager Name <span class="required">*</span></label>
+                        <select name="case_manager" id="case_manager" required>
+                            <option value="">Select Case Manager</option>
+                            <?php
+                            if ($CMresult && $CMresult->num_rows > 0) {
+                                while ($row = $CMresult->fetch_assoc()) {
+                                    $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                    $selected = (($_POST['case_manager'] ?? '') == $fullName) ? 'selected' : '';
+                                    echo "<option value='" . $fullName . "' " . $selected . ">"
+                                        . $fullName
+                                        . "</option>";
+                                }
+                            } else {
+                                echo "<option disabled>No case managers found</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="form-group">
                         <!-- Empty div for spacing -->
@@ -248,5 +267,6 @@ require_once('header.php');
 
     </div>
   </main>
+
 </body>
 </html>
