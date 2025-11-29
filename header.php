@@ -294,20 +294,7 @@ if (date("H:i:s") > "18:19:59") {
     <span>Create Request</span>
   </div>
 </a>
-<a href="assignMaintenanceTasks.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/user-check.svg">
-    <span>Assign Tasks</span>
-  </div>
-</a>
-<a href="viewPendingMaintenanceRequests.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Pending Requests</span>
-  </div>
-</a>
 
-</a>
 
 
 
@@ -488,18 +475,6 @@ if (date("H:i:s") > "18:19:59") {
   <div class="in-nav">
     <img src="images/plus-solid.svg">
     <span>Create Request</span>
-  </div>
-</a>
-<a href="viewPendingMaintenanceRequests.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/clock-regular.svg">
-    <span>Pending Requests</span>
-  </div>
-</a>
-<a href="assignMaintenanceTasks.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/user-check.svg">
-    <span>Assign Tasks</span>
   </div>
 </a>
                     </div>
