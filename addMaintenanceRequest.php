@@ -57,12 +57,33 @@
             $result = add_maintenance_request($maintenanceRequest);
             
             if ($result) {
-                $message = 'Maintenance request created successfully! Request ID: ' . $id;
-                // clear form data
-                $_POST = array();
-            } else {
-                $error = 'Failed to create maintenance request. Please try again.';
-            }
+
+    // Handle image upload
+    if (!empty($_FILES['attachment']['tmp_name'])) {
+
+        require_once('database/dbMaintenanceImages.php');
+
+        $file_name = $_FILES['attachment']['name'];
+        $file_type = $_FILES['attachment']['type'];
+        $file_blob = file_get_contents($_FILES['attachment']['tmp_name']);
+
+        // Only accept PNG
+        if ($file_type === "image/png") {
+            add_maintenance_image($id, $file_name, $file_type, $file_blob);
+        } else {
+            $error = "Only PNG images are allowed.";
+        }
+    }
+
+    $message = 'Maintenance request created successfully! Request ID: ' . $id;
+
+    // clear form data
+    $_POST = array();
+
+} else {
+    $error = 'Failed to create maintenance request. Please try again.';
+}
+
         }
     }
 ?>
@@ -113,7 +134,7 @@ require_once('header.php');
         <?php endif; ?>
         
         <div class="form-container">
-            <form method="POST" action="">
+            <form method="POST" enctype="multipart/form-data" action="">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="requester_name">Requester Name *</label>
@@ -181,6 +202,11 @@ require_once('header.php');
                            value="<?php echo htmlspecialchars($_POST['notes'] ?? ''); ?>">
                 </div>
                 
+                <div class="form-group">
+                    <label for="attachment">Upload Image (PNG only)</label>
+                    <input type="file" id="attachment" name="attachment" accept="image/png">
+                </div>
+
                 <div style="text-align: center; margin-top: 30px;">
                     <button type="submit" class="blue-button">Create Maintenance Request</button>
                     <a href="maintman.php" class="gray-button" style="margin-left: 10px;">Cancel</a>

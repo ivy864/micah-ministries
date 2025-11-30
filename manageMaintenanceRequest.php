@@ -207,15 +207,30 @@
                 
                 // update in database using object
                 $result = update_maintenance_request($request);
-                
-                if ($result) {
-                    $message = '✅ Changes saved successfully! The maintenance request has been updated.';
-                    // redirect to view mode after successful update
-                    header('Location: ?id=' . urlencode($request_id) . '&saved=1');
-                    exit;
-                } else {
-                    $error = '❌ Failed to save changes. Please check your connection and try again.';
-                }
+
+// Handle image upload
+if (!empty($_FILES['attachment']['tmp_name'])) {
+
+    require_once('database/dbMaintenanceImages.php');
+
+    $file_name = $_FILES['attachment']['name'];
+    $file_type = $_FILES['attachment']['type'];
+    $file_blob = file_get_contents($_FILES['attachment']['tmp_name']);
+
+    if ($file_type === "image/png") {
+        add_maintenance_image($request_id, $file_name, $file_type, $file_blob);
+    } else {
+        $error = "❌ Only PNG images are allowed.";
+    }
+}
+
+if ($result) {
+    header('Location: ?id=' . urlencode($request_id) . '&saved=1');
+    exit;
+} else {
+    $error = '❌ Failed to save changes. Please check your connection and try again.';
+}
+
             }
         }
     }
@@ -267,7 +282,7 @@ require_once('header.php');
         <?php endif; ?>
 
         <div class="form-container">
-            <form id="maintenance-form" method="POST" action="">
+            <form id="maintenance-form" method="POST" enctype="multipart/form-data" action="">
                 <div class="form-group">
                     <label>Request ID</label>
                     <input type="text" value="<?php echo htmlspecialchars($request->getID()); ?>" readonly style="background-color: #f8f9fa;">
@@ -348,6 +363,13 @@ require_once('header.php');
                     <?php if (!$edit_mode): ?>
                         <a href="?id=<?php echo urlencode($request_id); ?>&edit=1" class="blue-button">Edit</a>
                     <?php else: ?>
+                        <?php if ($edit_mode): ?>
+                    <div class="form-group">
+                        <label for="attachment">Upload Image (PNG only)</label>
+                        <input type="file" id="attachment" name="attachment" accept="image/png">
+                    </div>
+                    <?php endif; ?>
+
                         <a href="#" onclick="document.getElementById('maintenance-form').submit(); return false;" class="btn-primary">Save</a>
                         <a href="?id=<?php echo urlencode($request_id); ?>" class="btn-secondary" style="margin-left: 10px;">Cancel</a>
                     <?php endif; ?>
@@ -356,6 +378,29 @@ require_once('header.php');
             </form>
         </div>
         
+        <?php
+require_once('database/dbMaintenanceImages.php');
+$images = get_maintenance_images_by_request($request->getID());
+?>
+
+<div class="attachments-section" style="margin-top: 30px;">
+    <h2 style="color:var(--main-color);">Attachments</h2>
+
+    <?php if (empty($images)): ?>
+        <p style="color:#6c757d;">No images uploaded.</p>
+    <?php else: ?>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <?php foreach ($images as $img): ?>
+                <a href="viewMaintenanceImage.php?id=<?php echo $img->getID(); ?>" target="_blank">
+                    <img src="viewMaintenanceImage.php?id=<?php echo $img->getID(); ?>" 
+                         style="width:150px; border-radius:6px; border:1px solid #ccc;">
+                </a>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+
         <div id="comments" requestID="<?php echo htmlspecialchars($request->getID()) ?>">
             <?php
             $comments = get_comments($_GET['id']);
