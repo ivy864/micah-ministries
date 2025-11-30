@@ -358,28 +358,29 @@ if (date("H:i:s") > "18:19:59") {
             <div class="nav-links">
                 <div class="nav-item">Lease Management
                     <div class="dropdown">
+<a href="leaseman.php" style="text-decoration: none;">
+  <div class="in-nav">
+    <img src="images/dashboard.svg">
+    <span>Leases Hub</span>
+  </div>
+</a>
 <a href="leaseView.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/list-solid.svg">
     <span>View Leases</span>
   </div>
 </a>
-<a href="calendar.php" style="text-decoration: none;">
+<a href="addLease.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/calendar.svg">
-    <span>Calendar</span>
-  </div>
-</a>
-<a href="eventsearch.php" style="text-decoration: none;">
-  <div class="in-nav">
-    <img src="images/search.svg">
-    <span>Search Events</span>
+    <img src="images/plus-solid.svg">
+    <span>Add Lease</span>
   </div>
 </a>
                     </div>
                 </div>
                 <div class="nav-item">Maintenance
                     <div class="dropdown">
+
 <a href="maintman.php" style="text-decoration: none;">
   <div class="in-nav">
     <img src="images/dashboard.svg">
@@ -398,19 +399,23 @@ if (date("H:i:s") > "18:19:59") {
     <span>Create Request</span>
   </div>
 </a>
+
+
+
+
                     </div>
                 </div>
                 <div class="nav-item">Profile
                     <div class="dropdown">
 <a href="viewProfile.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/user.svg">
+    <img src="images/view-profile.svg">
     <span>My Profile</span>
   </div>
 </a>
 <a href="editProfile.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/edit.svg">
+    <img src="images/edit-pencil.svg">
     <span>Edit Profile</span>
   </div>
 </a>
@@ -433,9 +438,6 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon">
                         <div class="dropdown">
-                            <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>
-                            <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
-                            <a href="inbox.php" style="text-decoration: none;"><div>Notifications</div></a>
                             <a href="managePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
                             <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
                         </div>
@@ -483,13 +485,13 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="dropdown">
 <a href="viewProfile.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/user.svg">
+    <img src="images/view-profile.svg">
     <span>My Profile</span>
   </div>
 </a>
 <a href="editProfile.php" style="text-decoration: none;">
   <div class="in-nav">
-    <img src="images/edit.svg">
+    <img src="images/edit-pencil.svg">
     <span>Edit Profile</span>
   </div>
 </a>
@@ -523,7 +525,7 @@ if (date("H:i:s") > "18:19:59") {
             </div>
         </div>
     </div>');
-        }
+	}
 
 
     }
