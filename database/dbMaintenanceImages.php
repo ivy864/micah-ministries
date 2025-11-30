@@ -48,11 +48,11 @@ function get_maintenance_images_by_request($request_id) {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $images[] = new MaintenanceImage(
-            $row['id'],
             $row['request_id'],
             $row['file_name'],
             $row['file_type'],
             $row['file_blob'],
+            $row['id'],
             $row['uploaded_at']
         );
     }

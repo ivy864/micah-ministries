@@ -9,11 +9,11 @@ class MaintenanceImage {
     private $uploaded_at;
 
     function __construct($request_id, $file_name, $file_type, $file_blob, $id = null, $uploaded_at = null) {
-        $this->id = $id;
         $this->request_id = $request_id;
         $this->file_name = $file_name;
         $this->file_type = $file_type;
         $this->file_blob = $file_blob;
+        $this->id = $id;
         $this->uploaded_at = $uploaded_at;
     }
 
