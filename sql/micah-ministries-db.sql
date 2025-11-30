@@ -250,6 +250,22 @@ INSERT INTO `dbmaintenancerequests` (`id`, `requester_name`, `requester_email`, 
 
 -- --------------------------------------------------------
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dbmaintenanceimages`
+--
+
+CREATE TABLE `dbmaintenanceimages` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `request_id` VARCHAR(256) NOT NULL,
+  `file_name` TEXT NOT NULL,
+  `file_type` VARCHAR(50) NOT NULL,
+  `file_blob` MEDIUMBLOB NOT NULL,
+  `uploaded_at` TIMESTAMP NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
 --
 -- Table structure for table `dbmessages`
 --
