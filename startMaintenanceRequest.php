@@ -11,9 +11,9 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
 
-// Only Staff (1), Case Managers (2), and Admin (3) can start requests.
+// only staff (1), case managers (2), and admin (3) can start requests
 if (!($accessLevel == 1 || $accessLevel == 2 || $accessLevel == 3)) {
-    header('Location: micahportal.php');
+    header('Location: index.php');
     die();
 }
 
