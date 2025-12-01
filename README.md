@@ -1,6 +1,4 @@
-Names of all group members: Madelyn Winfrey, Luke Busch, Ileana Perez, Jakob Ayers, CJ Purtan, Alexander Young, and Abe Kassem
-
-# Fredericksburg SPCA Volunteer Management Web Application 
+# Micah Ecumenical Ministries Maintenance and Lease Management System
 
 ## Purpose
 This project is the result of a semester's worth of collaboration among UMW students. The goal of the project was to create a web application that better suits the needs of Fredericksburg SPCA, specifically as a system to manage their volunteers. The system allows volunteers to check-in and out of shifts on site, view their hours volunteered and sign up for events. For the Fred SPCA staff the system allows them to keep track of volunteer hours, create events, share announcements, and managed volunteer accounts.
