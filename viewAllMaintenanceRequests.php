@@ -17,7 +17,7 @@
     }
     // maintenance staff and above can access
     if ($accessLevel < 1) {
-        header('Location: micahportal.php');
+        header('Location: index.php');
         die();
     }
 

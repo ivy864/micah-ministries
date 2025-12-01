@@ -12,11 +12,10 @@ if (isset($_SESSION['_id'])) {
 }
 
 /**
- * Deleting should be admin/manager only.
- * If you want maintenance staff to delete, lower this threshold to >=1.
+ * deleting should be maintenance staff and above.
  */
-if ($accessLevel < 2) {
-    header('Location: micahportal.php');
+if ($accessLevel < 1) {
+    header('Location: index.php');
     die();
 }
 

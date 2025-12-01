@@ -10,9 +10,9 @@ if (isset($_SESSION['_id'])) {
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
 }
-// who can mark complete? keep consistent with archive flow (admin/manager)
-if ($accessLevel < 2) {
-    header('Location: micahportal.php');
+// who can mark complete? maintenance staff and above
+if ($accessLevel < 1) {
+    header('Location: index.php');
     die();
 }
 
