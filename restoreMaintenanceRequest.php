@@ -10,7 +10,8 @@ if (isset($_SESSION['_id'])) {
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
 }
-if ($accessLevel < 2) {
+// restoring should be maintenance staff and above
+if ($accessLevel < 1) {
     header('Location: index.php');
     die();
 }
@@ -21,7 +22,8 @@ require_once('domain/MaintenanceRequest.php');
 $message = '';
 $error = '';
 
-$request_id = $_GET['id'] ?? null;
+// prefer id from post so restore works even without query string
+$request_id = $_POST['id'] ?? ($_GET['id'] ?? null);
 $request = null;
 if ($request_id) {
     $request = get_maintenance_request_by_id($request_id);
@@ -96,6 +98,7 @@ require_once('header.php');
             </div>
 
             <form method="POST" action="">
+              <input type="hidden" name="id" value="<?php echo htmlspecialchars($request->getID()); ?>">
               <button type="submit" name="restore" class="blue-button">Restore Maintenance Request</button>
               <a href="viewAllMaintenanceRequests.php?archived=1" class="delete-button">Cancel</a>
             </form>

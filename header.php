@@ -125,12 +125,12 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['index.php'] = 1;
         
         //pages case managers can view (Level 2) - Lease + Maintenance
-        $permission_array['restoremaintenancerequest.php'] = 2;
+        $permission_array['restoremaintenancerequest.php'] = 1;
         $permission_array['addlease.php'] = 2;
         $permission_array['editlease.php'] = 2;
         $permission_array['deletelease.php'] = 2;
-        $permission_array['archivemaintenancerequest.php'] = 2;
-        $permission_array['restoreMaintenancerequest.php'] = 2;
+        $permission_array['archivemaintenancerequest.php'] = 1;
+        $permission_array['restoreMaintenancerequest.php'] = 1;
         $permission_array['leaseview.php'] = 2;
         $permission_array['calendar.php'] = 2;
         $permission_array['eventsearch.php'] = 2;
