@@ -44,16 +44,12 @@
         $errors = false;
         $errorDetails = array();
 
-        // Debug: Check what we received
-        $errorDetails[] = "DEBUG: Received POST data: " . print_r($_POST, true);
-        $errorDetails[] = "DEBUG: Sanitized args: " . print_r($args, true);
-
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
             $errorDetails[] = "DEBUG: Required fields check failed";
             foreach ($required as $field) {
                 if (!isset($args[$field]) || empty($args[$field])) {
-                    $errorDetails[] = "DEBUG: Missing or empty field: $field";
+                    $errorDetails[] = "Missing or empty field: $field";
                 }
             }
         }
@@ -94,18 +90,18 @@
             // echo 'bad zip';
         }
         if (!validateEmail($email)) {
-            $errorDetails[] = "DEBUG: Email validation failed for: $email";
+            $errorDetails[] = "Email validation failed for: $email";
             $errors = true;
         }
 
         if(!emailAllowedDomain($email, $allowedDomain)) {
-            $errorDetails[] = "DEBUG: Email must be a '$allowedDomain' email address";
+            $errorDetails[] = "Email must be a '$allowedDomain' email address";
             $errors = true;
         }
 
         $phone1 = validateAndFilterPhoneNumber($args['phone']);
         if (!$phone1) {
-            $errorDetails[] = "DEBUG: Phone validation failed for: " . $args['phone'];
+            $errorDetails[] = "Phone validation failed for: " . $args['phone'];
             $errors = true;
         }
 
@@ -138,37 +134,19 @@
         
         // Validate role
         if (!valueConstrainedTo($user_role, ['admin', 'case_manager', 'maintenance'])) {
-            $errorDetails[] = "DEBUG: Role validation failed for: $user_role";
+            $errorDetails[] = "Role validation failed for: $user_role";
             $errors = true;
         }
 
         // Detailed password validation debugging
         $passwordInput = $args['password'];
-        $passwordErrors = array();
-        
-        // Check if password is at least 8 characters long
-        if (strlen($passwordInput) < 8) {
-            $passwordErrors[] = "Password must be at least 8 characters long (current: " . strlen($passwordInput) . ")";
-        }
-        
-        // Check if password contains at least one uppercase letter
-        if (!preg_match('/[A-Z]/', $passwordInput)) {
-            $passwordErrors[] = "Password must contain at least one uppercase letter";
-        }
-        
-        // Check if password contains at least one lowercase letter
-        if (!preg_match('/[a-z]/', $passwordInput)) {
-            $passwordErrors[] = "Password must contain at least one lowercase letter";
-        }
-        
-        // Check if password contains at least one number
-        if (!preg_match('/[0-9]/', $passwordInput)) {
-            $passwordErrors[] = "Password must contain at least one number";
-        }
-        
-        if (!empty($passwordErrors)) {
-            $errorDetails[] = "DEBUG: Password validation failed: " . implode(', ', $passwordErrors);
+        $password = '';
+
+        // enhanced password validation
+        $passwordValidation = validatePasswordWithDetails($passwordInput);
+        if ($passwordValidation !== true) {
             $errors = true;
+            $errorDetails[] = 'Password validation failed: ' . implode(', ', $passwordValidation);
         } else {
             $password = password_hash($passwordInput, PASSWORD_BCRYPT);
         }
