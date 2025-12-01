@@ -41,8 +41,8 @@ class Lease {
      */
     public function __construct($id, $tenant_first_name, $tenant_last_name, $property_street, 
                                $unit_number, $property_city, $property_state, $property_zip,
-                               $start_date, $expiration_date, $monthly_rent = null, 
-                               $security_deposit = null, $lease_form, $case_manager, $program_type = null, $status = 'Active') {
+                               $start_date, $expiration_date, $case_manager, $lease_form, $monthly_rent = null, 
+                               $security_deposit = null, $program_type = null, $status = 'Active') {
         $this->id = $id;
         $this->tenant_first_name = $tenant_first_name;
         $this->tenant_last_name = $tenant_last_name;
