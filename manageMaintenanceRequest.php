@@ -168,6 +168,13 @@
         $status = $_POST['status'] ?? 'Pending';
         $assigned_to = $_POST['assigned_to'] ?? '';
         $notes = $_POST['notes'] ?? '';
+
+        // CHANGE: Track whether an image was uploaded, so uploads count as "changes"
+        $image_uploaded = (
+            isset($_FILES['attachment']) &&
+            isset($_FILES['attachment']['tmp_name']) &&
+            is_uploaded_file($_FILES['attachment']['tmp_name'])
+        );
         
         // basic validation
         if (empty($requester_name) || empty($description)) {
@@ -188,7 +195,12 @@
                 $request->getNotes() !== $notes) {
                 $has_changes = true;
             }
-            
+
+            // CHANGE: Image uploads count as changes so user doesn't see "no changes made"
+            if ($image_uploaded) {
+                $has_changes = true;
+            }
+
             if (!$has_changes) {
                 $message = 'ℹ️ No changes were made. The form data is the same as before.';
             } else {
@@ -208,29 +220,54 @@
                 // update in database using object
                 $result = update_maintenance_request($request);
 
-// Handle image upload
-if (!empty($_FILES['attachment']['tmp_name'])) {
+                // CHANGE: Safely handle image upload with strict size/type checks
+                if ($image_uploaded) {
+                    require_once('database/dbMaintenanceImages.php');
 
-    require_once('database/dbMaintenanceImages.php');
+                    $max_size = 900 * 1024; // CHANGE: 900 KB per-image limit to stay under DB packet size
+                    $file_error = $_FILES['attachment']['error'];
+                    $file_name  = $_FILES['attachment']['name'];
+                    $file_type  = $_FILES['attachment']['type'];
+                    $file_size  = $_FILES['attachment']['size'];
 
-    $file_name = $_FILES['attachment']['name'];
-    $file_type = $_FILES['attachment']['type'];
-    $file_blob = file_get_contents($_FILES['attachment']['tmp_name']);
+                    if ($file_error !== UPLOAD_ERR_OK) {
+                        $error = "❌ Failed to upload image (upload error code: {$file_error}).";
+                    } elseif ($file_size <= 0) {
+                        $error = "❌ Uploaded image is empty or invalid.";
+                    } elseif ($file_size > $max_size) {
+                    $size_kb = round($file_size / 1024);
+                    $max_kb  = round($max_size / 1024);
+                    $error = "❌ Image too large. Your file is {$size_kb} KB — maximum allowed is {$max_kb} KB.";
+                    } elseif ($file_type !== "image/png") {
+                        $error = "❌ Only PNG images are allowed.";
+                    } else {
+                        // Only read the file if it passed all checks
+                        $file_blob = file_get_contents($_FILES['attachment']['tmp_name']);
 
-    if ($file_type === "image/png") {
-        add_maintenance_image($request_id, $file_name, $file_type, $file_blob);
-    } else {
-        $error = "❌ Only PNG images are allowed.";
-    }
-}
+                        if ($file_blob === false) {
+                            $error = "❌ Failed to read image from disk.";
+                        } else {
+                            $save_result = add_maintenance_image($request_id, $file_name, $file_type, $file_blob);
+                            if (!$save_result) {
+                                $error = "❌ Failed to save image.";
+                            } else {
+                                // If no prior error, show success
+                                if (empty($error)) {
+                                    $message = "✅ Image uploaded successfully!";
+                                }
+                            }
+                        }
+                    }
+                }
 
-if ($result) {
-    header('Location: ?id=' . urlencode($request_id) . '&saved=1');
-    exit;
-} else {
-    $error = '❌ Failed to save changes. Please check your connection and try again.';
-}
-
+                // CHANGE: Only redirect if text update succeeded AND there were no image errors
+                if ($result && empty($error)) {
+                    header('Location: ?id=' . urlencode($request_id) . '&saved=1');
+                    exit;
+                } elseif (!$result) {
+                    $error = '❌ Failed to save changes. Please check your connection and try again.';
+                }
+                // If $error is set, fall through and re-render page with error message, no redirect.
             }
         }
     }
@@ -425,4 +462,3 @@ $images = get_maintenance_images_by_request($request->getID());
   </main>
 </body>
 </html>
-

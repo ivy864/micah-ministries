@@ -265,6 +265,8 @@ CREATE TABLE `dbmaintenanceimages` (
   `uploaded_at` TIMESTAMP NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+ALTER TABLE `dbmaintenanceimages`
+  ADD KEY `FK_request_id_images` (`request_id`);
 
 --
 -- Table structure for table `dbmessages`
