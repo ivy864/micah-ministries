@@ -45,7 +45,8 @@
         // basic validation
         if (empty($requester_name) || empty($description)) {
             $error = 'Requester name and description are required.';
-        } else {
+        } 
+        else {
             // create maintenance request object
             $maintenanceRequest = new MaintenanceRequest(
                 $id, $requester_name, $requester_email, $requester_phone, 
@@ -58,34 +59,86 @@
             
             if ($result) {
 
-    // Handle image upload
-    if (!empty($_FILES['attachment']['tmp_name'])) {
+                /* ============================================================
+                   CHANGE: MULTIPLE IMAGE UPLOAD WITH SIZE/TYPE VALIDATION
+                   ============================================================ */
 
-        require_once('database/dbMaintenanceImages.php');
+                require_once('database/dbMaintenanceImages.php');
+                $max_size = 900 * 1024; // 900 KB limit PER IMAGE
 
-        $file_name = $_FILES['attachment']['name'];
-        $file_type = $_FILES['attachment']['type'];
-        $file_blob = file_get_contents($_FILES['attachment']['tmp_name']);
+                if (isset($_FILES['attachments']) &&
+                    is_array($_FILES['attachments']['tmp_name'])) {
 
-        // Only accept PNG
-        if ($file_type === "image/png") {
-            add_maintenance_image($id, $file_name, $file_type, $file_blob);
-        } else {
-            $error = "Only PNG images are allowed.";
-        }
-    }
+                    $count = count($_FILES['attachments']['tmp_name']);
 
-    $message = 'Maintenance request created successfully! Request ID: ' . $id;
+                    for ($i = 0; $i < $count; $i++) {
 
-    // clear form data
-    $_POST = array();
+                        // Skip empty inputs
+                        if (!is_uploaded_file($_FILES['attachments']['tmp_name'][$i])) {
+                            continue;
+                        }
 
-} else {
-    $error = 'Failed to create maintenance request. Please try again.';
-}
+                        $file_name = $_FILES['attachments']['name'][$i];
+                        $file_type = $_FILES['attachments']['type'][$i];
+                        $file_size = $_FILES['attachments']['size'][$i];
+                        $file_error = $_FILES['attachments']['error'][$i];
 
-        }
-    }
+                        // upload error
+                        if ($file_error !== UPLOAD_ERR_OK) {
+                            $error = "Upload error on file '{$file_name}' (error code {$file_error}).";
+                            break;
+                        }
+
+                        // too big
+                        if ($file_size > $max_size) {
+                            $size_kb = round($file_size / 1024);
+                            $error = "❌ File '{$file_name}' is too large ({$size_kb} KB). Maximum allowed is 900 KB.";
+                            break;
+                        }
+
+                        // only PNG
+                        if ($file_type !== "image/png") {
+                            $error = "❌ File '{$file_name}' must be a PNG image.";
+                            break;
+                        }
+
+                        // safe to read blob
+                        $file_blob = file_get_contents($_FILES['attachments']['tmp_name'][$i]);
+                        if ($file_blob === false) {
+                            $error = "❌ Failed to read file '{$file_name}'.";
+                            break;
+                        }
+
+                        // save to DB
+                        $save_result = add_maintenance_image($id, $file_name, $file_type, $file_blob);
+                        if (!$save_result) {
+                            $error = "❌ Failed to save image '{$file_name}'.";
+                            break;
+                        }
+                    }
+
+                    // if upload failed, do NOT clear form; display error
+                    if (!empty($error)) {
+                        // stop before success block
+                    }
+                    else {
+                        $message = "Maintenance request created successfully! Request ID: $id (images uploaded)";
+                        $_POST = [];
+                    }
+
+                } 
+                else {
+                    // no attachments
+                    $message = 'Maintenance request created successfully! Request ID: ' . $id;
+                    $_POST = [];
+                }
+
+            } else {
+                $error = 'Failed to create maintenance request. Please try again.';
+            }
+
+        } // end else
+    } // end POST
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -203,8 +256,9 @@ require_once('header.php');
                 </div>
                 
                 <div class="form-group">
-                    <label for="attachment">Upload Image (PNG only)</label>
-                    <input type="file" id="attachment" name="attachment" accept="image/png">
+                    <label for="attachments">Upload Images (PNG only)</label>
+                    <!-- CHANGE: allow multiple images -->
+                    <input type="file" id="attachments" name="attachments[]" accept="image/png" multiple>
                 </div>
 
                 <div style="text-align: center; margin-top: 30px;">
