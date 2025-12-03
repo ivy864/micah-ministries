@@ -11,7 +11,7 @@ if ($_SERVER['SERVER_NAME'] == 'jenniferp214.sg-host.com') {
         $user = 'ufn0uoxjv4xze';
         $database = 'dbg3egamdqoqhn';
         $pass = 'k9p3snb93cwe';
-}
+    }
 
 // delete_lease function moved to database/dbLeases.php
 // include it here for backward compatibility
