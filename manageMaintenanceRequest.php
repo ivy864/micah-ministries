@@ -189,6 +189,12 @@
                 $has_changes = true;
             }
             
+            // If an image was uploaded, that counts as a change
+            if (!empty($_FILES['attachment']['tmp_name'])) {
+                $has_changes = true;
+            }
+
+
             if (!$has_changes) {
                 $message = 'ℹ️ No changes were made. The form data is the same as before.';
             } else {
