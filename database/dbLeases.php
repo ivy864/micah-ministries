@@ -18,9 +18,7 @@
 include_once('dbinfo.php');
 include_once(dirname(__FILE__).'/../domain/Lease.php');
 
-/**
- * adds a new lease to the database using Lease object
- */
+
 /**
  * adds a new lease to the database using Lease object
  */
@@ -31,7 +29,6 @@ function add_lease($lease) {
 
     $con = connect();
     
-    // Remove created_at and updated_at - they auto-populate
     $query = "INSERT INTO dbleases (
         id, tenant_first_name, tenant_last_name, property_street, 
         unit_number, property_city, property_state, property_zip, 
@@ -63,11 +60,9 @@ function add_lease($lease) {
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
 
-    // s=string, d=double/decimal, b=blob
-    // 12th parameter (index 12) is the blob
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssddbsss",  // note: space added for clarity - remove in actual code
+        "ssssssssssddbsss",
         $id,
         $tenant_first_name,
         $tenant_last_name,
@@ -88,7 +83,7 @@ function add_lease($lease) {
 
     // Send blob data separately if it exists
     if ($lease_form !== null && strlen($lease_form) > 0) {
-        mysqli_stmt_send_long_data($stmt, 12, $lease_form); // 12 is the index of lease_form (0-based)
+        mysqli_stmt_send_long_data($stmt, 12, $lease_form);
         error_log("Sending PDF blob: " . strlen($lease_form) . " bytes");
     }
 
@@ -128,6 +123,11 @@ function get_lease_by_id($id) {
     }
     
     $row = mysqli_fetch_array($result);
+    
+    // Debug: Check if blob exists
+    $blob_size = $row['lease_form'] ? strlen($row['lease_form']) : 0;
+    error_log("get_lease_by_id - Retrieved lease ID: {$id}, Blob size: {$blob_size}");
+    
     $lease = new Lease(
         $row['id'],
         $row['tenant_first_name'],
@@ -139,10 +139,10 @@ function get_lease_by_id($id) {
         $row['property_zip'],
         $row['start_date'],
         $row['expiration_date'],
-        $row['monthly_rent'],
+        $row['case_manager'],    
+        $row['lease_form'],          
+        $row['monthly_rent'],       
         $row['security_deposit'],
-        $row['lease_form'],
-        $row['case_manager'],
         $row['program_type'],
         $row['status']
     );
@@ -151,14 +151,17 @@ function get_lease_by_id($id) {
     $lease->setCreatedAt($row['created_at']);
     $lease->setUpdatedAt($row['updated_at']);
     
+    // Debug: Verify blob in object
+    $object_blob_size = $lease->getLeaseForm() ? strlen($lease->getLeaseForm()) : 0;
+    error_log("get_lease_by_id - Lease object created, Blob size in object: {$object_blob_size}");
+    
     mysqli_stmt_close($stmt);
     mysqli_close($con);
     return $lease;
 }
 
-/**
- * updates a lease using Lease object
- */
+
+
 /**
  * updates a lease using Lease object
  */
@@ -200,30 +203,29 @@ function update_lease($lease) {
     $status = $lease->getStatus();
 
     mysqli_stmt_bind_param(
-    $stmt,
-    "sssssssssddbssss",  // ✅ CORRECT - 15 characters
-    $tenant_first_name,
-    $tenant_last_name,
-    $property_street,
-    $unit_number,
-    $property_city,
-    $property_state,
-    $property_zip,
-    $start_date,
-    $expiration_date,
-    $monthly_rent,
-    $security_deposit,
-    $lease_form,
-    $case_manager,
-    $program_type,
-    $status,
-    $id
-);
+        $stmt,
+        "sssssssssddbssss",
+        $tenant_first_name,
+        $tenant_last_name,
+        $property_street,
+        $unit_number,
+        $property_city,
+        $property_state,
+        $property_zip,
+        $start_date,
+        $expiration_date,
+        $monthly_rent,
+        $security_deposit,
+        $lease_form,
+        $case_manager,
+        $program_type,
+        $status,
+        $id
+    );
 
     // Send blob data separately if it exists
     if ($lease_form !== null && strlen($lease_form) > 0) {
-        mysqli_stmt_send_long_data($stmt, 11, $lease_form); // 11 is the index of lease_form in UPDATE
-        error_log("Updating PDF blob: " . strlen($lease_form) . " bytes");
+        mysqli_stmt_send_long_data($stmt, 11, $lease_form);
     }
 
     $result = mysqli_stmt_execute($stmt);
@@ -256,6 +258,34 @@ function delete_lease($lease_id) {
     mysqli_stmt_close($stmt);
     mysqli_close($con);
     return boolval($result);
+}
+
+/**
+ * Get a single PDF blob by lease ID
+ */
+function get_lease_pdf_file($id) {
+    $con = connect();
+    $query = "SELECT lease_form FROM dbleases WHERE id = ?";
+
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "s", $id);  // Changed to "s" for string ID
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($con);
+
+    // Return array with file_type for consistency with viewLeasePDF.php
+    if ($row && $row['lease_form']) {
+        return [
+            'lease_form' => $row['lease_form'],
+            'file_type' => 'application/pdf'
+        ];
+    }
+    
+    return null;
 }
 
 ?>
