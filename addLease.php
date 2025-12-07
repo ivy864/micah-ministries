@@ -216,13 +216,17 @@ require_once('header.php');
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="program_type">Program Type</label>
-                        <select id="program_type" name="program_type">
-                            <option value="">Select Program Type</option>
-                            <option value="Program #1" <?php echo (($_POST['program_type'] ?? '') == 'Program #1') ? 'selected' : ''; ?>>Program #1</option>
-                            <option value="Program #2" <?php echo (($_POST['program_type'] ?? '') == 'Program #2') ? 'selected' : ''; ?>>Program #2</option>
-                            <option value="Emergency Housing" <?php echo (($_POST['program_type'] ?? '') == 'Emergency Housing') ? 'selected' : ''; ?>>Emergency Housing</option>
-                            <option value="Transitional Housing" <?php echo (($_POST['program_type'] ?? '') == 'Transitional Housing') ? 'selected' : ''; ?>>Transitional Housing</option>
+                        <label for="funding_source">Funding Source</label>
+                        <select id="funding_source" name="program_type">
+                            <option value="">Select Funding Source</option>
+                            <option value="HTF - PSH" <?php echo (($_POST['program_type'] ?? '') == 'HTF - PSH') ? 'selected' : ''; ?>>HTF - PSH</option>
+                            <option value="HTF - RRH" <?php echo (($_POST['program_type'] ?? '') == 'HTF - RRH') ? 'selected' : ''; ?>>HTF - RRH</option>
+                            <option value="FISH (HUD) - PSH" <?php echo (($_POST['program_type'] ?? '') == 'FISH (HUD) - PSH') ? 'selected' : ''; ?>>FISH (HUD) - PSH</option>
+                            <option value="VHSP - RRH" <?php echo (($_POST['program_type'] ?? '') == 'VHSP - RRH') ? 'selected' : ''; ?>>VHSP - RRH</option>
+                            <option value="Unsheltered - RRH" <?php echo (($_POST['program_type'] ?? '') == 'Unsheltered - RRH') ? 'selected' : ''; ?>>Unsheltered - RRH</option>
+                            <option value="Journey Sustainable" <?php echo (($_POST['program_type'] ?? '') == 'Journey Sustainable') ? 'selected' : ''; ?>>Journey Sustainable</option>
+                            <option value="HOME ARP - TBRA" <?php echo (($_POST['program_type'] ?? '') == 'HOME ARP - TBRA') ? 'selected' : ''; ?>>HOME ARP - TBRA</option>
+                            <option value="Other" <?php echo (($_POST['program_type'] ?? '') == 'Other') ? 'selected' : ''; ?>>Other</option>
                         </select>
                     </div>
                     <div class="form-group">
