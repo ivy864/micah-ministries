@@ -14,6 +14,7 @@ if (isset($_SESSION['_id'])) {
 
 require_once('domain/Comment.php');
 require_once('database/dbComments.php');
+require_once('database/dbPersons.php');
 
 if ($accessLevel < 2) {
     header('Location: index.php');
@@ -21,10 +22,7 @@ if ($accessLevel < 2) {
 }
 $lease_id = $_GET['id'] ?? null;
 
-$CMcon = connect();
-$CMquery = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
-$CMresult = mysqli_query($CMcon, $CMquery);
-$CMcon->close();
+$caseManagersList = getCaseManagers();
 
 // if writecomment is set to true in request header, write a comment to database
     if (isset($_SERVER['HTTP_WRITECOMMENT']) && $_SERVER['HTTP_WRITECOMMENT'] == 'True') {
@@ -88,7 +86,9 @@ $CMcon->close();
         exit();
     }
 
-$pdo = null;
+require_once('database/dbLeases.php');
+require_once('domain/Lease.php');
+
 $db_notice = null;
 $lease = [
     'tenant_first_name' => '',
@@ -108,62 +108,52 @@ $lease = [
     'status' => 'Active'
 ];
 
-try {
-    $conf = null;
-    $confPath = __DIR__ . '/database/dbViewLease.php';
-
-    if (file_exists($confPath)) {
-        include $confPath; // sets $conf
-    }
-
-    $dsn  = $conf['dsn']  ?? getenv('MICAH_DB_DSN');
-    $user = $conf['user'] ?? getenv('MICAH_DB_USER');
-    $pass = $conf['pass'] ?? getenv('MICAH_DB_PASS');
-
-    if ($dsn) {
-        $pdo = new PDO($dsn, $user ?: null, $pass ?: null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+// Load existing lease data if editing
+if ($lease_id) {
+    $existing_lease = get_lease_by_id($lease_id);
+    
+    if ($existing_lease) {
+        // Convert Lease object to array for display
+        $lease = [
+            'tenant_first_name' => $existing_lease->getTenantFirstName(),
+            'tenant_last_name' => $existing_lease->getTenantLastName(),
+            'property_street' => $existing_lease->getPropertyStreet(),
+            'unit_number' => $existing_lease->getUnitNumber(),
+            'property_city' => $existing_lease->getPropertyCity(),
+            'property_state' => $existing_lease->getPropertyState(),
+            'property_zip' => $existing_lease->getPropertyZip(),
+            'start_date' => $existing_lease->getStartDate(),
+            'expiration_date' => $existing_lease->getExpirationDate(),
+            'monthly_rent' => $existing_lease->getMonthlyRent(),
+            'security_deposit' => $existing_lease->getSecurityDeposit(),
+            'case_manager' => $existing_lease->getCaseManager(),
+            'program_type' => $existing_lease->getProgramType(),
+            'status' => $existing_lease->getStatus(),
+            'lease_form_size' => $existing_lease->getLeaseForm() ? strlen($existing_lease->getLeaseForm()) : 0
+        ];
+        error_log("Loaded case_manager from DB: " . ($lease['case_manager'] ?? 'NULL'));
     } else {
-        $db_notice = "Database not yet configured — please fill in database/dbViewLease.php."; // change to actual db
-    }
-} catch (Throwable $e) {
-    $db_notice = "Database connection failed: " . htmlspecialchars($e->getMessage());
-}
-
-
-
-if ($pdo && $lease_id) {
-    try {
-        $stmt = $pdo->prepare("
-            SELECT tenant_first_name, tenant_last_name, property_street, unit_number, 
-                property_city, property_state, property_zip, start_date, 
-                expiration_date, monthly_rent, security_deposit, 
-                LENGTH(lease_form) as lease_form_size, case_manager, program_type, status 
-            FROM dbleases 
-            WHERE id = :id 
-            LIMIT 1
-        ");
-        $stmt->execute([':id' => $lease_id]);
-        if ($row = $stmt->fetch()) {
-            $lease = array_merge($lease, $row);
-        } else {
-            $db_notice = "No lease found for ID " . htmlspecialchars($lease_id);
-        }
-    } catch (Throwable $e) {
-        $db_notice = "Error loading lease: " . htmlspecialchars($e->getMessage());
+        $db_notice = "No lease found for ID " . htmlspecialchars($lease_id);
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
+
+    error_log("POST data received - case_manager: " . ($_POST['case_manager'] ?? 'NOT SET'));
+
     require_once('database/dbLeases.php');
     require_once('domain/Lease.php');
+    require_once('database/dbPersons.php');
     
-    // Get the existing lease
+    // Get the existing lease WITH ITS BLOB
     $existing_lease = get_lease_by_id($lease_id);
+    $caseManagersList = getCaseManagers();
     
     if ($existing_lease) {
+        // Debug: Check blob before updates
+        $blob_before = $existing_lease->getLeaseForm();
+        error_log("BEFORE updates - Blob size: " . ($blob_before ? strlen($blob_before) : 0));
+        
         // Update with new values from form
         if (isset($_POST['tenant_first_name'])) $existing_lease->setTenantFirstName($_POST['tenant_first_name']);
         if (isset($_POST['tenant_last_name'])) $existing_lease->setTenantLastName($_POST['tenant_last_name']);
@@ -180,18 +170,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         if (isset($_POST['program_type'])) $existing_lease->setProgramType($_POST['program_type']);
         if (isset($_POST['status'])) $existing_lease->setStatus($_POST['status']);
         
-        // Handle file upload
-        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] == UPLOAD_ERR_OK) {
+        // Handle file upload - ONLY update if a new file was uploaded
+        if (isset($_FILES['lease_form']) && $_FILES['lease_form']['error'] === UPLOAD_ERR_OK) {
             $lease_form = file_get_contents($_FILES['lease_form']['tmp_name']);
             $existing_lease->setLeaseForm($lease_form);
-            error_log("New PDF uploaded for lease " . $lease_id . ". Size: " . strlen($lease_form) . " bytes");
+            error_log("New PDF uploaded: " . strlen($lease_form) . " bytes");
+        } else {
+            // Debug: Log file upload status
+            $error_code = $_FILES['lease_form']['error'] ?? 'not set';
+            error_log("No new file uploaded. Error code: " . $error_code . " (4 = UPLOAD_ERR_NO_FILE)");
         }
+        
+        // Debug: Check blob before database update
+        $blob_after = $existing_lease->getLeaseForm();
+        error_log("BEFORE database update - Blob size: " . ($blob_after ? strlen($blob_after) : 0));
         
         // Update in database
         $result = update_lease($existing_lease);
         
         if ($result) {
-            $db_notice = "✅ Lease updated successfully.";
+            $db_notice = "Lease updated successfully.";
+            
+            // Debug: Verify what was saved
+            $verify_lease = get_lease_by_id($lease_id);
+            $verify_blob = $verify_lease ? $verify_lease->getLeaseForm() : null;
+            error_log("AFTER database update - Retrieved blob size: " . ($verify_blob ? strlen($verify_blob) : 0));
+            
             // Reload the lease to show updated data
             $lease = get_lease_by_id($lease_id);
             if ($lease) {
@@ -216,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                 $lease = $lease_array;
             }
         } else {
-            $db_notice = "❌ Update failed.";
+            $db_notice = "Update failed.";
         }
     }
 }
@@ -478,16 +482,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                         <label for="case_manager">Case Manager Name <span class="required">*</span></label>
                         <select name="case_manager" id="case_manager" required>
                             <?php
-                            if ($CMresult && $CMresult->num_rows > 0) {
+                            if ($caseManagersList && $caseManagersList->num_rows > 0) {
                                 // Get the current case manager value
-                                $currentCaseManager = htmlspecialchars($lease['case_manager']);
+                                $currentCaseManager = $lease['case_manager'] ?? '';
                                 
-                                while ($row = $CMresult->fetch_assoc()) {
-                                    $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                // Debug - remove this later
+                                error_log("Current case manager for dropdown: '" . $currentCaseManager . "'");
+                                
+                                // Reset the result pointer to the beginning
+                                mysqli_data_seek($caseManagersList, 0);
+                                
+                                while ($row = $caseManagersList->fetch_assoc()) {
+                                    $fullName = $row['first_name'] . ' ' . $row['last_name'];
                                     // Compare the full name to the current case manager
-                                    $selected = ($currentCaseManager == $fullName) ? 'selected' : '';
-                                    echo "<option value='" . $fullName . "' " . $selected . ">"
-                                        . $fullName
+                                    $selected = (trim($currentCaseManager) == trim($fullName)) ? 'selected' : '';
+                                    
+                                    // Debug - remove this later
+                                    error_log("Comparing '" . trim($currentCaseManager) . "' with '" . trim($fullName) . "' - selected: " . ($selected ? 'YES' : 'NO'));
+                                    
+                                    echo "<option value='" . htmlspecialchars($fullName) . "' " . $selected . ">"
+                                        . htmlspecialchars($fullName)
                                         . "</option>";
                                 }
                             } else {
@@ -499,11 +513,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                     </div>
 
                     <div class="form-group">
-                        <label for="lease_form">Lease Form:</label>
-                        <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
+                        <label for="lease_form">Lease Form (PDF):</label>
                         
                         <?php if (isset($lease['lease_form_size']) && $lease['lease_form_size'] > 0): ?>
-                            <div style="margin-top: 15px; display: flex; justify-content: center;">
+                            <div style="margin-bottom: 15px; padding: 12px; background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 4px;">
+                                <strong style="color: #0066cc;">Current PDF:</strong> 
+                                <span style="color: #333;">Lease document uploaded (<?php echo number_format($lease['lease_form_size']); ?> bytes)</span>
+                                <br>
+                                <small style="color: #666;">Upload a new file below only if you want to replace it</small>
+                            </div>
+                            
+                            <div style="margin-top: 15px; margin-bottom: 15px; display: flex; justify-content: center;">
                                 <iframe 
                                     src="viewLeasePDF.php?id=<?php echo urlencode($lease_id); ?>" 
                                     width="100%" 
@@ -512,10 +532,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
                                 </iframe>
                             </div>
                         <?php else: ?>
-                            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                            <p style="font-size: 14px; color: #856404; background: #fff3cd; padding: 10px; border-radius: 4px; border: 1px solid #ffeaa7;">
                                 No lease document currently uploaded
                             </p>
                         <?php endif; ?>
+                        
+                        <div style="margin-top: 10px;">
+                            <input type="file" id="lease_form" name="lease_form" accept="application/pdf">
+                            <small style="display: block; margin-top: 5px; color: #6c757d;">
+                                <?php if (isset($lease['lease_form_size']) && $lease['lease_form_size'] > 0): ?>
+                                    Leave blank to keep existing PDF, or select a new file to replace it
+                                <?php else: ?>
+                                    Upload a PDF lease document
+                                <?php endif; ?>
+                            </small>
+                        </div>
                     </div>
 
                 <div style="margin-top: 30px; text-align: center;">

@@ -101,6 +101,17 @@ function add_hours_to_person($person_id, $hours) {
     return $result;
 }
 
+/**
+ * Gets a list of case managers for lease
+ */
+function getCaseManagers(){
+    $con = connect();
+
+    $query = "SELECT first_name, last_name FROM dbpersons WHERE type = 'case_manager'";
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
+    return $result;
+}
 
 
 function remove_person($id) {
