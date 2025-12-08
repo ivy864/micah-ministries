@@ -65,7 +65,7 @@ function add_lease($lease) {
     // Bind parameters: 11 strings, 1 blob, 2 decimals, 2 strings = 16 total
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssssbdds",
+        "sssssssssssbddss",
         $id,
         $tenant_first_name,
         $tenant_last_name,
@@ -290,6 +290,3 @@ function get_lease_pdf_file($id) {
     
     return null;
 }
-
-?>
-
