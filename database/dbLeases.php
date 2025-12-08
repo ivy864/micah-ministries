@@ -29,11 +29,12 @@ function add_lease($lease) {
 
     $con = connect();
     
+    // Column order matches the Lease constructor parameter order
     $query = "INSERT INTO dbleases (
         id, tenant_first_name, tenant_last_name, property_street, 
         unit_number, property_city, property_state, property_zip, 
-        start_date, expiration_date, monthly_rent, security_deposit, 
-        lease_form, case_manager, program_type, status
+        start_date, expiration_date, case_manager, lease_form,
+        monthly_rent, security_deposit, program_type, status
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = mysqli_prepare($con, $query);
@@ -43,6 +44,7 @@ function add_lease($lease) {
         return false;
     }
 
+    // Get values in the exact order they appear in the query
     $id = $lease->getID();
     $tenant_first_name = $lease->getTenantFirstName();
     $tenant_last_name = $lease->getTenantLastName();
@@ -53,16 +55,17 @@ function add_lease($lease) {
     $property_zip = $lease->getPropertyZip();
     $start_date = $lease->getStartDate();
     $expiration_date = $lease->getExpirationDate();
+    $case_manager = $lease->getCaseManager();
+    $lease_form = $lease->getLeaseForm();
     $monthly_rent = $lease->getMonthlyRent();
     $security_deposit = $lease->getSecurityDeposit();
-    $lease_form = $lease->getLeaseForm();
-    $case_manager = $lease->getCaseManager();
     $program_type = $lease->getProgramType();
     $status = $lease->getStatus();
 
+    // Bind parameters: 11 strings, 1 blob, 2 decimals, 2 strings = 16 total
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssddbsss",
+        "ssssssssssssbdds",
         $id,
         $tenant_first_name,
         $tenant_last_name,
@@ -73,17 +76,17 @@ function add_lease($lease) {
         $property_zip,
         $start_date,
         $expiration_date,
-        $monthly_rent,      // d = decimal
-        $security_deposit,  // d = decimal
-        $lease_form,        // b = blob
         $case_manager,
+        $lease_form,
+        $monthly_rent,
+        $security_deposit,
         $program_type,
         $status
     );
 
     // Send blob data separately if it exists
     if ($lease_form !== null && strlen($lease_form) > 0) {
-        mysqli_stmt_send_long_data($stmt, 12, $lease_form);
+        mysqli_stmt_send_long_data($stmt, 11, $lease_form);
         error_log("Sending PDF blob: " . strlen($lease_form) . " bytes");
     }
 
@@ -139,9 +142,9 @@ function get_lease_by_id($id) {
         $row['property_zip'],
         $row['start_date'],
         $row['expiration_date'],
-        $row['case_manager'],    
+        $row['case_manager'],     
         $row['lease_form'],          
-        $row['monthly_rent'],       
+        $row['monthly_rent'],        
         $row['security_deposit'],
         $row['program_type'],
         $row['status']

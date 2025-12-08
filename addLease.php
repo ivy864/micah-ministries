@@ -78,8 +78,8 @@
             $lease = new Lease(
                 $lease_id, $tenant_first_name, $tenant_last_name, $property_street, 
                 $unit_number, $property_city, $property_state, $property_zip,
-                $start_date, $expiration_date, $monthly_rent, $security_deposit, $lease_form, $case_manager,
-                $program_type, 'Active'
+                $start_date, $expiration_date, $case_manager, $lease_form, 
+                $monthly_rent, $security_deposit, $program_type, 'Active'
             );
             
             // add to database using object

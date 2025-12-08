@@ -353,8 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $lease_id) {
         </p>
         
         <?php if (isset($db_notice) && $db_notice): ?>
-            <div class="alert <?php echo ($pdo ? 'alert-success' : 'alert-error'); ?>">
-                <?php echo $db_notice; ?>
+            <div class="alert <?php echo (strpos($db_notice, 'successfully') !== false ? 'alert-success' : 'alert-error'); ?>">                <?php echo $db_notice; ?>
             </div>
         <?php endif; ?>
 
